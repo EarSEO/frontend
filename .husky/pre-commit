@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+
+echo "🔍 코드 검사 중..."
+
+npm run lint --silent
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ lint 에러"
+  echo ""
+  exit 1 
+fi        
+
+npm run format --silent
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Prettier 에러!"
+  echo ""
+  exit 1  
+fi       
+
+echo "✅ 코드 검사완료!"
