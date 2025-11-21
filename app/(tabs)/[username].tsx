@@ -1,10 +1,9 @@
 import styled from "styled-components/native";
 
-export default function Index() {
+export default function Username() {
   return (
     <Container>
-      <Title>지도</Title>
-      <Title>큐레이션 바텀시트</Title>
+      <Title>user</Title>
     </Container>
   );
 }
@@ -14,7 +13,6 @@ const Container = styled.View`
   justify-content: "center";
   align-items: "center";
 `;
-
 const Title = styled.Text`
   font-size: ${({ theme }) => theme.typography.fontSize.xxxl};
   color: ${({ theme }) => theme.colors.textPrimary};

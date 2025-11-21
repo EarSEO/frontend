@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 
-import { Text, TextProps } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { ThemeProvider } from "styled-components/native";
+import { ThemeProvider } from "styled-components";
 
 import { theme } from "@/styles/theme";
 
@@ -21,9 +21,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      if (!(Text as any).defaultProps) {
-        (Text as any).defaultProps = {} as TextProps;
-      }
+      (Text as any).defaultProps = (Text as any).defaultProps || {};
       (Text as any).defaultProps.style = {
         fontFamily: "Pretendard-Regular",
       };
@@ -36,8 +34,17 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Stack />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider theme={theme}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: "white" },
+            }}
+          />
+        </SafeAreaView>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

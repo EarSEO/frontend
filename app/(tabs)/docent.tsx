@@ -1,10 +1,9 @@
 import styled from "styled-components/native";
 
-export default function Index() {
+export default function Docent() {
   return (
     <Container>
-      <Title>지도</Title>
-      <Title>큐레이션 바텀시트</Title>
+      <Title>도슨트</Title>
     </Container>
   );
 }

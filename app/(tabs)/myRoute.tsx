@@ -1,10 +1,10 @@
 import styled from "styled-components/native";
 
-export default function Index() {
+export default function MyRoute() {
   return (
     <Container>
       <Title>지도</Title>
-      <Title>큐레이션 바텀시트</Title>
+      <Title>나의 여행 바텀시트</Title>
     </Container>
   );
 }
