@@ -1,4 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
+import CouresIcon from "@/components/icons/CourseIcon";
+import MyRouteIcon from "@/components/icons/MyRouteIcon";
+import { theme } from "@/styles/theme";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TabLayout() {
@@ -11,14 +14,13 @@ export default function TabLayout() {
           height: 10,
           paddingTop: 10,
           paddingHorizontal: 10,
-          borderTopWidth: 0,
+          borderTopWidth: 1,
           position: "absolute",
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: -1 },
-          shadowOpacity: 0.01,
-          shadowRadius: 8,
+          overflow: "hidden",
+          borderTopColor: theme.colors.neutral300,
+          borderTopLeftRadius: theme.borderRadius.xl,
+          borderTopRightRadius: theme.borderRadius.xl,
+          backgroundColor: theme.colors.white,
         },
       }}
     >
@@ -30,7 +32,7 @@ export default function TabLayout() {
             <Ionicons
               name="headset-outline"
               size={28}
-              color={focused ? "black" : "grey"}
+              color={focused ? theme.colors.primary : theme.colors.black}
             />
           ),
         }}
@@ -40,10 +42,9 @@ export default function TabLayout() {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name="extension-puzzle-outline"
+            <MyRouteIcon
               size={28}
-              color={focused ? "black" : "grey"}
+              color={focused ? theme.colors.primary : theme.colors.black}
             />
           ),
         }}
@@ -53,7 +54,10 @@ export default function TabLayout() {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons name="map" size={24} color={focused ? "black" : "grey"} />
+            <CouresIcon
+              size={28}
+              color={focused ? theme.colors.primary : theme.colors.black}
+            />
           ),
         }}
       />
@@ -65,7 +69,7 @@ export default function TabLayout() {
             <Ionicons
               name="chatbox-ellipses-outline"
               size={28}
-              color={focused ? "black" : "grey"}
+              color={focused ? theme.colors.primary : theme.colors.black}
             />
           ),
         }}
@@ -75,10 +79,10 @@ export default function TabLayout() {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name="person"
+            <FontAwesome5
+              name="user"
               size={28}
-              color={focused ? "black" : "grey"}
+              color={focused ? theme.colors.primary : theme.colors.black}
             />
           ),
         }}

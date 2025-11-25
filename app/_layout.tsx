@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useFonts } from "expo-font";
@@ -37,12 +38,14 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider theme={theme}>
         <SafeAreaView style={{ flex: 1 }}>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "white" },
-            }}
-          />
+          <GestureHandlerRootView>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "white" },
+              }}
+            />
+          </GestureHandlerRootView>
         </SafeAreaView>
       </ThemeProvider>
     </SafeAreaProvider>

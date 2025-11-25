@@ -37,6 +37,7 @@ const borderRadius = {
   s: 5,
   md: 10,
   lg: 20,
+  xl: 30,
 } as const;
 
 const typography = {
