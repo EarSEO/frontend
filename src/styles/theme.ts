@@ -1,35 +1,41 @@
 const colors = {
-  primary400: "#2B64C9",
-  primary300: "#1172FF",
-  primary: "#3794FD",
-  primary100: "#548AED",
+  main: {
+    primary400: "#2B64C9",
+    primary300: "#1172FF",
+    primary: "#3794FD",
+    primary100: "#548AED",
+  },
+
+  grey: {
+    neutral600: "#241F1F",
+    neutral500: "#5E5E6E",
+    neutral400: "#9191A1",
+    neutral300: "#C8C9CF",
+    neutral200: "#E4E4E6",
+    neutral100: "#F8F8F8",
+  },
+
+  background: {
+    background500: "#E8EFF5",
+    background400: "#F8F9FD",
+    background300: "#F4F8FB",
+    background50: "#F9F9F9",
+    modalBackground: "#0000004D",
+    selectedList: "#1172FF1A",
+  },
 
   black: "#000000",
   white: "#FFFFFF",
-  neutral600: "#241F1F",
-  neutral500: "#5E5E6E",
-  neutral400: "#9191A1",
-  neutral300: "#C8C9CF",
-  neutral200: "#E4E4E6",
-  neutral100: "#F8F8F8",
 
-  background500: "#E8EFF5",
-  background400: "#F8F9FD",
-  background300: "#F4F8FB",
-  background50: "#F9F9F9",
+  semantic: { success: "#34C759", warning: "#FF9500", error: "#FF3B30" },
 
-  modalBackground: "#0000004D",
-  selected: "#1172FF1A",
-
-  success: "#34C759",
-  warning: "#FF9500",
-  error: "#FF3B30",
-
-  textPrimary: "#1A191E",
-  textSecondary: "#474752",
-  textTertiary: "#9191A1",
-  textBlue: "#2B64C9",
-  textWhite: "#FFFFFF",
+  text: {
+    textPrimary: "#1A191E",
+    textSecondary: "#474752",
+    textTertiary: "#9191A1",
+    textBlue: "#2B64C9",
+    textWhite: "#FFFFFF",
+  },
 } as const;
 
 const borderRadius = {

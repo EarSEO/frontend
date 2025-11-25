@@ -19,7 +19,7 @@ export default function TabLayout() {
           borderTopWidth: 1,
           position: "absolute",
           overflow: "hidden",
-          borderTopColor: theme.colors.neutral300,
+          borderTopColor: theme.colors.grey.neutral300,
           borderTopLeftRadius: theme.borderRadius.xl,
           borderTopRightRadius: theme.borderRadius.xl,
           backgroundColor: theme.colors.white,
@@ -34,7 +34,8 @@ export default function TabLayout() {
             <Ionicons
               name="headset-outline"
               size={28}
-              color={focused ? theme.colors.primary : theme.colors.black}
+              weght={1}
+              color={focused ? theme.colors.main.primary : theme.colors.black}
             />
           ),
         }}
@@ -46,7 +47,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused, color, size }) => (
             <MyRouteIcon
               size={28}
-              color={focused ? theme.colors.primary : theme.colors.black}
+              color={focused ? theme.colors.main.primary : theme.colors.black}
             />
           ),
         }}
@@ -58,7 +59,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused, color, size }) => (
             <CouresIcon
               size={28}
-              color={focused ? theme.colors.primary : theme.colors.black}
+              color={focused ? theme.colors.main.primary : theme.colors.black}
             />
           ),
         }}
@@ -71,7 +72,7 @@ export default function TabLayout() {
             <Ionicons
               name="chatbox-ellipses-outline"
               size={28}
-              color={focused ? theme.colors.primary : theme.colors.black}
+              color={focused ? theme.colors.main.primary : theme.colors.black}
             />
           ),
         }}
@@ -84,7 +85,7 @@ export default function TabLayout() {
             <FontAwesome5
               name="user"
               size={28}
-              color={focused ? theme.colors.primary : theme.colors.black}
+              color={focused ? theme.colors.main.primary : theme.colors.black}
             />
           ),
         }}

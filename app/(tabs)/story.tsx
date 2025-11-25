@@ -26,6 +26,6 @@ const Container = styled.View`
 
 const Title = styled.Text`
   font-size: ${({ theme }) => theme.typography.fontSize.xxxl};
-  color: ${({ theme }) => theme.colors.textPrimary};
+  color: ${({ theme }) => theme.colors.text.textPrimary};
   font-family: ${({ theme }) => theme.typography.fontFamily.regular};
 `;

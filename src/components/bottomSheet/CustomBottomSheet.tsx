@@ -24,7 +24,7 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
       enablePanDownToClose={false}
       enableOverDrag={false}
       handleIndicatorStyle={{
-        backgroundColor: theme.colors.neutral300,
+        backgroundColor: theme.colors.grey.neutral300,
         height: 4,
         width: 40,
       }}
