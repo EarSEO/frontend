@@ -1,5 +1,6 @@
-import { theme } from "@/styles/theme";
 import styled from "styled-components/native";
+
+import { theme } from "@/styles/theme";
 
 interface ButtonProps {
   text: string;
@@ -62,7 +63,7 @@ const StyledButton = styled.TouchableOpacity<{
   align-items: center;
 `;
 const ButtonText = styled.Text<{ fontSize?: number | string }>`
-  font-size: ${(props) => props.fontSize || theme.typography.fontSize.lg}px;
+  font-size: ${(props) => props.fontSize || theme.typography.fontSize.md}px;
   color: ${theme.colors.text.textPrimary};
   text-align: center;
 `;
