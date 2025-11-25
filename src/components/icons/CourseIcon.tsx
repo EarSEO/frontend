@@ -1,4 +1,4 @@
-import Svg, { Path, Mask, Defs } from "react-native-svg";
+import Svg, { Defs, Mask, Path } from "react-native-svg";
 
 interface ChatIconProps {
   color?: string;

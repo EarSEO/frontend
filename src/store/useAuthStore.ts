@@ -14,7 +14,7 @@ import {
   SocialLoginResponse,
   SocialSignUpRequest,
   User,
-} from "../types/authtypes";
+} from "../types/auth";
 
 interface AuthState {
   user: User | null;

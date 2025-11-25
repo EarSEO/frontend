@@ -1,21 +1,20 @@
-import { BottomSheetProps } from "@/types/bottomSheet";
+import { useCallback } from "react";
+
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+
+import { BottomSheetProps } from "@/types/bottomSheet";
+
 import { theme } from "@/styles/theme";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useCallback } from "react";
 
 const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
   children,
 }) => {
-  const renderBackdrop = useCallback(
-    (props: any) => <BottomSheetBackdrop {...props} pressBehavior="collapse" />,
-    []
-  );
-
   return (
     <BottomSheet
       ref={bottomSheetRef}

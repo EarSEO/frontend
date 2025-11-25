@@ -1,7 +1,8 @@
-import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import { useRef } from "react";
 
 import styled from "styled-components/native";
+
+import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 
 export default function Index() {
   const Ref = useRef<any>(null);

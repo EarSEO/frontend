@@ -1,8 +1,10 @@
-import CouresIcon from "@/components/icons/CourseIcon";
-import MyRouteIcon from "@/components/icons/MyRouteIcon";
-import { theme } from "@/styles/theme";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+
+import CouresIcon from "@/components/icons/CourseIcon";
+import MyRouteIcon from "@/components/icons/MyRouteIcon";
+
+import { theme } from "@/styles/theme";
 
 export default function TabLayout() {
   return (
