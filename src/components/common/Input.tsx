@@ -1,5 +1,6 @@
-import { theme } from "@/styles/theme";
 import styled from "styled-components/native";
+
+import { theme } from "@/styles/theme";
 
 interface InputProps {
   value?: string;
@@ -9,6 +10,7 @@ interface InputProps {
   placeholderTextColor: string;
   radius?: number;
   width?: number | string;
+  fontSize?: number | string;
 }
 
 /**
@@ -18,7 +20,8 @@ interface InputProps {
  * @param placeholder
  * @param placeholderTextColor
  * @param radius - 테두리 둥글기 (기본값: theme.borderRadius.s)
- * @param width -
+ * @param width
+ * @Param fontSize
  */
 
 const Input: React.FC<InputProps> = ({
@@ -29,10 +32,11 @@ const Input: React.FC<InputProps> = ({
   radius,
   placeholderTextColor,
   width,
+  fontSize,
   ...rest
 }) => {
   return (
-    <InpuBar
+    <StyledInput
       value={value}
       onChangeText={onChangeText}
       backgroundColor={backgroundColor}
@@ -42,22 +46,24 @@ const Input: React.FC<InputProps> = ({
         placeholderTextColor || theme.colors.text.textPrimary
       }
       width={width}
+      fontSize={fontSize}
       {...rest}
     />
   );
 };
 
-const InpuBar = styled.TextInput<{
+const StyledInput = styled.TextInput<{
   backgroundColor?: string;
   radius?: number;
   width?: number | string;
   placeholderTextColor: string;
+  fontSize?: number | string;
 }>`
-  width: 90%;
+  width: ${(props) => props.width || "90%"};
   padding: 12px 16px;
   background-color: ${(props) => props.backgroundColor || theme.colors.white};
   border-radius: ${(props) => props.radius || theme.borderRadius.s}px;
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${(props) => props.fontSize || theme.typography.fontSize.md}px;
   align-self: center;
 `;
 
