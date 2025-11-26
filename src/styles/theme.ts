@@ -98,15 +98,21 @@ const shadows = {
     shadowOpacity: 0.1,
     shadowRadius: 5,
   },
-  docent: {
+  docentList: {
     shadowColor: "#E8EFF5",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
   },
-  button: {
+  docentButton: {
     shadowColor: "#E8EFF5",
     shadowOpacity: 0.04,
+  },
+  myInput: {
+    shadowColor: "#F1F1F3",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
   },
 } as const;
 

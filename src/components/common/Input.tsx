@@ -11,6 +11,7 @@ interface InputProps {
   radius?: number;
   width?: number | string;
   height?: number | string;
+  shadow?: keyof typeof theme.shadows;
   fontSize?: number | string;
 }
 
@@ -23,6 +24,7 @@ interface InputProps {
  * @param radius - 테두리 둥글기 (기본값: theme.borderRadius.s)
  * @param width
  * @param height
+ * @param shadow
  * @Param fontSize
  */
 
@@ -35,9 +37,11 @@ const Input: React.FC<InputProps> = ({
   placeholderTextColor,
   width,
   height,
+  shadow,
   fontSize,
   ...rest
 }) => {
+  const shadowStyle = shadow ? theme.shadows[shadow] : {};
   return (
     <StyledInput
       value={value}
@@ -50,6 +54,7 @@ const Input: React.FC<InputProps> = ({
       }
       width={width}
       height={height}
+      style={shadowStyle}
       fontSize={fontSize}
       {...rest}
     />
@@ -61,11 +66,12 @@ const StyledInput = styled.TextInput<{
   radius?: number;
   width?: number | string;
   height?: number | string;
+  shadow?: keyof typeof theme.shadows;
   placeholderTextColor: string;
   fontSize?: number | string;
 }>`
   width: ${(props) => props.width || "90%"};
-  height: ${(props) => props.width || "50px"};
+  height: ${(props) => props.height || "50px"};
   padding: 12px 16px;
   background-color: ${(props) => props.backgroundColor || theme.colors.white};
   border-radius: ${(props) => props.radius || theme.borderRadius.s}px;

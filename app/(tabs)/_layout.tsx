@@ -1,9 +1,10 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-import { theme } from "@/styles/theme";
-import MyRouteIcon from "@/components/icons/tabs/MyRouteIcon";
 import CourseIcon from "@/components/icons/tabs/CourseIcon";
+import MyRouteIcon from "@/components/icons/tabs/MyRouteIcon";
+
+import { theme } from "@/styles/theme";
 
 export default function TabLayout() {
   return (
