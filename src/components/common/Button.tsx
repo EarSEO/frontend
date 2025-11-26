@@ -11,6 +11,7 @@ interface ButtonProps {
   height?: number | string;
   backgroundColor?: string;
   fontSize?: number | string;
+  color?: string;
 }
 
 /**
@@ -27,45 +28,54 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({
   text,
   onPress,
-  disabled,
+  disabled = false,
   radius,
   width,
   height,
   backgroundColor,
   fontSize,
+  color,
 }) => {
   return (
     <StyledButton
       onPress={onPress ? () => onPress(text) : undefined}
       disabled={disabled}
-      radius={radius}
-      width={width}
-      height={height}
-      backgroundColor={backgroundColor}
+      radius={radius || theme.borderRadius.lg}
+      width={width || "100%"}
+      height={height || "48px"}
+      backgroundColor={backgroundColor || theme.colors.main.primary}
     >
-      <ButtonText fontSize={fontSize}>{text}</ButtonText>
+      <ButtonText
+        fontSize={fontSize || theme.typography.fontSize.xl}
+        color={color || theme.colors.text.textWhite}
+      >
+        {text}
+      </ButtonText>
     </StyledButton>
   );
 };
 const StyledButton = styled.Pressable<{
   disabled: boolean;
-  radius?: number | string;
-  width?: number | string;
-  height?: number | string;
-  backgroundColor?: string;
+  radius: number | string;
+  width: number | string;
+  height: number | string;
+  backgroundColor: string;
 }>`
-  width: ${(props) => props.width || "100%"};
-  height: ${(props) => props.height || "48px"};
-  background-color: ${(props) =>
-    props.backgroundColor || theme.colors.main.primary};
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
+  background-color: ${(props) => props.backgroundColor};
   opacity: ${(props) => (props.disabled ? 0.3 : 1)};
-  border-radius: ${(props) => props.radius || theme.borderRadius.lg}px;
+  border-radius: ${(props) => props.radius}px;
   justify-content: center;
   align-items: center;
 `;
-const ButtonText = styled.Text<{ fontSize?: number | string }>`
-  font-size: ${(props) => props.fontSize || theme.typography.fontSize.xl}px;
-  color: ${theme.colors.text.textWhite};
+
+const ButtonText = styled.Text<{
+  fontSize: number | string;
+  color: string;
+}>`
+  font-size: ${(props) => props.fontSize}px;
+  color: ${(props) => props.color};
   text-align: center;
 `;
 

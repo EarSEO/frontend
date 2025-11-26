@@ -7,25 +7,31 @@ interface InputProps {
   onChangeText?: (text: string) => void;
   placeholder?: string;
   backgroundColor?: string;
-  placeholderTextColor: string;
+  placeholderTextColor?: string;
   radius?: number;
   width?: number | string;
   height?: number | string;
   shadow?: keyof typeof theme.shadows;
+  autoFocus?: boolean;
   fontSize?: number | string;
+  blurOnSubmit?: boolean;
+  onSubmitEditing?: () => void;
+  returnKeyType?: "done" | "go" | "next" | "search" | "send";
 }
 
 /**
  * @param value
  * @param onChangeText
- * @param backgroundColor - 배경색 (기본값: theme.colors.white)
+ * @param backgroundColor
  * @param placeholder
  * @param placeholderTextColor
- * @param radius - 테두리 둥글기 (기본값: theme.borderRadius.s)
+ * @param radius
  * @param width
  * @param height
  * @param shadow
- * @Param fontSize
+ * @Param onSubmitEditing - 키보드 완료 버튼 누르면 실행
+ * @param returnKeyType - 키보드 엔더 설정
+ *
  */
 
 const Input: React.FC<InputProps> = ({
@@ -39,6 +45,10 @@ const Input: React.FC<InputProps> = ({
   height,
   shadow,
   fontSize,
+  autoFocus = false,
+  blurOnSubmit = true,
+  onSubmitEditing,
+  returnKeyType = "done",
   ...rest
 }) => {
   const shadowStyle = shadow ? theme.shadows[shadow] : {};
@@ -46,36 +56,41 @@ const Input: React.FC<InputProps> = ({
     <StyledInput
       value={value}
       onChangeText={onChangeText}
-      backgroundColor={backgroundColor}
+      backgroundColor={backgroundColor || theme.colors.white}
       placeholder={placeholder}
-      radius={radius}
+      radius={radius || theme.borderRadius.s}
       placeholderTextColor={
         placeholderTextColor || theme.colors.text.textPrimary
       }
-      width={width}
-      height={height}
+      width={width || "90%"}
+      height={height || "50px"}
       style={shadowStyle}
-      fontSize={fontSize}
+      fontSize={fontSize || theme.typography.fontSize.lg}
+      autoFocus={autoFocus}
+      blurOnSubmit={blurOnSubmit}
+      onSubmitEditing={onSubmitEditing}
+      returnKeyType={returnKeyType}
       {...rest}
     />
   );
 };
 
 const StyledInput = styled.TextInput<{
-  backgroundColor?: string;
-  radius?: number;
-  width?: number | string;
-  height?: number | string;
-  shadow?: keyof typeof theme.shadows;
+  backgroundColor: string;
+  radius: number;
+  width: number | string;
+  height: number | string;
   placeholderTextColor: string;
-  fontSize?: number | string;
+  fontSize: number | string;
+  autoFocus: boolean;
+  blurOnSubmit?: boolean;
 }>`
-  width: ${(props) => props.width || "90%"};
-  height: ${(props) => props.height || "50px"};
+  width: ${(props) => props.width};
+  height: ${(props) => props.height};
   padding: 12px 16px;
-  background-color: ${(props) => props.backgroundColor || theme.colors.white};
-  border-radius: ${(props) => props.radius || theme.borderRadius.s}px;
-  font-size: ${(props) => props.fontSize || theme.typography.fontSize.md}px;
+  background-color: ${(props) => props.backgroundColor};
+  border-radius: ${(props) => props.radius}px;
+  font-size: ${(props) => props.fontSize}px;
   align-self: center;
 `;
 
