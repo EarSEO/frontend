@@ -77,7 +77,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="[username]"
+        name="myPage"
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (

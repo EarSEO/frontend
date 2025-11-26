@@ -25,7 +25,7 @@ interface AuthState {
   signup: (userData: SignUpRequest) => Promise<SignUpResponse>;
   socialLogin: (
     provider: Provider,
-    authCode: string,
+    authCode: string
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
   logout: () => Promise<void>;
@@ -43,7 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<LoginResponse>(
         `${API_ENDPOINTS.AUTH.LOGIN}`,
-        credentials,
+        credentials
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data;
@@ -60,7 +60,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false,
       });
     } catch (error) {
-      set({ isLoading: false });
+      set({
+        user: null,
+        isLogined: false,
+        isLoading: false,
+      });
       throw error;
     }
   },
@@ -70,7 +74,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true });
       const response = await api.post<SignUpResponse>(
         `${API_ENDPOINTS.AUTH.SIGNUP}`,
-        userData,
+        userData
       );
 
       set({ isLoading: false });
@@ -80,13 +84,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       throw error;
     }
   },
+
   socialLogin: async (provider: Provider, authCode: string) => {
     try {
       set({ isLoading: true });
 
       const response = await api.post<SocialLoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN}`,
-        { authCode },
+        { authCode }
       );
 
       const data = response.data;
@@ -94,8 +99,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (data.isNewMember) {
         set({ isLoading: false });
         return data;
-      }
-      if (
+      } else if (
         data.accessToken &&
         data.refreshToken &&
         data.memberId &&
@@ -121,17 +125,18 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       return data;
     } catch (error) {
-      set({ isLoading: false });
+      set({ user: null, isLogined: false, isLoading: false });
       throw error;
     }
   },
+
   socialSignup: async (userData: SocialSignUpRequest) => {
     try {
       set({ isLoading: true });
 
       const response = await api.post<LoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_SIGNUP}`,
-        userData,
+        userData
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data;
@@ -148,10 +153,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false,
       });
     } catch (error) {
-      set({ isLoading: false });
+      set({ user: null, isLogined: false, isLoading: false });
       throw error;
     }
   },
+
   logout: async () => {
     try {
       await api.post(`${API_ENDPOINTS.AUTH.LOGOUT}`);
@@ -167,6 +173,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
     }
   },
+
   loadUser: async () => {
     try {
       set({ isLoading: true });
@@ -182,12 +189,10 @@ export const useAuthStore = create<AuthState>((set) => ({
           isLoading: false,
         });
       } else {
-        set({ isLoading: true });
+        set({ user: null, isLoading: false, isLogined: false });
       }
     } catch {
-      set({ isLoading: false });
+      set({ user: null, isLogined: false, isLoading: false });
     }
   },
 }));
-
-export default api;

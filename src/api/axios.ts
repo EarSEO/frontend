@@ -23,15 +23,15 @@ export const api: AxiosInstance = axios.create({
 
 // 토큰 갱신 중복 방지
 let isRefreshing = false;
-let watingRequests: ((token: string) => void)[] = [];
+let watingRequest: ((token: string) => void)[] = [];
 
 const onRefreshed = (token: string) => {
-  watingRequests.forEach((callback) => callback(token));
-  watingRequests = [];
+  watingRequest.forEach((callback) => callback(token));
+  watingRequest = [];
 };
 
 const addRefreshSubscriber = (callback: (token: string) => void) => {
-  watingRequests.push(callback);
+  watingRequest.push(callback);
 };
 
 // 요청 인터셉터
@@ -47,7 +47,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 // 응답 인턴셉터
@@ -79,7 +79,7 @@ api.interceptors.response.use(
 
         const response = await axios.post<RefreshTokenResponse>(
           `${API_BASE_URL}${REFRESH_URL}`,
-          { refreshToken },
+          { refreshToken }
         );
 
         const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
@@ -107,7 +107,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

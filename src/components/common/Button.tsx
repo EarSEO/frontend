@@ -5,7 +5,7 @@ import { theme } from "@/styles/theme";
 interface ButtonProps {
   text: string;
   onPress?: (text: string) => void;
-  disabled: boolean;
+  disabled?: boolean;
   radius?: number | string;
   width?: number | string;
   height?: number | string;
