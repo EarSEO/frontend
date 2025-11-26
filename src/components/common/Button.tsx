@@ -47,24 +47,25 @@ const Button: React.FC<ButtonProps> = ({
     </StyledButton>
   );
 };
-const StyledButton = styled.TouchableOpacity<{
+const StyledButton = styled.Pressable<{
   disabled: boolean;
   radius?: number | string;
   width?: number | string;
   height?: number | string;
   backgroundColor?: string;
 }>`
-  width: ${(props) => props.width || "90%"};
-  height: ${(props) => props.height || "40px"};
+  width: ${(props) => props.width || "100%"};
+  height: ${(props) => props.height || "48px"};
   background-color: ${(props) =>
-    props.backgroundColor || theme.colors.background.background500};
-  border-radius: ${(props) => props.radius || theme.borderRadius.s}px;
+    props.backgroundColor || theme.colors.main.primary};
+  opacity: ${(props) => (props.disabled ? 0.3 : 1)};
+  border-radius: ${(props) => props.radius || theme.borderRadius.lg}px;
   justify-content: center;
   align-items: center;
 `;
 const ButtonText = styled.Text<{ fontSize?: number | string }>`
-  font-size: ${(props) => props.fontSize || theme.typography.fontSize.md}px;
-  color: ${theme.colors.text.textPrimary};
+  font-size: ${(props) => props.fontSize || theme.typography.fontSize.xl}px;
+  color: ${theme.colors.text.textWhite};
   text-align: center;
 `;
 

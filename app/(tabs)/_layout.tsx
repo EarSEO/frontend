@@ -81,7 +81,7 @@ export default function TabLayout() {
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons
-              name="person"
+              name="person-outline"
               size={24}
               color={focused ? theme.colors.main.primary : theme.colors.black}
             />
