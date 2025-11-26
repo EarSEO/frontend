@@ -10,6 +10,7 @@ interface InputProps {
   placeholderTextColor: string;
   radius?: number;
   width?: number | string;
+  height?: number | string;
   fontSize?: number | string;
 }
 
@@ -21,6 +22,7 @@ interface InputProps {
  * @param placeholderTextColor
  * @param radius - 테두리 둥글기 (기본값: theme.borderRadius.s)
  * @param width
+ * @param height
  * @Param fontSize
  */
 
@@ -32,6 +34,7 @@ const Input: React.FC<InputProps> = ({
   radius,
   placeholderTextColor,
   width,
+  height,
   fontSize,
   ...rest
 }) => {
@@ -46,6 +49,7 @@ const Input: React.FC<InputProps> = ({
         placeholderTextColor || theme.colors.text.textPrimary
       }
       width={width}
+      height={height}
       fontSize={fontSize}
       {...rest}
     />
@@ -56,10 +60,12 @@ const StyledInput = styled.TextInput<{
   backgroundColor?: string;
   radius?: number;
   width?: number | string;
+  height?: number | string;
   placeholderTextColor: string;
   fontSize?: number | string;
 }>`
   width: ${(props) => props.width || "90%"};
+  height: ${(props) => props.width || "50px"};
   padding: 12px 16px;
   background-color: ${(props) => props.backgroundColor || theme.colors.white};
   border-radius: ${(props) => props.radius || theme.borderRadius.s}px;
