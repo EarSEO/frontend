@@ -1,10 +1,9 @@
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-import CouresIcon from "@/components/icons/CourseIcon";
-import MyRouteIcon from "@/components/icons/MyRouteIcon";
-
 import { theme } from "@/styles/theme";
+import MyRouteIcon from "@/components/icons/tabs/MyRouteIcon";
+import CourseIcon from "@/components/icons/tabs/CourseIcon";
 
 export default function TabLayout() {
   return (
@@ -13,15 +12,14 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 10,
-          paddingTop: 10,
+          height: 15,
+          paddingTop: 15,
           paddingHorizontal: 10,
           borderTopWidth: 1,
           position: "absolute",
           overflow: "hidden",
-          borderTopColor: theme.colors.grey.neutral300,
-          borderTopLeftRadius: theme.borderRadius.xl,
-          borderTopRightRadius: theme.borderRadius.xl,
+          borderTopColor: theme.colors.grey.neutral200,
+
           backgroundColor: theme.colors.white,
         },
       }}
@@ -46,9 +44,9 @@ export default function TabLayout() {
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
             <MyRouteIcon
-              size={28}
+              size={24}
               color={focused ? theme.colors.main.primary : theme.colors.black}
-            />
+            ></MyRouteIcon>
           ),
         }}
       />
@@ -57,10 +55,10 @@ export default function TabLayout() {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
-            <CouresIcon
-              size={28}
+            <CourseIcon
+              size={26}
               color={focused ? theme.colors.main.primary : theme.colors.black}
-            />
+            ></CourseIcon>
           ),
         }}
       />
@@ -82,9 +80,9 @@ export default function TabLayout() {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
-            <FontAwesome5
-              name="user"
-              size={28}
+            <Ionicons
+              name="person"
+              size={24}
               color={focused ? theme.colors.main.primary : theme.colors.black}
             />
           ),

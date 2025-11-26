@@ -27,7 +27,7 @@ const colors = {
   black: "#000000",
   white: "#FFFFFF",
 
-  semantic: { success: "#34C759", warning: "#FF9500", error: "#FF3B30" },
+  alarm: { success: "#34C759", warning: "#FF9500", error: "#FF3B30" },
 
   text: {
     textPrimary: "#1A191E",

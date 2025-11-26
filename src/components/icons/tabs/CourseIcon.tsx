@@ -1,11 +1,16 @@
 import Svg, { Defs, Mask, Path } from "react-native-svg";
 
-interface ChatIconProps {
+interface CourseIconProps {
   color?: string;
   size?: number;
+  weight?: number;
 }
 
-export default function ChatIcon({ color = "#000", size = 25 }: ChatIconProps) {
+export default function CourseIcon({
+  color = "#000",
+  size = 25,
+  weight = 1,
+}: CourseIconProps) {
   return (
     <Svg width={size} height={size * 1.24} viewBox="0 0 25 31" fill="none">
       <Path
