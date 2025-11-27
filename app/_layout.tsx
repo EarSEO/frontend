@@ -1,24 +1,53 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { useEffect } from "react";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { ThemeProvider } from "styled-components";
+
+import { theme } from "@/styles/theme";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [fontsLoaded] = useFonts({
+    "Pretendard-Bold": require("../src/assets/fonts/Pretendard-Bold.otf"),
+    "Pretendard-SemiBold": require("../src/assets/fonts/Pretendard-SemiBold.otf"),
+    "Pretendard-Regular": require("../src/assets/fonts/Pretendard-Regular.otf"),
+    "Pretendard-Medium": require("../src/assets/fonts/Pretendard-Medium.otf"),
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      (Text as any).defaultProps = (Text as any).defaultProps || {};
+      (Text as any).defaultProps.style = {
+        fontFamily: "Pretendard-Regular",
+      };
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider theme={theme}>
+        <SafeAreaView style={{ flex: 1 }}>
+          <GestureHandlerRootView>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "white" },
+              }}
+            />
+          </GestureHandlerRootView>
+        </SafeAreaView>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
