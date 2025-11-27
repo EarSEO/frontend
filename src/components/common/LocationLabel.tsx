@@ -15,7 +15,7 @@ export interface LocationLabelProps {
   locationTitle: string;
   address?: string;
   distance?: number | null;
-  locationthema?: string;
+  locationtheme?: string;
 }
 
 const LocationLabel: React.FC<LocationLabelProps> = ({
@@ -23,9 +23,9 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
   locationTitle,
   address,
   distance,
-  locationthema,
+  locationtheme,
 }) => {
-  const onlyTitle = !address && !distance && !locationthema;
+  const onlyTitle = !address && !distance && !locationtheme;
 
   const formatDistance = () => {
     if (!distance) {
@@ -66,7 +66,7 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
         <ContentWrapper>
           <TopRow>
             <LocationTitle>{locationTitle}</LocationTitle>
-            <LocationThema>{locationthema}</LocationThema>
+            <LocationTheme>{locationtheme}</LocationTheme>
           </TopRow>
           <BottomRow>
             <Address>{address}</Address>
@@ -106,7 +106,7 @@ const LocationTitle = styled.Text`
   font-size: ${theme.typography.fontSize.md};
 `;
 
-const LocationThema = styled.Text`
+const LocationTheme = styled.Text`
   font-size: ${theme.typography.fontSize.sm};
 `;
 

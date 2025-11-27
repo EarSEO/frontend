@@ -3,15 +3,15 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
-interface AdressLabelProps {
-  adress: string;
+interface AddressLabelProps {
+  address: string;
   distance: number;
   iconSize?: number;
   fontSize?: number;
 }
 
-const AdressLabel: React.FC<AdressLabelProps> = ({
-  adress,
+const AddressLabel: React.FC<AddressLabelProps> = ({
+  address,
   distance,
   iconSize = 16,
   fontSize,
@@ -25,31 +25,40 @@ const AdressLabel: React.FC<AdressLabelProps> = ({
   };
 
   return (
-    <AdressLavelContainer>
+    <AddressLavelContainer>
       <MapPin
         size={iconSize}
         fontSize={fontSize}
         color={theme.colors.text.textPrimary}
       />
-      <AdressSection>
-        {formatDistance()}
-        {"  "}
-        {adress}
-      </AdressSection>
-    </AdressLavelContainer>
+      <AddressSection>
+        <Distance>{formatDistance()}</Distance>
+        <Address>{address}</Address>
+      </AddressSection>
+    </AddressLavelContainer>
   );
 };
 
-const AdressLavelContainer = styled.View`
-  flex: 1;
+const AddressLavelContainer = styled.View`
   flex-direction: row;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
 `;
 
-const AdressSection = styled.Text`
+const AddressSection = styled.View`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  flex-direction: row;
+  gap: 2px;
 `;
 
-export default AdressLabel;
+const Distance = styled.Text`
+  font-size: ${theme.typography.fontSize.xs};
+  color: ${theme.colors.text.textSecondary};
+`;
+
+const Address = styled.Text`
+  font-size: ${theme.typography.fontSize.xs};
+  color: ${theme.colors.text.textSecondary};
+`;
+
+export default AddressLabel;
