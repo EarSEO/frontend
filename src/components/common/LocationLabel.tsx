@@ -55,7 +55,8 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
   if (onlyTitle) {
     return (
       <OnlyTitleContainer>
-        {getIconName()} <LocationTitle>{locationTitle}</LocationTitle>
+        {getIconName()}
+        <LocationTitle>{locationTitle}</LocationTitle>
       </OnlyTitleContainer>
     );
   } else
@@ -68,8 +69,8 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
             <LocationThema>{locationthema}</LocationThema>
           </TopRow>
           <BottomRow>
-            <Address> {address}</Address>
-            <Distance> {formatDistance()}</Distance>
+            <Address>{address}</Address>
+            <Distance>{formatDistance()}</Distance>
           </BottomRow>
         </ContentWrapper>
       </LabelContainer>
