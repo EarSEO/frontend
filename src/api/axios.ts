@@ -47,7 +47,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // 응답 인턴셉터
@@ -79,7 +79,7 @@ api.interceptors.response.use(
 
         const response = await axios.post<RefreshTokenResponse>(
           `${API_BASE_URL}${REFRESH_URL}`,
-          { refreshToken }
+          { refreshToken },
         );
 
         const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
@@ -107,7 +107,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
