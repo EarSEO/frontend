@@ -17,10 +17,9 @@ export default function TabLayout() {
           paddingTop: 15,
           paddingHorizontal: 10,
           borderTopWidth: 1,
-          position: "absolute",
+          position: "static",
           overflow: "hidden",
           borderTopColor: theme.colors.grey.neutral200,
-
           backgroundColor: theme.colors.white,
         },
       }}

@@ -23,15 +23,15 @@ export const api: AxiosInstance = axios.create({
 
 // 토큰 갱신 중복 방지
 let isRefreshing = false;
-let watingRequest: ((token: string) => void)[] = [];
+let waitingRequest: ((token: string) => void)[] = [];
 
 const onRefreshed = (token: string) => {
-  watingRequest.forEach((callback) => callback(token));
-  watingRequest = [];
+  waitingRequest.forEach((callback) => callback(token));
+  waitingRequest = [];
 };
 
 const addRefreshSubscriber = (callback: (token: string) => void) => {
-  watingRequest.push(callback);
+  waitingRequest.push(callback);
 };
 
 // 요청 인터셉터

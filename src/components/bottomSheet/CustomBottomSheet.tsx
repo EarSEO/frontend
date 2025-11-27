@@ -19,7 +19,6 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={["45%", "95%"]}
-      bottomInset={20}
       index={1}
       enablePanDownToClose={false}
       enableOverDrag={false}
