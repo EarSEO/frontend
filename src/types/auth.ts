@@ -74,3 +74,10 @@ export interface User {
   nickname: string;
   role: Role;
 }
+
+// 공통 API 응답 타입
+export interface BaseResponse<T> {
+  status: string;
+  message: string;
+  data: T;
+}

@@ -6,9 +6,11 @@ import API_ENDPOINTS from "@/constants/endpoints";
 import api from "@/api/axios";
 
 import {
+  BaseResponse,
   LoginRequest,
   LoginResponse,
   Provider,
+  Role,
   SignUpRequest,
   SignUpResponse,
   SocialLoginResponse,
@@ -41,12 +43,12 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true });
 
-      const response = await api.post<LoginResponse>(
+      const response = await api.post<BaseResponse<LoginResponse>>(
         `${API_ENDPOINTS.AUTH.LOGIN}`,
         credentials
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
-        response.data;
+        response.data.data;
 
       await SecureStore.setItemAsync("accessToken", accessToken);
       await SecureStore.setItemAsync("refreshToken", refreshToken);
