@@ -1,7 +1,8 @@
-import { CircleCheck, ListPlus, Menu, ChevronRight } from "lucide-react-native";
+import { ChevronRight, CircleCheck, ListPlus, Menu } from "lucide-react-native";
+import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
-import styled from "styled-components/native";
+import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
 export type iconStyle = null | "EDIT" | "CHECK" | "ADD" | "DETAIL";
 
@@ -50,7 +51,7 @@ const SightCard: React.FC<SightCardProps> = ({
   };
   return (
     <SightCardContainer onPress={onCardPress}>
-      <SightImage source={{ uri: image }} />
+      <SightImage source={{ uri: image ?? DEFAULT_IMAGE_URL }} />
       <ContentWrapper>
         <SightName>{sightName}</SightName>
         <SightTheme>{sightTheme}</SightTheme>

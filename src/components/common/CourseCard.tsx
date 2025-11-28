@@ -1,6 +1,9 @@
-import { theme } from "@/styles/theme";
 import { ImageBackground } from "react-native";
+
 import styled from "styled-components/native";
+
+import { theme } from "@/styles/theme";
+import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
 interface CourseCardProps {
   image: string;
@@ -19,7 +22,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
     <CourseCardContainer onPress={onPress}>
       <BackgroundImage
         imageStyle={{ borderRadius: theme.borderRadius.lg }}
-        source={{ uri: image }}
+        source={{ uri: image ?? DEFAULT_IMAGE_URL }}
       >
         <ContentWrapper>
           <Title>{courseTitle}</Title>
