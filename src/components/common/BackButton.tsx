@@ -4,8 +4,10 @@ import styled from "styled-components/native";
 
 import BackButtonCircle from "@/assets/icons/headerButton/backButtonCircle.svg";
 
+type buttonStyleType = "NONE" | "CIRCLE";
+
 interface BackButtonProps {
-  buttonStyle: 1 | 2;
+  buttonStyle: buttonStyleType;
   disabled?: boolean;
 }
 
@@ -27,7 +29,7 @@ const BackButton: React.FC<BackButtonProps> = ({
 
   return (
     <StyledBackButton onPress={handleBack} disabled={disabled}>
-      {buttonStyle === 1 ? (
+      {buttonStyle === "NONE" ? (
         <Ionicons name="chevron-back-outline" size={30} />
       ) : (
         <BackButtonCircle width={50} height={50} />

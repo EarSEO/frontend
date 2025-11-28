@@ -4,8 +4,10 @@ import styled from "styled-components/native";
 
 import CloseButtonCircle from "@/assets/icons/headerButton/closeButtonCircle.svg";
 
+type buttonStyleType = "NONE" | "CIRCLE";
+
 interface CloseButtonProps {
-  buttonStyle: 1 | 2;
+  buttonStyle: buttonStyleType;
   disabled?: boolean;
   onPress: string;
 }
@@ -31,7 +33,7 @@ const CloseButton: React.FC<CloseButtonProps> = ({
       onPress={() => router.navigate(onPress)}
       disabled={disabled}
     >
-      {buttonStyle === 1 ? (
+      {buttonStyle === "NONE" ? (
         <Ionicons name="close-sharp" size={30} />
       ) : (
         <CloseButtonCircle width={50} height={50} />
