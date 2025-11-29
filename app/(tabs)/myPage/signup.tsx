@@ -9,6 +9,7 @@ import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
+import AdditionalInfoForm from "@/components/signup/AdditionalInfoForm";
 
 import { BaseResponse, Gender, NicknameCheckResponse } from "@/types/auth";
 
@@ -149,7 +150,7 @@ export default function SignUp() {
     try {
       setIsLoading(true);
       const response = await api.get<BaseResponse<NicknameCheckResponse>>(
-        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`,
+        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`
       );
 
       const { available, message } = response.data.data;
@@ -320,152 +321,37 @@ export default function SignUp() {
 
       {step === 2 && (
         <StepContainer>
-          <Label>닉네임을 입력해주세요.</Label>
-          <InputWithButton>
-            <InnerInput
-              placeholder="닉네임 입력"
-              placeholderTextColor={theme.colors.text.textTertiary}
-              value={nickname}
-              onChangeText={handleNicknameChange}
-            />
-            <InnerButton
-              onPress={handleCheckNickname}
-              disabled={isLoading || isNicknameChecked}
-            >
-              <InnerButtonText>중복확인</InnerButtonText>
-            </InnerButton>
-          </InputWithButton>
-          {nicknameMessage && (
-            <HelperText isAvailable={isNicknameChecked}>
-              {nicknameMessage}
-            </HelperText>
-          )}
+          <AdditionalInfoForm
+            onSubmit={async (data) => {
+              try {
+                setIsLoading(true);
 
-          <Gap height={20} />
+                await signup({
+                  email,
+                  password,
+                  nickname: data.nickname,
+                  gender: data.gender as Gender,
+                  birthdate: data.birthdate,
+                  nationality: data.nationality,
+                });
 
-          <Label>국적을 선택해주세요.</Label>
-          <SelectButton onPress={() => setShowNationalityPicker(true)}>
-            <SelectButtonText selected={!!nationality}>
-              {nationality}
-            </SelectButtonText>
-            <SelectArrow>▼</SelectArrow>
-          </SelectButton>
-
-          <Gap height={20} />
-
-          <Label>성별을 선택해주세요.</Label>
-          <GenderRow>
-            <GenderButton
-              selected={gender === "MALE"}
-              onPress={() => setGender("MALE")}
-            >
-              <GenderButtonText selected={gender === "MALE"}>
-                남자
-              </GenderButtonText>
-            </GenderButton>
-            <GenderButton
-              selected={gender === "FEMALE"}
-              onPress={() => setGender("FEMALE")}
-            >
-              <GenderButtonText selected={gender === "FEMALE"}>
-                여자
-              </GenderButtonText>
-            </GenderButton>
-          </GenderRow>
-
-          <Gap height={20} />
-
-          <Label>생년월일을 선택해주세요.</Label>
-          <SelectButton onPress={() => setShowDatePicker(true)}>
-            <SelectButtonText selected={true}>
-              {birthYear}년 {birthMonth}월 {birthDay}일
-            </SelectButtonText>
-            <SelectArrow>▼</SelectArrow>
-          </SelectButton>
-
-          <ButtonContainer>
-            <Button
-              text={isLoading ? "처리중..." : "회원가입"}
-              width="100%"
-              onPress={handleSignUp}
-              disabled={isLoading}
-            />
-          </ButtonContainer>
-
-          {/* 국적 선택 모달 */}
-          <Modal
-            visible={showNationalityPicker}
-            transparent={true}
-            animationType="slide"
-          >
-            <ModalOverlay>
-              <ModalContent>
-                <ModalHeader>
-                  <ModalTitle>국적 선택</ModalTitle>
-                  <ModalCloseButton
-                    onPress={() => setShowNationalityPicker(false)}
-                  >
-                    <ModalCloseText>완료</ModalCloseText>
-                  </ModalCloseButton>
-                </ModalHeader>
-                <Picker
-                  selectedValue={nationality}
-                  onValueChange={(value) => setNationality(value)}
-                >
-                  {NATIONALITIES.map((nation) => (
-                    <Picker.Item
-                      key={nation.code}
-                      label={nation.name}
-                      value={nation.name}
-                      color={theme.colors.text.textPrimary}
-                    />
-                  ))}
-                </Picker>
-              </ModalContent>
-            </ModalOverlay>
-          </Modal>
-
-          {/* 생년월일 선택 */}
-          {showDatePicker &&
-            (Platform.OS === "ios" ? (
-              <Modal
-                visible={showDatePicker}
-                transparent={true}
-                animationType="slide"
-              >
-                <ModalOverlay>
-                  <ModalContent>
-                    <ModalHeader>
-                      <ModalTitle>생년월일 선택</ModalTitle>
-                      <ModalCloseButton
-                        onPress={() => setShowDatePicker(false)}
-                      >
-                        <ModalCloseText>완료</ModalCloseText>
-                      </ModalCloseButton>
-                    </ModalHeader>
-                    <DateTimePicker
-                      value={selectedDate}
-                      mode="date"
-                      display="spinner"
-                      onChange={handleDateChange}
-                      maximumDate={new Date()}
-                      minimumDate={new Date(1900, 0, 1)}
-                      locale="ko-KR"
-                      textColor={theme.colors.text.textPrimary}
-                    />
-                  </ModalContent>
-                </ModalOverlay>
-              </Modal>
-            ) : (
-              <DateTimePicker
-                value={selectedDate}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
-                maximumDate={new Date()}
-                minimumDate={new Date(1900, 0, 1)}
-              />
-            ))}
+                Alert.alert("알림", "회원가입이 완료되었습니다.", [
+                  {
+                    text: "확인",
+                    onPress: () => router.replace("/myPage/login"),
+                  },
+                ]);
+              } catch (error: any) {
+                const message =
+                  error.response?.data?.message || "회원가입에 실패했습니다.";
+                Alert.alert("오류", message);
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            buttonText="회원가입"
+            isLoading={isLoading}
+          />
         </StepContainer>
       )}
     </Container>
