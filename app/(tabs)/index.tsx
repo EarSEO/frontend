@@ -4,6 +4,7 @@ import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import Input from "@/components/common/Input";
+
 import { theme } from "@/styles/theme";
 
 export default function Index() {
