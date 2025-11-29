@@ -149,7 +149,7 @@ export default function SignUp() {
     try {
       setIsLoading(true);
       const response = await api.get<BaseResponse<NicknameCheckResponse>>(
-        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`,
+        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`
       );
 
       const { available, message } = response.data.data;
@@ -417,6 +417,7 @@ export default function SignUp() {
                       key={nation.code}
                       label={nation.name}
                       value={nation.name}
+                      color={theme.colors.text.textPrimary}
                     />
                   ))}
                 </Picker>
@@ -450,6 +451,7 @@ export default function SignUp() {
                       maximumDate={new Date()}
                       minimumDate={new Date(1900, 0, 1)}
                       locale="ko-KR"
+                      textColor={theme.colors.text.textPrimary}
                     />
                   </ModalContent>
                 </ModalOverlay>
