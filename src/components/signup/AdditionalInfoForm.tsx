@@ -74,7 +74,7 @@ export default function AdditionalInfoForm({
     try {
       setIsChecking(true);
       const response = await api.get<BaseResponse<NicknameCheckResponse>>(
-        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`
+        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`,
       );
 
       const { available, message } = response.data.data;
