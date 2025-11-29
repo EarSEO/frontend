@@ -75,6 +75,21 @@ export interface User {
   role: Role;
 }
 
+// 이메일 인증 관련
+export interface EmailSendRequest {
+  email: string;
+}
+
+export interface EmailVerifyRequest {
+  email: string;
+  code: string;
+}
+
+export interface NicknameCheckResponse {
+  available: boolean;
+  message: string;
+}
+
 // 공통 API 응답 타입
 export interface BaseResponse<T> {
   status: string;

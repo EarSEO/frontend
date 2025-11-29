@@ -17,6 +17,7 @@ interface InputProps {
   blurOnSubmit?: boolean;
   onSubmitEditing?: () => void;
   returnKeyType?: "done" | "go" | "next" | "search" | "send";
+  secureTextEntry?: boolean;
 }
 
 /**
