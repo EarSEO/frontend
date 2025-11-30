@@ -1,4 +1,9 @@
-import React, { useCallback, useRef } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+} from "react";
 
 import { StyleSheet, TouchableOpacity } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
@@ -11,6 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { useLocation } from "@/hooks/useLocation";
 
+import { MapRef } from "@/types/map";
+
 import { theme } from "@/styles/theme";
 
 const LOCATION_BUTTON_SIZE = 48;
@@ -22,9 +29,28 @@ interface MapProps {
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-const Map: React.FC<MapProps> = ({ animatedPosition }) => {
+const Map = forwardRef<MapRef, MapProps>(({ animatedPosition }, ref) => {
   const mapRef = useRef<MapView>(null);
   const { location, isLoading, getCurrentLocation } = useLocation();
+
+  useImperativeHandle(ref, () => ({
+    getBoundaries: async () => {
+      if (!mapRef.current) return null;
+      const boundaries = await mapRef.current.getMapBoundaries();
+      return boundaries;
+    },
+    fitToPoints: (points) => {
+      if (!mapRef.current || points.length === 0) return;
+      mapRef.current.fitToCoordinates(points, {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      });
+    },
+    moveToLocation: (location) => {
+      if (!mapRef.current) return;
+      mapRef.current.animateToRegion(location, 300);
+    },
+  }));
 
   const moveToCurrentLocation = useCallback(async () => {
     const coords = await getCurrentLocation();
@@ -69,7 +95,9 @@ const Map: React.FC<MapProps> = ({ animatedPosition }) => {
       </AnimatedTouchable>
     </>
   );
-};
+});
+
+Map.displayName = "Map";
 
 const styles = StyleSheet.create({
   map: {
