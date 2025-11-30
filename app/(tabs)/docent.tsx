@@ -1,21 +1,13 @@
-import styled from "styled-components/native";
+import EmptyTour from "@/components/docent/emptyTour/EmptyTour";
+import OnTour from "@/components/docent/onTour/OnTour";
+
+import { useRouteStore } from "@/store/useRouteStore";
 
 export default function Docent() {
-  return (
-    <Container>
-      <Title>도슨트</Title>
-    </Container>
-  );
+  const { routeItems } = useRouteStore();
+
+  if (routeItems === undefined) {
+    return <EmptyTour />;
+  }
+  return <OnTour />;
 }
-
-const Container = styled.View`
-  flex: 1;
-  justify-content: "center";
-  align-items: "center";
-`;
-
-const Title = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xxxl};
-  color: ${({ theme }) => theme.colors.text.textPrimary};
-  font-family: ${({ theme }) => theme.typography.fontFamily.regular};
-`;
