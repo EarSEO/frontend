@@ -14,14 +14,16 @@ import { theme } from "@/styles/theme";
 const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
   children,
+  animatedPosition,
 }) => {
   return (
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={["45%", "95%"]}
-      index={1}
+      index={0}
       enablePanDownToClose={false}
       enableOverDrag={false}
+      animatedPosition={animatedPosition}
       handleIndicatorStyle={{
         backgroundColor: theme.colors.grey.neutral300,
         height: 4,
