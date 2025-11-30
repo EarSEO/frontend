@@ -5,4 +5,5 @@ export interface BottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheet | null>;
   children: React.ReactNode;
   animatedPosition?: SharedValue<number>;
+  snapPoints?: string[];
 }

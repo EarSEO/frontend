@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   STORY: {
     SPOTTOTALINFO: (storySpotId: number) =>
       `/api/story/spot/${storySpotId}/info`,
+    MAP_RECTANGLE: "/api/story/map/rectangle",
   },
 };
 

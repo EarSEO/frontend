@@ -1,7 +1,12 @@
 import axios from "axios";
 
 import { BaseResponse } from "@/types/auth";
-import { GetSpotTotalInfoResponse, GetStoryRequest } from "@/types/storySpot";
+import {
+  GetMapStoriesRequest,
+  GetMapStoryResponse,
+  GetSpotTotalInfoResponse,
+  GetStoryRequest,
+} from "@/types/storySpot";
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
@@ -19,6 +24,20 @@ export const getStoryApi = async (
     );
     return response.data.data;
   } catch (error) {
+    throw error;
+  }
+};
+
+//지도 사각형 영역 내 이야기 스팟 조회
+export const getRectangle = async (param: GetMapStoriesRequest) => {
+  try {
+    const response = await api.get<BaseResponse<GetMapStoryResponse>>(
+      `${API_ENDPOINTS.STORY.MAP_RECTANGLE}`,
+      { params: param }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("연결안됨");
     throw error;
   }
 };

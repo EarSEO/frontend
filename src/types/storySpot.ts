@@ -6,6 +6,16 @@ export interface GetSpotTotalInfoResponse {
   summaries?: StorySummaryResponse[];
 }
 
+export interface GetMapStoryResponse {
+  stories?: StoryInfoResponse[];
+  number?: number;
+  size?: number;
+  isFirst?: boolean;
+  isLast?: boolean;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
+}
+
 export interface SpotInfoResponse {
   longitude?: number;
   latitude?: number;
@@ -60,4 +70,24 @@ export interface GetStoryRequest {
         | "likeCount,asc";
     };
   };
+}
+
+export interface GetMapStoriesRequest {
+  minLongitude: string;
+  minLatitude: string;
+  maxLongitude: string;
+  maxLatitude: string;
+  page: number;
+  size: number;
+  sort: string;
+}
+
+export interface StoryData {
+  stories: StoryInfoResponse[];
+  number: number;
+  size: number;
+  isFirst: boolean;
+  isLast: boolean;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }

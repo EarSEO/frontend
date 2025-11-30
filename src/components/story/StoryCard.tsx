@@ -167,12 +167,12 @@ const SpotInfoWrapper = styled.View`
 
 const StroySpotName = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.xs};
 `;
 
 const StoryConcept = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.xs};
 `;
 
 const ContentWrapper = styled.View`

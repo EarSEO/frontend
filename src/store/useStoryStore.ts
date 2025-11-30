@@ -1,25 +1,33 @@
 import { create } from "zustand";
 
 import {
+  GetMapStoriesRequest,
+  GetMapStoryResponse,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
   SpotInfoResponse,
   SpotTitleListResponse,
+  StoryInfoResponse,
   StorySummaryResponse,
 } from "@/types/storySpot";
 
-import { getStoryApi } from "@/api/getStoryApi";
+import { getRectangle, getStoryApi } from "@/api/getStoryApi";
 
 interface StoryStore {
+  storyMain?: boolean;
   storyItems?: StoryItem[];
   briefSpotInfo?: SpotInfoResponse;
   spotTitleList?: SpotTitleListResponse;
   distance?: number;
   summaries?: StorySummaryResponse[];
+  mapStoryInfo?: StoryInfoResponse[];
 
   setStoryInfo: (
-    param: GetStoryRequest,
+    param: GetStoryRequest
   ) => Promise<GetSpotTotalInfoResponse | undefined>;
+  setMapStoryInfo: (
+    param: GetMapStoriesRequest
+  ) => Promise<StoryInfoResponse | undefined>;
 }
 
 interface StoryItem {
@@ -39,20 +47,22 @@ interface StoryItem {
   imageUrls?: string[];
 }
 
-export const useStoryStore = create<StoryStore>((set, get) => ({
+export const useStoryStore = create<StoryStore>((set) => ({
   briefSpotInfo: undefined,
   storyItems: undefined,
   spotTitleList: undefined,
   distance: undefined,
   summaries: undefined,
+  mapStoryInfo: undefined,
+  storyMain: true,
 
   setStoryInfo: async (
-    param: GetStoryRequest,
+    param: GetStoryRequest
   ): Promise<GetSpotTotalInfoResponse | undefined> => {
     try {
       const response: GetSpotTotalInfoResponse = await getStoryApi(param);
-      console.log(response.stories);
       set({
+        storyMain: false,
         briefSpotInfo: response.briefSpotInfo,
         spotTitleList: response.spotTitleList,
         distance: response.distance,
@@ -62,10 +72,29 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
           createdAt: formatDateArray(storyItem.createdAt),
         })),
       });
-
       return response;
     } catch (error) {
       set({ storyItems: undefined });
+      return undefined;
+    }
+  },
+
+  setMapStoryInfo: async (
+    param: GetMapStoriesRequest
+  ): Promise<GetMapStoryResponse | undefined> => {
+    try {
+      const response: GetMapStoryResponse = await getRectangle(param);
+
+      set({
+        storyMain: true,
+        mapStoryInfo: response.stories?.map((mapStory) => ({
+          ...mapStory,
+          createdAt: formatDateArray(mapStory.createdAt),
+        })),
+      });
+      return response;
+    } catch (error) {
+      set({ mapStoryInfo: undefined });
       return undefined;
     }
   },
