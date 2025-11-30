@@ -10,6 +10,11 @@ export const API_ENDPOINTS = {
     EMAIL_VERIFY: "/api/member/email/verify",
     NICKNAME_CHECK: "/api/member/nickname/check",
   },
+
+  STORY: {
+    SPOTTOTALINFO: (storySpotId: number) =>
+      `/api/story/spot/${storySpotId}/info`,
+  },
 };
 
 export default API_ENDPOINTS;
