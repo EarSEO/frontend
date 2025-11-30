@@ -11,9 +11,9 @@ export const API_ENDPOINTS = {
     NICKNAME_CHECK: "/api/member/nickname/check",
   },
   SIGHT: {
-    RECTANGLE: '/api/sight/map/rectangle',
-    CIRCLE: '/api/sight/map/circle',
-    DETAIL: '/api/sight/detail',
+    RECTANGLE: "/api/sight/map/rectangle",
+    CIRCLE: "/api/sight/map/circle",
+    DETAIL: "/api/sight/detail",
   },
 };
 

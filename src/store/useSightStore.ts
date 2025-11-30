@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import { SightDetailInfo,SightInfo } from '@/types/sight';
+import { SightDetailInfo, SightInfo } from "@/types/sight";
 
 interface SightState {
   sights: SightInfo[];
@@ -33,24 +33,26 @@ export const useSightStore = create<SightState>((set) => ({
   ...initialState,
 
   setSights: (sights) => set({ sights, error: null }),
-  
-  selectSight: (sight) => set({ 
-    selectedSight: sight,
-    sightDetail: null,  // 새로운 관광지 선택 시 이전 상세정보 초기화
-  }),
-  
+
+  selectSight: (sight) =>
+    set({
+      selectedSight: sight,
+      sightDetail: null, // 새로운 관광지 선택 시 이전 상세정보 초기화
+    }),
+
   setSightDetail: (detail) => set({ sightDetail: detail }),
-  
+
   setLoading: (loading) => set({ isLoading: loading }),
-  
+
   setDetailLoading: (loading) => set({ isDetailLoading: loading }),
-  
+
   setError: (error) => set({ error }),
-  
-  clearSelection: () => set({ 
-    selectedSight: null, 
-    sightDetail: null 
-  }),
-  
+
+  clearSelection: () =>
+    set({
+      selectedSight: null,
+      sightDetail: null,
+    }),
+
   reset: () => set(initialState),
 }));

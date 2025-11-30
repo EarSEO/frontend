@@ -15,21 +15,21 @@ export interface SightMapInfoList {
 // 관광지 상세 정보
 export interface SightDetailInfo {
   id: string;
-  theme: string;           // 관광지 테마 (문화시설, 자연관광지 등)
-  outl: string;            // 관광지 개요/설명
-  title: string;           // 관광지 이름
-  fullAddress: string;     // 전체 주소
-  address: string;         // 주소 요약 (구/동 단위)
-  longitude: number;        // 경도
-  latitude: number;         // 위도
-  tel: string;              // 전화번호 
-  imgUrl: string;           // 이미지 URL
-  useTime: string;         // 이용 시간
-  restDate: string;        // 휴무일
-  parking: string;         // 주차 정보
-  useFee: string;          // 입장료
-  distance: number;        // 현재 위치로부터 거리 (km 단위, 소수점 1자리)
-  docentUrl: string;       // 도슨트 오디오 URL
+  theme: string; // 관광지 테마 (문화시설, 자연관광지 등)
+  outl: string; // 관광지 개요/설명
+  title: string; // 관광지 이름
+  fullAddress: string; // 전체 주소
+  address: string; // 주소 요약 (구/동 단위)
+  longitude: number; // 경도
+  latitude: number; // 위도
+  tel: string; // 전화번호
+  imgUrl: string; // 이미지 URL
+  useTime: string; // 이용 시간
+  restDate: string; // 휴무일
+  parking: string; // 주차 정보
+  useFee: string; // 입장료
+  distance: number; // 현재 위치로부터 거리 (km 단위, 소수점 1자리)
+  docentUrl: string; // 도슨트 오디오 URL
 }
 
 export interface RectangleBoundsParams {
