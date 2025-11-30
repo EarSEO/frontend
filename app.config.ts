@@ -7,6 +7,6 @@ export default {
     extra: {
       API_BASE_URL: process.env.API_BASE_URL,
     },
-    plugins: ["expo-secure-store", "expo-router"],
+    plugins: ["expo-secure-store", "expo-router", "expo-audio"],
   },
 };
