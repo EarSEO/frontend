@@ -11,9 +11,17 @@ export const API_ENDPOINTS = {
     NICKNAME_CHECK: "/api/member/nickname/check",
   },
   SIGHT: {
+    DOCENT_SCRIPT: "/api/sight/docent",
     RECTANGLE: "/api/sight/map/rectangle",
     CIRCLE: "/api/sight/map/circle",
     DETAIL: "/api/sight/detail",
+  },
+  STORY: {
+    DOCENT_SCRIPT: "/api/story/docent",
+  },
+  ROUTE: {
+    CREATE_IN_PROGRESS_ROUTE: "/api/user/route/in-progress",
+    COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}'complete`,
   },
 };
 

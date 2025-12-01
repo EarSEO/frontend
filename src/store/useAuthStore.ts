@@ -4,6 +4,7 @@ import { create } from "zustand";
 import API_ENDPOINTS from "@/constants/endpoints";
 
 import api from "@/api/axios";
+import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from "@/store/secureStoreKey";
 
 import {
   BaseResponse,
@@ -50,11 +51,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data.data;
 
-      await SecureStore.setItemAsync("accessToken", accessToken);
-      await SecureStore.setItemAsync("refreshToken", refreshToken);
+      await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
+      await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
       const user: User = { memberId, email, nickname, role };
-      await SecureStore.setItemAsync("user", JSON.stringify(user));
+      await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({
         user,
@@ -108,8 +109,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         data.nickname &&
         data.role
       ) {
-        await SecureStore.setItemAsync("accessToken", data.accessToken);
-        await SecureStore.setItemAsync("refreshToken", data.refreshToken);
+        await SecureStore.setItemAsync(ACCESS_TOKEN, data.accessToken);
+        await SecureStore.setItemAsync(REFRESH_TOKEN, data.refreshToken);
 
         const user: User = {
           memberId: data.memberId,
@@ -117,7 +118,7 @@ export const useAuthStore = create<AuthState>((set) => ({
           nickname: data.nickname,
           role: data.role,
         };
-        await SecureStore.setItemAsync("user", JSON.stringify(user));
+        await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
         set({
           user,
@@ -143,11 +144,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data;
 
-      await SecureStore.setItemAsync("accessToken", accessToken);
-      await SecureStore.setItemAsync("refreshToken", refreshToken);
+      await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
+      await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
       const user: User = { memberId, email, nickname, role };
-      await SecureStore.setItemAsync("user", JSON.stringify(user));
+      await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({
         user,
@@ -165,9 +166,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       await api.post(`${API_ENDPOINTS.AUTH.LOGOUT}`);
     } catch {
     } finally {
-      await SecureStore.deleteItemAsync("accessToken");
-      await SecureStore.deleteItemAsync("refreshToken");
-      await SecureStore.deleteItemAsync("user");
+      await SecureStore.deleteItemAsync(ACCESS_TOKEN);
+      await SecureStore.deleteItemAsync(REFRESH_TOKEN);
+      await SecureStore.deleteItemAsync(USER_INFO);
 
       set({
         user: null,
@@ -180,8 +181,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       set({ isLoading: true });
 
-      const userString = await SecureStore.getItemAsync("user");
-      const accessToken = await SecureStore.getItemAsync("accessToken");
+      const userString = await SecureStore.getItemAsync(USER_INFO);
+      const accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN);
 
       if (userString && accessToken) {
         const user: User = JSON.parse(userString);

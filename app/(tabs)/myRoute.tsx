@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -7,6 +7,7 @@ import { useSharedValue } from "react-native-reanimated";
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
+import Button from "@/components/common/Button";
 import Map from "@/components/map/Map";
 
 import { useLocation } from "@/hooks/useLocation";
@@ -15,10 +16,19 @@ import { useSightMap } from "@/hooks/useSightMap";
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
+import { useRouteStore } from "@/store/useRouteStore";
+
 export default function MyRoute() {
   const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
+  const { setRoute, finishRoute } = useRouteStore();
+  const onPressCreateMockRouteData = useCallback(() => {
+    setRoute({ placeIds: [] });
+  }, []);
+  const onPressDeleteMockRouteData = useCallback(() => {
+    finishRoute();
+  }, []);
   const { location } = useLocation();
 
   const {
@@ -101,6 +111,14 @@ export default function MyRoute() {
               <InfoText>마커를 눌러 상세 정보를 확인하세요</InfoText>
             </DefaultView>
           )}
+          <Button
+            text="목데이터 만들기"
+            onPress={() => onPressCreateMockRouteData()}
+          ></Button>
+          <Button
+            text="목데이터 제거하기"
+            onPress={() => onPressDeleteMockRouteData()}
+          ></Button>
         </CustomBottomSheet>
       </GestureHandlerRootView>
     </Container>
