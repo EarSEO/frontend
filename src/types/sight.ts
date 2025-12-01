@@ -70,3 +70,14 @@ export interface SearchSightParams {
   maxLatitude: string;
   limit: string;
 }
+
+export interface CurationItem {
+  curationId: number;
+  curationTitle: string;
+  description: string;
+  curationImgUrl: string;
+}
+
+export interface CurationListResponse {
+  curationList: CurationItem[];
+}

@@ -1,12 +1,13 @@
 import { useCallback, useRef, useState } from "react";
 
-import {
+import { CurationItem ,
   RectangleBoundsParams,
   SearchSightParams,
   SightInfo,
 } from "@/types/sight";
 
 import { getSightDetail, getSightsInRectangle } from "@/api/sight";
+import { getCurationList } from "@/api/sight/getCuration";
 import { getSearchSight } from "@/api/sight/getSearchSight";
 import { useSightStore } from "@/store/useSightStore";
 
@@ -35,6 +36,9 @@ export const useSightMap = () => {
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const searchDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const [curations, setCurations] = useState<CurationItem[]>([]);
+  const [isCurationLoading, setIsCurationLoading] = useState(false);
 
   // 영역 내 관광지 조회 (기존 코드 유지)
   const fetchSightsInBounds = useCallback(
@@ -174,6 +178,18 @@ export const useSightMap = () => {
     [selectSight, setSightDetail, setDetailLoading, setError],
   );
 
+  const fetchCurations = useCallback(async () => {
+    try {
+      setIsCurationLoading(true);
+      const list = await getCurationList();
+      setCurations(list);
+    } catch (e) {
+      console.error("큐레이션 조회 실패:", e);
+    } finally {
+      setIsCurationLoading(false);
+    }
+  }, []);
+
   // 마커 선택 해제 (기존 코드 유지)
   const deselectSight = useCallback(() => {
     clearSelection();
@@ -188,7 +204,7 @@ export const useSightMap = () => {
     isDetailLoading,
     error,
 
-    // ✅ 검색 상태
+    // 검색 상태
     searchResults,
     isSearching,
     searchError,
@@ -199,9 +215,13 @@ export const useSightMap = () => {
     fetchSightDetail,
     deselectSight,
 
-    // ✅ 검색 액션
+    // 검색 액션
     searchSightsInBounds,
     searchSightsDebounced,
     clearSearchResults,
+
+    curations,
+    isCurationLoading,
+    fetchCurations,
   };
 };

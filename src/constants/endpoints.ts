@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
     CIRCLE: "/api/sight/map/circle",
     DETAIL: "/api/sight/detail",
     SEARCH: "/api/sight/search",
+    CURATION: "/api/sight/curation",
   },
   STORY: {
     DOCENT_SCRIPT: "/api/story/docent",
