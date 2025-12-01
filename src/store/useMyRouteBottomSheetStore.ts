@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { useRouteStore } from "@/store/useRouteStore";
+import {Point} from "@/types/geom";
 
 interface UseMyRouteBottomSheetStore {
   isPreTour: boolean;
@@ -10,7 +11,7 @@ interface UseMyRouteBottomSheetStore {
 
   setPreTour: () => void;
   setPreTourDelete: () => void;
-  setOnTour: () => void;
+  setOnTour: (point: Point) => void;
 
   deleteList: string[];
   addDeleteList: (itemId: string) => void;
@@ -40,13 +41,14 @@ export const useMyRouteBottomSheetStore = create<UseMyRouteBottomSheetStore>(
         isOnTour: false,
       });
     },
-    setOnTour: (): void => {
+    setOnTour: (point: Point): void => {
       set({
         isPreTour: false,
         isPreTourDelete: false,
         isOnTour: true,
       });
       useRouteStore.getState().setRoute({
+        point: point,
         placeIds: useRouteCartStore
           .getState()
           .routeCartItems.map((routCartItem) => routCartItem.sightId),
