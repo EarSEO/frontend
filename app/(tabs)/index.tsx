@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  FlatList,
-  Keyboard,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { FlatList, Keyboard, StyleSheet, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 
@@ -23,10 +18,7 @@ import { useSightMap } from "@/hooks/useSightMap";
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
-import {
-  RouteCartItem,
-  useRouteCartStore,
-} from "@/store/useRouteCartStore";
+import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 
 export default function Index() {
   const bottomSheetRef = useRef<any>(null);
@@ -39,8 +31,6 @@ export default function Index() {
 
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
-
-  
 
   const {
     sights,

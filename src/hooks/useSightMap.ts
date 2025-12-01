@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
-import { CurationItem ,
+import {
+  CurationItem,
   RectangleBoundsParams,
   SearchSightParams,
   SightInfo,

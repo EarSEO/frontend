@@ -79,7 +79,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       ) : sightDetail ? (
         <>
           <BasicInfoRow>
-            <SightDistance>{distanceToString(sightDetail.distance * 1000)}</SightDistance>
+            <SightDistance>
+              {distanceToString(sightDetail.distance * 1000)}
+            </SightDistance>
             <SightTheme>{sightDetail.theme}</SightTheme>
           </BasicInfoRow>
           <SightText>{checkData(sightDetail.address)}</SightText>
