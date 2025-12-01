@@ -1,11 +1,12 @@
-import {create} from "zustand";
+import { create } from "zustand";
 
-import {Point} from "@/types/geom";
+import { Point } from "@/types/geom";
 
 interface RouteCartStore {
   routeCartItems: RouteCartItem[];
   insertRouteCartItem: (routeCartItem: RouteCartItem) => void;
   removeRouteCartItem: (routeCartItemId: string) => void;
+  removeAllRouteCartItem: () => void;
 }
 
 export interface RouteCartItem {
@@ -21,13 +22,20 @@ export const useRouteCartStore = create<RouteCartStore>((set, get) => ({
   routeCartItems: [],
 
   insertRouteCartItem: (routeCartItem: RouteCartItem): void => {
-    set(({routeCartItems}) => ({
-      routeCartItems: [...routeCartItems, routeCartItem]
+    set(({ routeCartItems }) => ({
+      routeCartItems: [...routeCartItems, routeCartItem],
     }));
   },
   removeRouteCartItem: (routeCartItemId: string): void => {
-    get().routeCartItems.filter((routeCartItem) => {
-      return routeCartItem.sightId !== routeCartItemId;
+    set({
+      routeCartItems: get().routeCartItems.filter((routeCartItem) => {
+        return routeCartItem.sightId !== routeCartItemId;
+      }),
+    });
+  },
+  removeAllRouteCartItem: (): void => {
+    set({
+      routeCartItems: [],
     });
   },
 }));

@@ -3,7 +3,7 @@ import { Point } from "@/types/geom";
 export type RouteItemType = "SIGHT" | "STORY_SPOT";
 
 export interface GetRouteRequest {
-  placeIds: number[];
+  placeIds: string[];
 }
 
 export interface GetRouteResponse {

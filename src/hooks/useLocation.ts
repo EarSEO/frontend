@@ -9,7 +9,21 @@ const SEOUL_CITY_HALL = {
   longitudeDelta: 0.01,
 };
 
-export const useLocation = () => {
+export interface CurrentLocation {
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  isLoading: boolean;
+  getCurrentLocation: () => Promise<{
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  }>;
+}
+
+export const useLocation = (): CurrentLocation => {
   const [location, setLocation] = useState(SEOUL_CITY_HALL);
   const [isLoading, setIsLoading] = useState(true);
 

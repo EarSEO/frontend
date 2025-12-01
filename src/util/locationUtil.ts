@@ -4,4 +4,4 @@ export const distanceToString = (meters: number) => {
   }
   const km = (meters / 1000).toFixed(2);
   return km + "km";
-}
+};
