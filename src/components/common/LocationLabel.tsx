@@ -11,8 +11,8 @@ import { theme } from "@/styles/theme";
 export type LocationInfo = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
 
 export interface LocationLabelProps {
-  locationInfo: LocationInfo;
-  locationTitle: string;
+  locationInfo?: LocationInfo;
+  locationTitle?: string;
   address?: string;
   distance?: number | null;
   locationtheme?: string;
@@ -84,7 +84,6 @@ const OnlyTitleContainer = styled.View`
 `;
 
 const LabelContainer = styled.View`
-  font-family: ${theme.typography.fontFamily.regular};
   flex-direction: row;
   align-items: center;
   gap: 15;
@@ -103,10 +102,12 @@ const TopRow = styled.View`
 `;
 
 const LocationTitle = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.md};
 `;
 
 const LocationTheme = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.sm};
 `;
 
@@ -117,11 +118,13 @@ const BottomRow = styled.View`
 `;
 
 const Address = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
   color: ${theme.colors.text.textSecondary};
   font-size: ${theme.typography.fontSize.sm};
 `;
 
 const Distance = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
   color: ${theme.colors.text.textBlue};
   font-size: ${theme.typography.fontSize.sm};
 `;

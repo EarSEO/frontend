@@ -10,15 +10,25 @@ export const API_ENDPOINTS = {
     EMAIL_VERIFY: "/api/member/email/verify",
     NICKNAME_CHECK: "/api/member/nickname/check",
   },
+
+  STORY: {
+    SPOTTOTALINFO: (storySpotId: number) =>
+      `/api/story/spot/${storySpotId}/info`,
+    MAP_RECTANGLE: "/api/story/map/rectangle",
+
+    SPOT_BRIEF_INFO: "/api/story/spot/info/brief",
+    CREATE_STRORY: "/api/user/story/create",
+    DOCENT_SCRIPT: "/api/story/docent",
+    SEARCH_TITLE: "/api/story/search/title",
+  },
+
   SIGHT: {
     DOCENT_SCRIPT: "/api/sight/docent",
     RECTANGLE: "/api/sight/map/rectangle",
     CIRCLE: "/api/sight/map/circle",
     DETAIL: "/api/sight/detail",
   },
-  STORY: {
-    DOCENT_SCRIPT: "/api/story/docent",
-  },
+
   ROUTE: {
     CREATE_IN_PROGRESS_ROUTE: "/api/user/route/in-progress",
     COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}/complete`,

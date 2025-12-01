@@ -2,11 +2,7 @@ import { useCallback } from "react";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 
 import { BottomSheetProps } from "@/types/bottomSheet";
 
@@ -16,12 +12,13 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
   children,
   animatedPosition,
+  snapPoints,
 }) => {
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={["45%", "95%"]}
-      index={0}
+      snapPoints={snapPoints || ["15%", "45%", "90%"]}
+      index={1}
       enablePanDownToClose={false}
       enableOverDrag={false}
       animatedPosition={animatedPosition}
@@ -45,8 +42,6 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
       <BottomSheetScrollView
         style={{
           flex: 1,
-          paddingHorizontal: theme.spacing.md,
-          paddingBottom: 40,
         }}
         showsVerticalScrollIndicator={true}
       >
