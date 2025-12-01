@@ -59,3 +59,25 @@ export interface SightDetailCardProps {
   onToggleRoute: () => void;
   onClose: () => void;
 }
+
+export interface SearchSightParams {
+  keyword: string;
+  longitude: string;
+  latitude: string;
+  minLongitude: string;
+  minLatitude: string;
+  maxLongitude: string;
+  maxLatitude: string;
+  limit: string;
+}
+
+export interface CurationItem {
+  curationId: number;
+  curationTitle: string;
+  description: string;
+  curationImgUrl: string;
+}
+
+export interface CurationListResponse {
+  curationList: CurationItem[];
+}

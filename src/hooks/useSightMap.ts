@@ -1,8 +1,15 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
-import { RectangleBoundsParams, SightInfo } from "@/types/sight";
+import {
+  CurationItem,
+  RectangleBoundsParams,
+  SearchSightParams,
+  SightInfo,
+} from "@/types/sight";
 
 import { getSightDetail, getSightsInRectangle } from "@/api/sight";
+import { getCurationList } from "@/api/sight/getCuration";
+import { getSearchSight } from "@/api/sight/getSearchSight";
 import { useSightStore } from "@/store/useSightStore";
 
 export const useSightMap = () => {
@@ -22,10 +29,19 @@ export const useSightMap = () => {
     clearSelection,
   } = useSightStore();
 
+  // 검색 관련 상태
+  const [searchResults, setSearchResults] = useState<SightInfo[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const searchDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // 영역 내 관광지 조회
+  const [curations, setCurations] = useState<CurationItem[]>([]);
+  const [isCurationLoading, setIsCurationLoading] = useState(false);
+
+  // 영역 내 관광지 조회 (기존 코드 유지)
   const fetchSightsInBounds = useCallback(
     async (bounds: RectangleBoundsParams) => {
       try {
@@ -43,7 +59,7 @@ export const useSightMap = () => {
     [setSights, setLoading, setError],
   );
 
-  // 디바운스 적용된 조회 (지도 이동 시 사용)
+  // 디바운스 적용된 조회 (기존 코드 유지)
   const fetchSightsDebounced = useCallback(
     (bounds: RectangleBoundsParams, delay = 300) => {
       if (debounceTimer.current) {
@@ -57,7 +73,86 @@ export const useSightMap = () => {
     [fetchSightsInBounds],
   );
 
-  // 관광지 상세 조회
+  // 관광지 검색
+  const searchSightsInBounds = useCallback(
+    async (
+      keyword: string,
+      currentLocation: { longitude: number; latitude: number },
+      bounds: RectangleBoundsParams,
+      limit: number = 20,
+    ) => {
+      if (!keyword.trim()) {
+        setSearchResults([]);
+        return;
+      }
+
+      try {
+        setIsSearching(true);
+        setSearchError(null);
+
+        const params: SearchSightParams = {
+          keyword,
+          longitude: String(currentLocation.longitude),
+          latitude: String(currentLocation.latitude),
+          minLongitude: String(bounds.minLongitude),
+          minLatitude: String(bounds.minLatitude),
+          maxLongitude: String(bounds.maxLongitude),
+          maxLatitude: String(bounds.maxLatitude),
+          limit: String(limit),
+        };
+
+        const results = await getSearchSight(params);
+        const mapped: SightInfo[] = results.map((item: any) => ({
+          id: item.sightId, // ← sightId 를 id 로 변환
+          title: item.title,
+          longitude: item.longitude,
+          latitude: item.latitude,
+          geoHash: item.geoHash ?? "",
+        }));
+
+        setSearchResults(mapped);
+      } catch (err) {
+        console.error("관광지 검색 실패:", err);
+        setSearchError("검색에 실패했습니다.");
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [],
+  );
+
+  // 디바운스 적용된 검색 (입력 중 실시간 검색용)
+  const searchSightsDebounced = useCallback(
+    (
+      keyword: string,
+      currentLocation: { longitude: number; latitude: number },
+      bounds: RectangleBoundsParams,
+      delay = 500,
+    ) => {
+      if (searchDebounceTimer.current) {
+        clearTimeout(searchDebounceTimer.current);
+      }
+
+      if (!keyword.trim()) {
+        setSearchResults([]);
+        return;
+      }
+
+      searchDebounceTimer.current = setTimeout(() => {
+        searchSightsInBounds(keyword, currentLocation, bounds);
+      }, delay);
+    },
+    [searchSightsInBounds],
+  );
+
+  // 검색 결과 초기화
+  const clearSearchResults = useCallback(() => {
+    setSearchResults([]);
+    setSearchError(null);
+  }, []);
+
+  // 관광지 상세 조회 (기존 코드 유지)
   const fetchSightDetail = useCallback(
     async (
       sight: SightInfo,
@@ -84,7 +179,19 @@ export const useSightMap = () => {
     [selectSight, setSightDetail, setDetailLoading, setError],
   );
 
-  // 마커 선택 해제
+  const fetchCurations = useCallback(async () => {
+    try {
+      setIsCurationLoading(true);
+      const list = await getCurationList();
+      setCurations(list);
+    } catch (e) {
+      console.error("큐레이션 조회 실패:", e);
+    } finally {
+      setIsCurationLoading(false);
+    }
+  }, []);
+
+  // 마커 선택 해제 (기존 코드 유지)
   const deselectSight = useCallback(() => {
     clearSelection();
   }, [clearSelection]);
@@ -98,10 +205,24 @@ export const useSightMap = () => {
     isDetailLoading,
     error,
 
+    // 검색 상태
+    searchResults,
+    isSearching,
+    searchError,
+
     // 액션
     fetchSightsInBounds,
     fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,
+
+    // 검색 액션
+    searchSightsInBounds,
+    searchSightsDebounced,
+    clearSearchResults,
+
+    curations,
+    isCurationLoading,
+    fetchCurations,
   };
 };
