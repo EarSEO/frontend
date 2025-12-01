@@ -29,6 +29,10 @@ interface MapProps {
   markers?: SightInfo[];
   selectedMarkerId?: string | null;
   onMarkerPress?: (sight: SightInfo) => void;
+  scrollEnabled?: boolean;
+  zoomEnabled?: boolean;
+  rotateEnabled?: boolean;
+  pitchEnabled?: boolean;
   onRegionChangeComplete?: (bounds: {
     minLongitude: number;
     minLatitude: number;
@@ -47,8 +51,12 @@ const Map = forwardRef<MapRef, MapProps>(
       selectedMarkerId,
       onMarkerPress,
       onRegionChangeComplete,
+      scrollEnabled = true,
+      zoomEnabled = true,
+      rotateEnabled = true,
+      pitchEnabled = true,
     },
-    ref,
+    ref
   ) => {
     const mapRef = useRef<MapView>(null);
     const { location, isLoading, getCurrentLocation } = useLocation();
@@ -116,6 +124,10 @@ const Map = forwardRef<MapRef, MapProps>(
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsCompass={false}
+          scrollEnabled={scrollEnabled}
+          zoomEnabled={zoomEnabled}
+          rotateEnabled={rotateEnabled}
+          pitchEnabled={pitchEnabled}
           onRegionChangeComplete={handleRegionChangeComplete}
         >
           {markers?.map((sight) => (
@@ -148,7 +160,7 @@ const Map = forwardRef<MapRef, MapProps>(
         </AnimatedTouchable>
       </>
     );
-  },
+  }
 );
 
 Map.displayName = "Map";

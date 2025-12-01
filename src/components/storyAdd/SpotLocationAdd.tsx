@@ -7,6 +7,7 @@ import { theme } from "@/styles/theme";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import LocationLabel from "../common/LocationLabel";
+import { useStoryStore } from "@/store/useStoryStore";
 
 interface SpotNameAddProps {
   onSpotNameChange: (name: string) => void;
@@ -14,6 +15,7 @@ interface SpotNameAddProps {
 
 const SpotLocationAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
   const [newSpotname, setNSpotName] = useState<string>();
+  const { searchTitleInfo } = useStoryStore();
 
   const handleSpotNamePass = (text: string) => {
     setNSpotName(text);
@@ -38,7 +40,9 @@ const SpotLocationAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
             gap: 12,
           }}
         >
-          <LocationLabel locationInfo={"SIGHT"} locationTitle="어디에요" />
+          {searchTitleInfo?.map((item) => (
+            <LocationLabel locationTitle={item.title} />
+          ))}
         </SearchViewWrapper>
       </Content>
     </Container>

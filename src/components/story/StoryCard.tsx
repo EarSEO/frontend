@@ -36,7 +36,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const handleTextToggle = () => {
     setIsExpanded((prev) => !prev);
     setNumberOfLines((prevLines) =>
-      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3,
+      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3
     );
   };
 
@@ -149,6 +149,7 @@ const ProfileImage = styled.Image`
 
 const TextContainer = styled.View`
   gap: 20px;
+  width: 350px;
 `;
 
 const ContentHeaderWrapper = styled.View`

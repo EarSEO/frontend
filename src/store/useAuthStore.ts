@@ -28,7 +28,7 @@ interface AuthState {
   signup: (userData: SignUpRequest) => Promise<SignUpResponse>;
   socialLogin: (
     provider: Provider,
-    authCode: string,
+    authCode: string
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
   logout: () => Promise<void>;
@@ -46,7 +46,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<BaseResponse<LoginResponse>>(
         `${API_ENDPOINTS.AUTH.LOGIN}`,
-        credentials,
+        credentials
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data.data;
@@ -54,7 +54,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
-      const user: User = { memberId, email, nickname, role };
+      const user: User = {
+        memberId,
+        email,
+        nickname,
+        role,
+        updatedAt: new Date(),
+        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+      };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({
@@ -77,7 +84,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true });
       const response = await api.post<SignUpResponse>(
         `${API_ENDPOINTS.AUTH.SIGNUP}`,
-        userData,
+        userData
       );
 
       set({ isLoading: false });
@@ -94,7 +101,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<SocialLoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN}`,
-        { authCode },
+        { authCode }
       );
 
       const data = response.data;
@@ -117,6 +124,8 @@ export const useAuthStore = create<AuthState>((set) => ({
           email: data.email,
           nickname: data.nickname,
           role: data.role,
+          updatedAt: new Date(),
+          profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
         };
         await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -139,7 +148,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<LoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_SIGNUP}`,
-        userData,
+        userData
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data;
@@ -147,7 +156,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
-      const user: User = { memberId, email, nickname, role };
+      const user: User = {
+        memberId,
+        email,
+        nickname,
+        role,
+        updatedAt: new Date(),
+        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+      };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({

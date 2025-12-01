@@ -2,17 +2,22 @@ import axios from "axios";
 
 import { BaseResponse } from "@/types/auth";
 import {
+  CreateStoryRequest,
+  CreateStoryResponse,
   GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
   GetMapStoryResponse,
+  GetSearchTitleRequest,
   GetSpotBriefInfoRequest,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
+  SearchSpotInfoResponse,
 } from "@/types/storySpot";
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
 import api from "./axios";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export const getStoryApi = async (
   param: GetStoryRequest
@@ -49,6 +54,65 @@ export const getSpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
     const response = await api.get<
       BaseResponse<GetLocationSpotBriefInfoResponse>
     >(`${API_ENDPOINTS.STORY.SPOT_BRIEF_INFO}`, { params: param });
+    return response.data.data;
+  } catch (error) {
+    console.log("연결안됨");
+    throw error;
+  }
+};
+
+export const createStoryTextApi = async (
+  param: CreateStoryRequest,
+  images?: string[]
+) => {
+  try {
+    const { user } = useAuthStore.getState();
+
+    const createTextRes = await api.post<BaseResponse<CreateStoryResponse>>(
+      `${API_ENDPOINTS.STORY.CREATE_STRORY}`,
+      param
+    );
+
+    console.log("1차 텍스트 연결 성공");
+
+    const storyData = createTextRes.data.data;
+    const storyId = storyData.storyId;
+
+    if (images && images.length > 0) {
+      const formData = new FormData();
+
+      images.forEach((imageUri, index) => {
+        formData.append("images", {
+          uri: imageUri,
+          type: "image/jpeg",
+          name: `image_${index}.jpg`,
+        } as any);
+      });
+
+      await api.post<BaseResponse<void>>(
+        `/api/user/story/image/${storyId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+    }
+
+    return createTextRes.data;
+  } catch (error) {
+    console.log("createStoryApi error: ", error);
+    throw error;
+  }
+};
+
+export const getSearchTitle = async (param: GetSearchTitleRequest) => {
+  try {
+    const response = await api.get<BaseResponse<SearchSpotInfoResponse>>(
+      `${API_ENDPOINTS.STORY.SEARCH_TITLE}`,
+      { params: param }
+    );
     return response.data.data;
   } catch (error) {
     console.log("연결안됨");

@@ -42,8 +42,6 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
       <BottomSheetScrollView
         style={{
           flex: 1,
-          paddingHorizontal: theme.spacing.md,
-          paddingBottom: 40,
         }}
         showsVerticalScrollIndicator={true}
       >

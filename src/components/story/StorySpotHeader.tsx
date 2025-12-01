@@ -10,24 +10,10 @@ import Divider from "./Divider";
 import StoryCard from "./StoryCard";
 import SummaryCard from "./SummaryCard";
 
-const testRequest: GetStoryRequest = {
-  storySpotId: 1,
-  query: {
-    query: {
-      longitude: "126.9784",
-      latitude: "37.5665",
-      locale: "KO",
-      page: 0,
-      size: 1000,
-      sort: "createdAt,desc",
-    },
-  },
-};
-
 const StorySpotHeader = () => {
-  const { storyItems, spotTitleList, summaries } = useStoryStore();
+  const { storyItems, spotBriefInfo, summaries } = useStoryStore();
 
-  const spotNames = spotTitleList?.titles;
+  const spotNames = spotBriefInfo?.titles;
   const mainTitle = spotNames?.[0] || "제목 없음";
   const spotTitles =
     spotNames

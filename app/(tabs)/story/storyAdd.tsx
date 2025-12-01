@@ -15,6 +15,9 @@ import { theme } from "@/styles/theme";
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { useStoryStore } from "@/store/useStoryStore";
+import { useRouteStore } from "@/store/useRouteStore";
+import { CreateStoryRequest } from "@/types/storySpot";
+import { createStoryTextApi } from "@/api/getStoryApi";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
 
@@ -27,14 +30,12 @@ const CONCEPTS = [
 ] as const;
 
 export default function StoryAdd() {
-  const [content, setContent] = useState<string>();
+  const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
     null
   );
-  const { user } = useAuthStore();
-
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const { newSpotName, storyMain } = useStoryStore();
+  const { newSpotName } = useStoryStore();
   const router = useRouter();
 
   const handleMapButton = () => {
@@ -49,7 +50,7 @@ export default function StoryAdd() {
 
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: false,
         quality: 1,
       });
@@ -66,15 +67,87 @@ export default function StoryAdd() {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!content || !newSpotName || !selectedConcept) {
-      alert("하나라도 빠지면 안해주지롱");
-    } else {
-      console.log("새로운 스팟 이름", newSpotName);
-      console.log("선택된 컨셉:", selectedConcept);
-      console.log(user?.memberId);
+      Alert.alert("하나라도 빠지면 안해주지롱");
+      return;
+    }
+
+    const { user } = useAuthStore.getState();
+    const { storyLocation } = useStoryStore.getState();
+
+    if (!user || !storyLocation) {
+      Alert.alert("정보를 불러오지못했습니다.");
+      return;
+    }
+
+    try {
+      const createRequestData: CreateStoryRequest = {
+        authorId: user.memberId,
+        authorName: user.nickname,
+        authorProfileUrl: user.profileUrl,
+        authorProfileUpdatedAt: user.updatedAt.toISOString(),
+        latitude: storyLocation.latitude,
+        longitude: storyLocation.longitude,
+        title: newSpotName,
+        content: content,
+        storyConcept: selectedConcept,
+        locale: "KO",
+      };
+
+      await createStoryTextApi(createRequestData, selectedImages);
+      router.push("/story");
+    } catch (error) {
+      throw error;
     }
   };
+
+  // const handleAdd = async () => {
+  //   // 1) 기본 검증 (내용, 스팟 이름, 컨셉)
+  //   if (!content || !newSpotName || !selectedConcept) {
+  //     Alert.alert("하나라도 빠지면 안해주지롱");
+  //     return;
+  //   }
+
+  //   // 2) 더미 유저 데이터 (store 대신 사용)
+  //   const dummyUser = {
+  //     memberId: 10, // 백엔드에서 허용하는 아무 숫자
+  //     nickname: "이어동",
+  //     profileUrl: "string", // 임시 이미지 URL
+  //     updatedAt: "2025-12-01T13:42:18.385Z", // ISO 문자열 형태의 시간
+  //   };
+
+  //   // 3) 더미 위치 데이터 (스토리 위치)
+  //   const dummyLocation = {
+  //     latitude: 37.5665, // 서울 광화문 근처
+  //     longitude: 126.978,
+  //   };
+
+  //   try {
+  //     // 4) 실제 API에 보낼 요청 바디
+  //     const createRequestData: CreateStoryRequest = {
+  //       authorId: dummyUser.memberId,
+  //       authorName: dummyUser.nickname,
+  //       authorProfileUrl: dummyUser.profileUrl,
+  //       authorProfileUpdatedAt: dummyUser.updatedAt, // 이미 string
+  //       latitude: dummyLocation.latitude,
+  //       longitude: dummyLocation.longitude,
+  //       title: newSpotName, // 이건 여전히 store에서 온 값 사용
+  //       content: content,
+  //       storyConcept: selectedConcept,
+  //       locale: "KO",
+  //     };
+
+  //     console.log("📤 요청 보낼 데이터:", createRequestData);
+
+  //     await createStoryApi(createRequestData);
+  //     Alert.alert("등록 완료!");
+  //     router.push("/story");
+  //   } catch (error) {
+  //     console.error("스토리 생성 실패:", error);
+  //     Alert.alert("에러", "스토리 등록 중 오류가 발생했습니다.");
+  //   }
+  // };
 
   return (
     <Container>

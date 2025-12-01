@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -14,40 +14,78 @@ import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
 import { MapRef } from "@/types/map";
-import { GetMapStoriesRequest, GetStoryRequest } from "@/types/storySpot";
+import {
+  GetMapStoriesRequest,
+  GetSearchTitleRequest,
+  GetStoryRequest,
+} from "@/types/storySpot";
 
 import { useStoryStore } from "@/store/useStoryStore";
-
-const dummyGetMapStoriesRequest: GetMapStoriesRequest = {
-  minLongitude: "126",
-  minLatitude: "36",
-  maxLongitude: "128",
-  maxLatitude: "39",
-  page: 0,
-  size: 10,
-  sort: "createdAt,desc",
-};
+import { SightInfo } from "@/types/sight";
+import { useSightMap } from "@/hooks/useSightMap";
 
 export default function Index() {
   const Ref = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
-  const { setMapStoryInfo, storyMain } = useStoryStore();
+  const { setMapStoryInfo, storyMain, setStoryInfo } = useStoryStore();
+  const [selectedMarker, setSelectedMarker] = useState<SightInfo | null>(null);
+  const { sights } = useSightMap();
 
-  useEffect(() => {
-    setMapStoryInfo(dummyGetMapStoriesRequest);
-  }, []);
+  const handleRegionChange = (bounds: {
+    minLongitude: number;
+    minLatitude: number;
+    maxLongitude: number;
+    maxLatitude: number;
+  }) => {
+    const mapStoriesRequest: GetMapStoriesRequest = {
+      minLongitude: bounds.minLongitude.toString(),
+      minLatitude: bounds.minLatitude.toString(),
+      maxLongitude: bounds.maxLongitude.toString(),
+      maxLatitude: bounds.maxLatitude.toString(),
+      page: 0,
+      size: 10,
+      sort: "createdAt,desc",
+    };
+
+    setMapStoryInfo(mapStoriesRequest);
+  };
+
+  const handleMarkerPress = (sight: SightInfo) => {
+    setSelectedMarker(sight);
+
+    const storyRequest = {
+      storySpotId: parseInt(sight.id),
+      query: {
+        query: {
+          longitude: sight.longitude.toString(),
+          latitude: sight.latitude.toString(),
+          locale: "KO" as const,
+          page: 0,
+          size: 1000,
+          sort: "createdAt,desc" as const,
+        },
+      },
+    };
+    setStoryInfo(storyRequest);
+  };
 
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
-        <Map ref={mapRef} animatedPosition={animatedPosition} />
+        <Map
+          ref={mapRef}
+          animatedPosition={animatedPosition}
+          onRegionChangeComplete={handleRegionChange}
+          onMarkerPress={handleMarkerPress}
+          selectedMarkerId={selectedMarker?.id}
+        />
 
         <CustomBottomSheet
           bottomSheetRef={Ref}
           animatedPosition={animatedPosition}
         >
-          {storyMain ? <MainStoryHeader /> : <StorySpotHeader />}
+          {selectedMarker ? <StorySpotHeader /> : <MainStoryHeader />}
         </CustomBottomSheet>
         <StoryAddButton />
       </GestureHandlerRootView>

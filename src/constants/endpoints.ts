@@ -17,7 +17,9 @@ export const API_ENDPOINTS = {
     MAP_RECTANGLE: "/api/story/map/rectangle",
 
     SPOT_BRIEF_INFO: "/api/story/spot/info/brief",
+    CREATE_STRORY: "/api/user/story/create",
     DOCENT_SCRIPT: "/api/story/docent",
+    SEARCH_TITLE: "/api/story/search/title",
   },
 
   SIGHT: {

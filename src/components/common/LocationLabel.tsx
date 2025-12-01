@@ -11,8 +11,8 @@ import { theme } from "@/styles/theme";
 export type LocationInfo = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
 
 export interface LocationLabelProps {
-  locationInfo: LocationInfo;
-  locationTitle: string;
+  locationInfo?: LocationInfo;
+  locationTitle?: string;
   address?: string;
   distance?: number | null;
   locationtheme?: string;

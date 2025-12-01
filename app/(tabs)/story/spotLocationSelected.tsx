@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { Alert } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -15,16 +15,30 @@ import SpotLocationAdd from "@/components/storyAdd/SpotLocationAdd";
 import { theme } from "@/styles/theme";
 
 import { useStoryStore } from "@/store/useStoryStore";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Map from "@/components/map/Map";
+import { MapRef } from "@/types/map";
+import { useSharedValue } from "react-native-reanimated";
+import MapPin from "@/assets/icons/map/MapPin.svg";
+import { GetSearchTitleRequest } from "@/types/storySpot";
+import { getSearchTitle } from "@/api/getStoryApi";
 
 export default function SpotLocationSelected() {
-  const { setNewSpotName } = useStoryStore();
+  const { setNewSpotName, setStoryLocation } = useStoryStore();
   const Ref = useRef<any>(null);
   const router = useRouter();
+  const mapRef = useRef<MapRef>(null);
+  const animatedPosition = useSharedValue(0);
 
   const [inputSpotName, setInputSpotName] = useState<string>("");
 
+  const [centerCoordinate, setCenterCoordinate] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+
   const handleAdd = () => {
-    if (!inputSpotName) {
+    if (!centerCoordinate) {
       Alert.alert("안넘어가지롱");
     } else {
       setNewSpotName(inputSpotName);
@@ -32,9 +46,52 @@ export default function SpotLocationSelected() {
     }
   };
 
+  const handleRegionChange = async (bounds: {
+    minLongitude: number;
+    minLatitude: number;
+    maxLongitude: number;
+    maxLatitude: number;
+  }) => {
+    try {
+      const centerLat = (bounds.minLatitude + bounds.maxLatitude) / 2;
+      const centerLng = (bounds.minLongitude + bounds.maxLongitude) / 2;
+
+      setCenterCoordinate({
+        latitude: centerLat,
+        longitude: centerLng,
+      });
+      setStoryLocation(centerLat, centerLng);
+
+      const searchTitleInfo: GetSearchTitleRequest = {
+        keyword: inputSpotName,
+        longitude: centerLng.toString(),
+        latitude: centerLat.toString(),
+        minLongitude: bounds.minLongitude.toString(),
+        minLatitude: bounds.minLatitude.toString(),
+        maxLongitude: bounds.maxLongitude.toString(),
+        maxLatitude: bounds.maxLatitude.toString(),
+        limit: "10",
+      };
+      const result = await getSearchTitle(searchTitleInfo);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <Container>
-      <MapWrapper>
+      <GestureHandlerRootView style={styles.container}>
+        <MapWrapper>
+          <Map
+            ref={mapRef}
+            animatedPosition={animatedPosition}
+            onRegionChangeComplete={handleRegionChange}
+          />
+          <CenterPin>
+            <MapPin width={45} height={45} />
+          </CenterPin>
+        </MapWrapper>
+        
         <Header>
           <BackButton buttonStyle="CIRCLE" />
           <Input
@@ -46,19 +103,19 @@ export default function SpotLocationSelected() {
           />
           <CloseButton buttonStyle="CIRCLE" onPress={"./"} />
         </Header>
-      </MapWrapper>
 
-      <CustomBottomSheet bottomSheetRef={Ref} snapPoints={["45%", "85%"]}>
-        <SpotLocationAdd onSpotNameChange={setInputSpotName} />
-      </CustomBottomSheet>
-      <ButtonWrapper>
-        <Button
-          text="이 위치에서 이야기 등록하기"
-          onPress={handleAdd}
-          width="90%"
-          fontSize={theme.typography.fontSize.sm}
-        />
-      </ButtonWrapper>
+        <CustomBottomSheet bottomSheetRef={Ref} snapPoints={["45%", "85%"]}>
+          <SpotLocationAdd onSpotNameChange={setInputSpotName} />
+        </CustomBottomSheet>
+        <ButtonWrapper>
+          <Button
+            text="이 위치에서 이야기 등록하기"
+            onPress={handleAdd}
+            width="90%"
+            fontSize={theme.typography.fontSize.sm}
+          />
+        </ButtonWrapper>
+      </GestureHandlerRootView>
     </Container>
   );
 }
@@ -71,7 +128,19 @@ const MapWrapper = styled.View`
   flex: 1;
 `;
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+
 const Header = styled.View`
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+
   width: 90%;
   flex-direction: row;
   justify-content: space-between;
@@ -89,4 +158,16 @@ const ButtonWrapper = styled.View`
   justify-content: center;
   align-items: center;
   margin-top: auto;
+`;
+const CenterPin = styled.View`
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  z-index: 5;
+  margin-left: -15px;
+  margin-top: -30px;
+`;
+
+const PinIcon = styled.Text`
+  font-size: 30px;
 `;

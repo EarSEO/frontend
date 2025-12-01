@@ -102,16 +102,44 @@ export interface GetSpotBriefInfoRequest {
   latitude: string;
 }
 
-export interface CreateRequest {
+export interface CreateStoryRequest {
   authorId: number;
   authorName: string;
   authorProfileUrl: string;
   authorProfileUpdatedAt: string;
   latitude: number;
   longitude: number;
-  storySpotId: number;
   title: string;
   content: string;
   storyConcept: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
   locale: "KO" | "EN";
+}
+
+export interface CreateStoryResponse {
+  storyId: number;
+  storySpotId: number;
+  createdAt: string;
+}
+
+export interface GetSearchTitleRequest {
+  keyword: string;
+  longitude: string;
+  latitude: string;
+  minLongitude: string;
+  minLatitude: string;
+  maxLongitude: string;
+  maxLatitude: string;
+  limit?: string;
+}
+
+export interface storySpots {
+  longitude?: number;
+  latitude?: number;
+  storySpotId?: number;
+  distance?: number;
+  title?: string;
+}
+
+export interface SearchSpotInfoResponse {
+  storySpots: storySpots[];
 }

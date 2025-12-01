@@ -4,16 +4,24 @@ import {
   GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
   GetMapStoryResponse,
+  GetSearchTitleRequest,
   GetSpotBriefInfoRequest,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
+  SearchSpotInfoResponse,
   SpotInfoResponse,
   SpotTitleListResponse,
   StoryInfoResponse,
+  storySpots,
   StorySummaryResponse,
 } from "@/types/storySpot";
 
-import { getRectangle, getSpotBriefInfo, getStoryApi } from "@/api/getStoryApi";
+import {
+  getRectangle,
+  getSearchTitle,
+  getSpotBriefInfo,
+  getStoryApi,
+} from "@/api/getStoryApi";
 
 interface StoryStore {
   storyMain?: boolean;
@@ -26,6 +34,8 @@ interface StoryStore {
   spotBriefInfo?: GetLocationSpotBriefInfoResponse;
   newSpotName?: string;
   newSpotLocation?: GetSpotBriefInfoRequest[];
+  storyLocation?: { latitude: number; longitude: number };
+  searchTitleInfo?: storySpots[];
 
   setStoryInfo: (
     param: GetStoryRequest
@@ -37,6 +47,7 @@ interface StoryStore {
     param: GetSpotBriefInfoRequest
   ) => Promise<GetLocationSpotBriefInfoResponse | undefined>;
   setNewSpotName: (name: string) => void;
+  setStoryLocation: (latitude: number, longitude: number) => void;
 }
 
 interface StoryItem {
@@ -66,6 +77,8 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   storyMain: true,
   spotBriefInfo: undefined,
   newSpotName: undefined,
+  storyLocation: undefined,
+  searchTitleInfo: undefined,
 
   setStoryInfo: async (
     param: GetStoryRequest
@@ -95,7 +108,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   ): Promise<GetMapStoryResponse | undefined> => {
     try {
       const response: GetMapStoryResponse = await getRectangle(param);
-
+      console.log(response.stories);
       set({
         storyMain: true,
         mapStoryInfo: response.stories?.map((mapStory) => ({
@@ -127,6 +140,28 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   },
 
   setNewSpotName: (name: string) => set({ newSpotName: name }),
+
+  setStoryLocation: (latitude: number, longitude: number) =>
+    set({
+      storyLocation: {
+        latitude,
+        longitude,
+      },
+    }),
+
+  setSearchTitle: async (
+    param: GetSearchTitleRequest
+  ): Promise<SearchSpotInfoResponse | undefined> => {
+    try {
+      const response: SearchSpotInfoResponse = await getSearchTitle(param);
+      set({
+        searchTitleInfo: response.storySpots,
+      });
+      return response;
+    } catch (error) {
+      set({ searchTitleInfo: undefined });
+    }
+  },
 }));
 
 function formatDateArray(dateArray: number[] | string | undefined): string {

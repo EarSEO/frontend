@@ -69,7 +69,6 @@ const SpotNameAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
 
 const Container = styled.View`
   gap: 20px;
-  margin: 10px;
 `;
 
 const TitleWrapper = styled.View`
