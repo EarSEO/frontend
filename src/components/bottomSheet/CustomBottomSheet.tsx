@@ -15,11 +15,12 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
   children,
   animatedPosition,
+  snapPoints,
 }) => {
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={["10%", "45%", "95%"]}
+      snapPoints={snapPoints || ["15%", "45%", "90%"]}
       index={1}
       enablePanDownToClose={false}
       enableOverDrag={false}

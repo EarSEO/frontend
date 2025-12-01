@@ -2,8 +2,10 @@ import axios from "axios";
 
 import { BaseResponse } from "@/types/auth";
 import {
+  GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
   GetMapStoryResponse,
+  GetSpotBriefInfoRequest,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
 } from "@/types/storySpot";
@@ -35,6 +37,18 @@ export const getRectangle = async (param: GetMapStoriesRequest) => {
       `${API_ENDPOINTS.STORY.MAP_RECTANGLE}`,
       { params: param }
     );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//
+export const getSpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
+  try {
+    const response = await api.get<
+      BaseResponse<GetLocationSpotBriefInfoResponse>
+    >(`${API_ENDPOINTS.STORY.SPOT_BRIEF_INFO}`, { params: param });
     return response.data.data;
   } catch (error) {
     console.log("연결안됨");

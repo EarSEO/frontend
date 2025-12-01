@@ -1,8 +1,10 @@
 import { create } from "zustand";
 
 import {
+  GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
   GetMapStoryResponse,
+  GetSpotBriefInfoRequest,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
   SpotInfoResponse,
@@ -11,7 +13,7 @@ import {
   StorySummaryResponse,
 } from "@/types/storySpot";
 
-import { getRectangle, getStoryApi } from "@/api/getStoryApi";
+import { getRectangle, getSpotBriefInfo, getStoryApi } from "@/api/getStoryApi";
 
 interface StoryStore {
   storyMain?: boolean;
@@ -21,6 +23,9 @@ interface StoryStore {
   distance?: number;
   summaries?: StorySummaryResponse[];
   mapStoryInfo?: StoryInfoResponse[];
+  spotBriefInfo?: GetLocationSpotBriefInfoResponse;
+  newSpotName?: string;
+  newSpotLocation?: GetSpotBriefInfoRequest[];
 
   setStoryInfo: (
     param: GetStoryRequest
@@ -28,6 +33,10 @@ interface StoryStore {
   setMapStoryInfo: (
     param: GetMapStoriesRequest
   ) => Promise<StoryInfoResponse | undefined>;
+  setSpotBriefInfo: (
+    param: GetSpotBriefInfoRequest
+  ) => Promise<GetLocationSpotBriefInfoResponse | undefined>;
+  setNewSpotName: (name: string) => void;
 }
 
 interface StoryItem {
@@ -47,7 +56,7 @@ interface StoryItem {
   imageUrls?: string[];
 }
 
-export const useStoryStore = create<StoryStore>((set) => ({
+export const useStoryStore = create<StoryStore>((set, get) => ({
   briefSpotInfo: undefined,
   storyItems: undefined,
   spotTitleList: undefined,
@@ -55,6 +64,8 @@ export const useStoryStore = create<StoryStore>((set) => ({
   summaries: undefined,
   mapStoryInfo: undefined,
   storyMain: true,
+  spotBriefInfo: undefined,
+  newSpotName: undefined,
 
   setStoryInfo: async (
     param: GetStoryRequest
@@ -98,6 +109,24 @@ export const useStoryStore = create<StoryStore>((set) => ({
       return undefined;
     }
   },
+
+  //스팟 이름 검색 -> 관련 스팟 이름 가져오기
+  setSpotBriefInfo: async (
+    param: GetSpotBriefInfoRequest
+  ): Promise<GetLocationSpotBriefInfoResponse | undefined> => {
+    try {
+      const response: GetLocationSpotBriefInfoResponse =
+        await getSpotBriefInfo(param);
+      set({
+        spotBriefInfo: response,
+      });
+      return response;
+    } catch (error) {
+      set({ spotBriefInfo: undefined });
+    }
+  },
+
+  setNewSpotName: (name: string) => set({ newSpotName: name }),
 }));
 
 function formatDateArray(dateArray: number[] | string | undefined): string {

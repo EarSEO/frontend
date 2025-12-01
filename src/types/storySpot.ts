@@ -16,6 +16,11 @@ export interface GetMapStoryResponse {
   hasPrevious?: boolean;
 }
 
+export interface GetLocationSpotBriefInfoResponse {
+  spotId?: number;
+  titles?: string[];
+}
+
 export interface SpotInfoResponse {
   longitude?: number;
   latitude?: number;
@@ -90,4 +95,23 @@ export interface StoryData {
   isLast: boolean;
   hasNext: boolean;
   hasPrevious: boolean;
+}
+
+export interface GetSpotBriefInfoRequest {
+  longitude: string;
+  latitude: string;
+}
+
+export interface CreateRequest {
+  authorId: number;
+  authorName: string;
+  authorProfileUrl: string;
+  authorProfileUpdatedAt: string;
+  latitude: number;
+  longitude: number;
+  storySpotId: number;
+  title: string;
+  content: string;
+  storyConcept: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+  locale: "KO" | "EN";
 }

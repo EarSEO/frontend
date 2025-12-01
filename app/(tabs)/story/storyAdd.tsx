@@ -4,21 +4,42 @@ import { Alert } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { ChevronRight, MapPin, X } from "lucide-react-native";
+import { Bluetooth, ChevronRight, MapPin, X } from "lucide-react-native";
 import styled from "styled-components/native";
 
+import Button from "@/components/common/Button";
 import CloseButton from "@/components/common/CloseButton";
 import Input from "@/components/common/Input";
 
 import { theme } from "@/styles/theme";
 
+import { useAuthStore } from "@/store/useAuthStore";
+import { useStoryStore } from "@/store/useStoryStore";
+
+type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+
+const CONCEPTS = [
+  { value: "TIP", label: "🍯꿀팁" },
+  { value: "EXPERIENCE", label: "🗣️경험담" },
+  { value: "CULTURE", label: "🎩문화" },
+  { value: "HISTORY", label: "🏛️역사" },
+  { value: "ETC", label: "👀기타" },
+] as const;
+
 export default function StoryAdd() {
-  const router = useRouter();
-  const handleMapButton = () => {
-    router.push("./");
-  };
+  const [content, setContent] = useState<string>();
+  const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
+    null
+  );
+  const { user } = useAuthStore();
 
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const { newSpotName, storyMain } = useStoryStore();
+  const router = useRouter();
+
+  const handleMapButton = () => {
+    router.push("/story/spotLocationSelected");
+  };
 
   const handlePickImage = async () => {
     if (selectedImages.length >= 3) {
@@ -45,53 +66,95 @@ export default function StoryAdd() {
     setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
 
+  const handleAdd = () => {
+    if (!content || !newSpotName || !selectedConcept) {
+      alert("하나라도 빠지면 안해주지롱");
+    } else {
+      console.log("새로운 스팟 이름", newSpotName);
+      console.log("선택된 컨셉:", selectedConcept);
+      console.log(user?.memberId);
+    }
+  };
+
   return (
     <Container>
-      <Header>
-        <CloseButton buttonStyle="NONE" onPress={"/story"} />
-      </Header>
-      <StoryAddContainer>
-        <TitleWrapper>
-          <Title>이야기 등록</Title>
-        </TitleWrapper>
-        <StoryConcept></StoryConcept>
-        <MapButtonWrapper onPress={handleMapButton}>
-          <MapText>
-            <MapPin size={24} />
-            <LocationText>경복궁 파스타</LocationText>
-          </MapText>
-          <ChevronRight size={20} />
-        </MapButtonWrapper>
-        <InputWrapper>
-          <Input
-            width={340}
-            height={300}
-            radius={20}
-            fontSize={16}
-            multiline={true}
-            placeholder="여러분의 이야기를 남겨보세요."
-          />
-        </InputWrapper>
-        <ImageAddWrapper>
-          <ImageListContainer>
-            {selectedImages.map((imageUri, index) => (
-              <ImageContainer key={index}>
-                <SelectedImage source={{ uri: imageUri }} />
-                <RemoveButton onPress={() => handleRemoveImage(index)}>
-                  <X size={20} color="#fff" />
-                </RemoveButton>
-              </ImageContainer>
-            ))}
+      <ScrollContainer>
+        <Header>
+          <CloseButton buttonStyle="NONE" onPress={"/story"} />
+        </Header>
 
-            {selectedImages.length < 3 && (
-              <AddImageButton onPress={handlePickImage}>
-                <AddImageText>+</AddImageText>
-                <AddImageSubText>{selectedImages.length}/3</AddImageSubText>
-              </AddImageButton>
-            )}
-          </ImageListContainer>
-        </ImageAddWrapper>
-      </StoryAddContainer>
+        <StoryAddContainer>
+          <TitleWrapper>
+            <Title>Add Stroy</Title>
+          </TitleWrapper>
+
+          <MapButtonWrapper onPress={handleMapButton}>
+            <MapText>
+              <MapPin size={24} />
+              <LocationText>{newSpotName}</LocationText>
+            </MapText>
+            <ChevronRight size={20} />
+          </MapButtonWrapper>
+
+          <StoryConceptWrapper>
+            {CONCEPTS.map((concept) => (
+              <ConceptButton
+                key={concept.value}
+                selected={selectedConcept === concept.value}
+                onPress={() =>
+                  setSelectedConcept(concept.value as StoryConcept)
+                }
+              >
+                <ButtonText selected={selectedConcept === concept.value}>
+                  {concept.label}
+                </ButtonText>
+              </ConceptButton>
+            ))}
+          </StoryConceptWrapper>
+
+          <InputWrapper>
+            <Input
+              value={content}
+              onChangeText={setContent}
+              width={340}
+              height={200}
+              radius={20}
+              fontSize={16}
+              multiline={true}
+              placeholder="여러분의 이야기를 남겨보세요."
+            />
+          </InputWrapper>
+
+          <ImageAddWrapper>
+            <ImageListContainer>
+              {selectedImages.map((imageUri, index) => (
+                <ImageContainer key={index}>
+                  <SelectedImage source={{ uri: imageUri }} />
+                  <RemoveButton onPress={() => handleRemoveImage(index)}>
+                    <X size={20} color="#fff" />
+                  </RemoveButton>
+                </ImageContainer>
+              ))}
+
+              {selectedImages.length < 3 && (
+                <AddImageButton onPress={handlePickImage}>
+                  <AddImageText>+</AddImageText>
+                  <AddImageSubText>{selectedImages.length}/3</AddImageSubText>
+                </AddImageButton>
+              )}
+            </ImageListContainer>
+          </ImageAddWrapper>
+        </StoryAddContainer>
+      </ScrollContainer>
+
+      <ButtonWrapper>
+        <Button
+          text="등록"
+          onPress={handleAdd}
+          width="90%"
+          fontSize={theme.typography.fontSize.md}
+        />
+      </ButtonWrapper>
     </Container>
   );
 }
@@ -101,7 +164,9 @@ const Container = styled.View`
   gap: 10px;
   background-color: ${theme.colors.background.background300};
 `;
-
+const ScrollContainer = styled.ScrollView`
+  flex: 1;
+`;
 const Header = styled.View`
   padding: 16px;
   align-items: flex-end;
@@ -120,11 +185,33 @@ const TitleWrapper = styled.View`
 
 const Title = styled.Text`
   font-family: ${theme.typography.fontFamily.semiBold};
-  font-size: ${theme.typography.fontSize.xxl};
+  font-size: ${theme.typography.fontSize.xxl}px;
   color: ${theme.colors.text.textPrimary};
 `;
 
-const StoryConcept = styled.View``;
+const StoryConceptWrapper = styled.View`
+  flex-direction: row;
+  align-self: center;
+
+  gap: 5px;
+`;
+
+const ConceptButton = styled.Pressable<{ selected: boolean }>`
+  border-width: 1px;
+  border-radius: 20px;
+  padding: 5px 10px;
+  border-color: ${({ selected }) =>
+    selected ? theme.colors.main.primary : theme.colors.grey.neutral200};
+  background-color: ${({ selected }) =>
+    selected ? theme.colors.background.background500 : theme.colors.white};
+`;
+
+const ButtonText = styled.Text<{ selected: boolean }>`
+  font-family: ${theme.typography.fontFamily.medium};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${({ selected }) =>
+    selected ? theme.colors.text.textPrimary : theme.colors.text.textPrimary};
+`;
 
 const MapButtonWrapper = styled.Pressable`
   border-radius: ${theme.borderRadius.lg}px;
@@ -135,6 +222,7 @@ const MapButtonWrapper = styled.Pressable`
   flex-direction: row;
   justify-content: space-between;
   width: 340px;
+  height: 55px;
   align-self: center;
   background-color: ${theme.colors.white};
 `;
@@ -146,7 +234,7 @@ const MapText = styled.View`
 
 const LocationText = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textSecondary};
 `;
 
@@ -210,7 +298,13 @@ const AddImageText = styled.Text`
 `;
 
 const AddImageSubText = styled.Text`
-  font-size: 12px;
+  font-size: ${theme.typography.fontSize.sm};
   color: ${theme.colors.grey.neutral400};
   margin-top: 4px;
+`;
+
+const ButtonWrapper = styled.View`
+  padding-bottom: 16px;
+  justify-content: center;
+  align-items: center;
 `;

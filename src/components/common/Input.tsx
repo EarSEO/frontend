@@ -1,3 +1,5 @@
+import { Children } from "react";
+
 import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
@@ -18,6 +20,10 @@ interface InputProps {
   onSubmitEditing?: () => void;
   returnKeyType?: "done" | "go" | "next" | "search" | "send";
   secureTextEntry?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
+  children?: React.ReactNode;
+  editable?: boolean;
 }
 
 /**
@@ -50,6 +56,10 @@ const Input: React.FC<InputProps> = ({
   blurOnSubmit = true,
   onSubmitEditing,
   returnKeyType = "done",
+  multiline = false,
+  numberOfLines = 1,
+  children,
+  editable,
   ...rest
 }) => {
   const shadowStyle = shadow ? theme.shadows[shadow] : {};
@@ -71,8 +81,14 @@ const Input: React.FC<InputProps> = ({
       blurOnSubmit={blurOnSubmit}
       onSubmitEditing={onSubmitEditing}
       returnKeyType={returnKeyType}
+      multiline={multiline}
+      numberOfLines={numberOfLines}
+      textAlignVertical={multiline ? "top" : "center"}
+      editable={editable}
       {...rest}
-    />
+    >
+      {children}
+    </StyledInput>
   );
 };
 
@@ -85,6 +101,7 @@ const StyledInput = styled.TextInput<{
   fontSize: number | string;
   autoFocus: boolean;
   blurOnSubmit?: boolean;
+  multiline?: boolean;
 }>`
   width: ${(props) => props.width};
   height: ${(props) => props.height};
@@ -92,6 +109,7 @@ const StyledInput = styled.TextInput<{
   background-color: ${(props) => props.backgroundColor};
   border-radius: ${(props) => props.radius}px;
   font-size: ${(props) => props.fontSize}px;
+  ${(props) => props.multiline && `padding-top: 12px;`}
   align-self: center;
 `;
 
