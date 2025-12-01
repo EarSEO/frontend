@@ -1,125 +1,149 @@
-import React, { useCallback, useRef } from "react";
+import React, {useEffect, useRef} from "react";
 
-import { StyleSheet } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSharedValue } from "react-native-reanimated";
+import {Animated, StyleSheet} from "react-native";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {Polyline} from "react-native-maps";
+import {useSharedValue} from "react-native-reanimated";
 
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
-import Button from "@/components/common/Button";
-import Map from "@/components/map/Map";
+import EmptyTour from "@/components/docent/emptyTour/EmptyTour";
+import RouteMap, {RouteMapSightInfo} from "@/components/map/RouteMap";
+import DeleteTourItemButton from "@/components/myRoute/button/DeleteTourItemButton";
+import OnTourButton from "@/components/myRoute/button/OnTourButton";
+import PreTourButton from "@/components/myRoute/button/PreTourButton";
+import MyRouteSightList from "@/components/myRoute/sight/MyRouteSightList";
 
-import { useLocation } from "@/hooks/useLocation";
-import { useSightMap } from "@/hooks/useSightMap";
+import {useLocation} from "@/hooks/useLocation";
+import {useSightMap} from "@/hooks/useSightMap";
 
-import { MapRef } from "@/types/map";
-import { SightInfo } from "@/types/sight";
+import {MapRef} from "@/types/map";
+import {SightInfo} from "@/types/sight";
 
-import { useRouteStore } from "@/store/useRouteStore";
+import {theme} from "@/styles/theme";
+
+import {useMyRouteBottomSheetStore} from "@/store/useMyRouteBottomSheetStore";
+import {useRouteCartStore} from "@/store/useRouteCartStore";
+import {useRouteStore} from "@/store/useRouteStore";
+import View = Animated.View;
 
 export default function MyRoute() {
   const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
-  const { setRoute, finishRoute } = useRouteStore();
-  const onPressCreateMockRouteData = useCallback(() => {
-    setRoute({ placeIds: [] });
-  }, []);
-  const onPressDeleteMockRouteData = useCallback(() => {
-    finishRoute();
-  }, []);
-  const { location } = useLocation();
+  const {location} = useLocation();
+  const {routeCartItems} = useRouteCartStore();
+  const isOnTour = useMyRouteBottomSheetStore((state) => state.isOnTour);
+  const isPreTour = useMyRouteBottomSheetStore((state) => state.isPreTour);
+  const path = useRouteStore((state) => state.path);
+  const routeItems = useRouteStore((state) => state.routeItems);
+  const isPreTourDelete = useMyRouteBottomSheetStore(
+    (state) => state.isPreTourDelete,
+  );
 
-  const {
-    sights,
-    selectedSight,
-    sightDetail,
-    isLoading,
-    isDetailLoading,
-    fetchSightsDebounced,
-    fetchSightDetail,
-    deselectSight,
-  } = useSightMap();
+  const {selectedSight, fetchSightsDebounced, fetchSightDetail} =
+    useSightMap();
 
-  // 지도 영역 변경 시 관광지 조회
-  const handleRegionChangeComplete = (bounds: {
-    minLongitude: number;
-    minLatitude: number;
-    maxLongitude: number;
-    maxLatitude: number;
-  }) => {
-    fetchSightsDebounced(bounds);
-  };
+  const sightPoints =
+    routeItems
+      ?.filter((item) => item.itemType === "SIGHT")
+      .map((item) => ({
+        latitude: item.point.latitude,
+        longitude: item.point.longitude,
+      })) ?? [];
 
-  // 마커 클릭 시
-  const handleMarkerPress = (sight: SightInfo) => {
-    fetchSightDetail(sight, {
-      longitude: location.longitude,
-      latitude: location.latitude,
-    });
-  };
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const points =
+      path && path.length > 0
+        ? path.map((p) => ({ latitude: p.latitude, longitude: p.longitude }))
+        : sightPoints;
+
+    if (!points || points.length === 0) return;
+
+    setTimeout(() => {
+      mapRef.current?.fitToPoints(points);
+    }, 300);
+  }, [path, sightPoints.length]);
+
+  const title = isPreTour ? (
+    <Title>나의 경로</Title>
+  ) : isPreTourDelete ? (
+    <Title>나의 경로 삭제</Title>
+  ) : isOnTour ? (
+    <Title>여행중</Title>
+  ) : (
+    <></>
+  );
+  const content =
+    routeCartItems.length === 0 ? <EmptyTour/> : <MyRouteSightList/>;
+  const button =
+    routeCartItems.length === 0 ? (
+      <></>
+    ) : isPreTour ? (
+      <PreTourButton/>
+    ) : isPreTourDelete ? (
+      <DeleteTourItemButton/>
+    ) : isOnTour ? (
+      <OnTourButton/>
+    ) : (
+      <></>
+    );
+
+  const routeSights: RouteMapSightInfo[] = routeItems === undefined ? [] : routeItems?.filter((routeItem) =>
+    routeItem.itemType === "SIGHT"
+  ).map((routeItem) => ({
+    id: String(routeItem.itemId),
+    title: routeItem.itemName,
+    longitude: routeItem.point.longitude,
+    latitude: routeItem.point.latitude,
+  }))
 
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
-        <Map
+        <RouteMap
           ref={mapRef}
           animatedPosition={animatedPosition}
-          markers={sights}
-          selectedMarkerId={selectedSight?.id}
-          onMarkerPress={handleMarkerPress}
-          onRegionChangeComplete={handleRegionChangeComplete}
-        />
+          markers={routeSights}
+        >
+          {
+            path &&
+            <Polyline
+              coordinates={path?.map((point) => ({
+                latitude: point.latitude,
+                longitude: point.longitude,
+              }))
+              }
+              strokeColor={theme.colors.main.primary400}
+              strokeWidth={4}
+              lineCap="round"
+              lineJoin="round"
+              geodesic={true}
+            />
+          }
+        </RouteMap>
         <CustomBottomSheet
           bottomSheetRef={bottomSheetRef}
           animatedPosition={animatedPosition}
         >
-          {selectedSight ? (
-            <SightDetailView>
-              <SightTitle>{selectedSight.title}</SightTitle>
-              {isDetailLoading ? (
-                <LoadingText>상세 정보 로딩 중...</LoadingText>
-              ) : sightDetail ? (
-                <>
-                  <SightDistance>{sightDetail.distance}km</SightDistance>
-                  <SightDistance>{sightDetail.theme}테마</SightDistance>
-                  <SightText>{sightDetail.address}</SightText>
-                  <SectionTitle>썸네일</SectionTitle>
-                  <SectionTitle>정보/이야기</SectionTitle>
-                  <SectionTitle>도슨트 듣기</SectionTitle>
-                  <SectionTitle>소개</SectionTitle>
-                  <SightDescription numberOfLines={10}>
-                    {sightDetail.outl}
-                  </SightDescription>
-                  <SectionTitle>방문정보</SectionTitle>
-                  <SightText>주소 : {sightDetail.fullAddress}</SightText>
-                  <SightText>전화번호 : {sightDetail.tel}</SightText>
-                  <SightText>운영시간: {sightDetail.useTime}</SightText>
-                  <SightText>휴무일 : {sightDetail.restDate}</SightText>
-                  <SightText>입장료 : {sightDetail.useFee}</SightText>
-                  <SightText>주차 : {sightDetail.parking}</SightText>
-                </>
-              ) : null}
-              <CloseButton onPress={deselectSight}>
-                <CloseButtonText>닫기</CloseButtonText>
-              </CloseButton>
-            </SightDetailView>
-          ) : (
-            <DefaultView>
-              <InfoText>관광지 개수: {sights.length}</InfoText>
-              <InfoText>마커를 눌러 상세 정보를 확인하세요</InfoText>
-            </DefaultView>
-          )}
-          <Button
-            text="목데이터 만들기"
-            onPress={() => onPressCreateMockRouteData()}
-          ></Button>
-          <Button
-            text="목데이터 제거하기"
-            onPress={() => onPressDeleteMockRouteData()}
-          ></Button>
+          <View style={{paddingBottom: 48}}>
+            <View style={{alignSelf: "center"}}>{title}</View>
+            {content}
+          </View>
         </CustomBottomSheet>
+        <View
+          style={{
+            position: "absolute",
+            bottom: theme.spacing.xs,
+            left: theme.spacing.xs,
+            right: theme.spacing.xs,
+          }}
+        >
+          {button}
+        </View>
       </GestureHandlerRootView>
     </Container>
   );
@@ -129,63 +153,11 @@ const Container = styled.View`
   flex: 1;
 `;
 
-const SightDetailView = styled.View`
-  gap: 8px;
-`;
-
-const SightTitle = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xxl}px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.text.textPrimary};
-`;
-
-const SectionTitle = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.text.textPrimary};
-`;
-
-const SightText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
-`;
-
-const SightDistance = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
-  color: ${({ theme }) => theme.colors.main.primary};
-`;
-
-const SightDescription = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
-  line-height: 22px;
-`;
-
-const LoadingText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textTertiary};
-`;
-
-const CloseButton = styled.TouchableOpacity`
-  margin-top: 12px;
-  padding: 12px;
-  background-color: ${({ theme }) => theme.colors.grey.neutral100};
-  border-radius: 8px;
-  align-items: center;
-`;
-
-const CloseButtonText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
-`;
-
-const DefaultView = styled.View`
-  gap: 8px;
-`;
-
-const InfoText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
+const Title = styled.Text`
+  font-family: ${theme.typography.fontFamily.bold};
+  font-size: ${theme.typography.fontSize.xxl};
+  color: ${theme.colors.black};
+  margin-bottom: ${theme.spacing.xl};
 `;
 
 const styles = StyleSheet.create({

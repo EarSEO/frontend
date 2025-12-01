@@ -55,7 +55,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
     set({ geoPlay: ativate });
   },
   setListeningRouteItem: (routeItem: RouteItem | undefined): void => {
-    if (!routeItem) return;
+    if (!routeItem || !routeItem.itemDocentUrl) return;
     const { listeningRouteItem, listeningRouteItemType } = get();
     if (
       routeItem.itemType === listeningRouteItemType &&
@@ -88,6 +88,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
   },
 
   playTrack: (source: string): void => {
+    if (!source) return;
     const { player } = get();
     player.replace(source);
     player.play();

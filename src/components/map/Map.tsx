@@ -56,7 +56,7 @@ const Map = forwardRef<MapRef, MapProps>(
       rotateEnabled = true,
       pitchEnabled = true,
     },
-    ref,
+    ref
   ) => {
     const mapRef = useRef<MapView>(null);
     const { location, isLoading, getCurrentLocation } = useLocation();
@@ -120,7 +120,12 @@ const Map = forwardRef<MapRef, MapProps>(
           ref={mapRef}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
-          initialRegion={location}
+          initialRegion={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsCompass={false}
@@ -160,7 +165,7 @@ const Map = forwardRef<MapRef, MapProps>(
         </AnimatedTouchable>
       </>
     );
-  },
+  }
 );
 
 Map.displayName = "Map";

@@ -75,6 +75,10 @@ export interface User {
   role: Role;
   updatedAt: Date;
   profileUrl: string;
+  profileImage?: string;
+  gender?: Gender;
+  birthdate?: string;
+  nationality?: string;
 }
 
 // 이메일 인증 관련

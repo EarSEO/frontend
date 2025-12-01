@@ -12,7 +12,7 @@ const GoGetCourseButton: React.FC = () => {
   const addCourseText = "경로 추가하러 가기";
   const router = useRouter();
   const onPress = useCallback(() => {
-    router.push("/myRoute");
+    router.push("/");
   }, []);
   return (
     <Pressable onPress={onPress}>
