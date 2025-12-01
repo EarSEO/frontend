@@ -24,8 +24,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   isDetailLoading,
   onClose,
 }) => {
-  const { insertRouteCartItem, removeRouteCartItem } =
-    useRouteCartStore();
+  const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
 
   if (!selectedSight) return null;
@@ -37,16 +36,17 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       : "데이터가 존재하지 않습니다";
   };
 
-  const isInCart = routeCartItems.filter((routeCartItem)=>{
-    return routeCartItem.sightId === selectedSight.id;
-  }).length > 0;
+  const isInCart =
+    routeCartItems.filter((routeCartItem) => {
+      return routeCartItem.sightId === selectedSight.id;
+    }).length > 0;
 
   return (
     <Container>
       <HeaderRow>
         <SightTitle>{selectedSight.title}</SightTitle>
 
-          {/* <IconButton onPress={(e) => {
+        {/* <IconButton onPress={(e) => {
           e.stopPropagation();
           isInCart ? removeRouteCartItem(selectedSight.id) : insertRouteCartItem({
             sightId : sightDetail?.id ?? "",
@@ -320,8 +320,7 @@ const Section = styled.View`
 const Badge = styled.View<{ type: "good" | "bad" }>`
   padding: 4px 10px;
   border-radius: 4px;
-  background-color: ${({ type }) =>
-    type === "good" ? "#66BB6A" : "#EF5350"};
+  background-color: ${({ type }) => (type === "good" ? "#66BB6A" : "#EF5350")};
 `;
 
 const BadgeText = styled.Text`
