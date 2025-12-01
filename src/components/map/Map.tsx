@@ -112,7 +112,12 @@ const Map = forwardRef<MapRef, MapProps>(
           ref={mapRef}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
-          initialRegion={location}
+          initialRegion={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsCompass={false}

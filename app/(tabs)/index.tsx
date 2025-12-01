@@ -1,9 +1,10 @@
-import React, { useRef } from "react";
+import React, { useCallback, useRef , useState } from "react";
 
-import { StyleSheet } from "react-native";
+import { FlatList, Keyboard, StyleSheet , TextInput, TouchableOpacity } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 
+import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
@@ -22,11 +23,12 @@ import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 export default function Index() {
   const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
-  const mapRef = useRef<MapRef>(null);
+  const mapRef = useRef<MapRef | null>(null);
   // const { setRoute, finishRoute } = useRouteStore();
   const { location } = useLocation();
-  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
-    useRouteCartStore();
+  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =  useRouteCartStore();
+  const [searchText, setSearchText] = useState("");
+  const [showResults, setShowResults] = useState(false);
 
   const {
     sights,
@@ -36,7 +38,60 @@ export default function Index() {
     fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,
+    searchSightsInBounds,
+    searchSightsDebounced,
+    searchResults
   } = useSightMap();
+
+  const handleSearch = useCallback(async () => {
+    if (!searchText.trim()) return;
+
+    // 1) 지도 bounds 가져오기
+    const boundaries = await mapRef.current?.getBoundaries();
+
+    if (!boundaries) {
+      return;
+    }
+
+    const bounds = {
+      minLongitude: boundaries.southWest.longitude,
+      minLatitude: boundaries.southWest.latitude,
+      maxLongitude: boundaries.northEast.longitude,
+      maxLatitude: boundaries.northEast.latitude,
+    };
+
+    // 2) 검색 API 호출
+    await searchSightsInBounds(searchText, {
+      longitude: location.longitude,
+      latitude: location.latitude,
+    }, bounds);
+
+    // 3) 검색 결과 패널 표시 + 키보드 닫기
+    setShowResults(true);
+    Keyboard.dismiss();
+  }, [searchText, location, searchSightsInBounds]);
+
+
+  // 검색 결과 선택 시
+  const handleSelectResult = (sight: SightInfo) => {
+    setShowResults(false);
+    setSearchText("");
+    
+    // 해당 위치로 지도 이동
+    mapRef.current?.moveToLocation({
+      latitude: sight.latitude,
+      longitude: sight.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    
+    // 상세 정보 조회
+    fetchSightDetail(sight, {
+      longitude: location.longitude,
+      latitude: location.latitude,
+    });
+  };
+  
 
   const isInCart = routeCartItems.some(
     (item) => item.sightId === selectedSight?.id,
@@ -84,6 +139,38 @@ export default function Index() {
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
+        <SearchContainer>
+          <SearchInputWrapper>
+            <Ionicons name="search" size={20} color="#888" />
+            <SearchInput
+              placeholder="관광지 검색..."
+              value={searchText}
+              onChangeText={setSearchText}
+              onSubmitEditing={handleSearch}
+              returnKeyType="search"
+            />
+            {searchText.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchText("")}>
+                <Ionicons name="close-circle" size={20} color="#888" />
+              </TouchableOpacity>
+            )}
+          </SearchInputWrapper>
+        </SearchContainer>
+
+        {showResults && searchResults.length > 0 && (
+          <SearchResultsContainer>
+            <FlatList
+              data={searchResults}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <ResultItem onPress={() => handleSelectResult(item)}>
+                  <ResultTitle>{item.title}</ResultTitle>
+                </ResultItem>
+              )}
+              keyboardShouldPersistTaps="handled"
+            />
+          </SearchResultsContainer>
+        )}
         <Map
           ref={mapRef}
           animatedPosition={animatedPosition}
@@ -119,3 +206,53 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+const SearchContainer = styled.View`
+  position: absolute;
+  top: 60px;
+  left: 16px;
+  right: 16px;
+  z-index: 10;
+`;
+
+const SearchInputWrapper = styled.View`
+  flex-direction: row;
+  align-items: center;
+  background-color: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  shadow-color: #000;
+  shadow-offset: 0px 2px;
+  shadow-opacity: 0.1;
+  shadow-radius: 4px;
+  elevation: 3;
+`;
+
+const SearchInput = styled.TextInput`
+  flex: 1;
+  margin-left: 10px;
+  font-size: 16px;
+`;
+
+const SearchResultsContainer = styled.View`
+  position: absolute;
+  top: 120px;
+  left: 16px;
+  right: 16px;
+  max-height: 300px;
+  background-color: white;
+  border-radius: 12px;
+  z-index: 10;
+  elevation: 4;
+`;
+
+const ResultItem = styled.TouchableOpacity`
+  padding: 14px 16px;
+  border-bottom-width: 1px;
+  border-bottom-color: #eee;
+`;
+
+const ResultTitle = styled.Text`
+  font-size: 15px;
+  color: #333;
+`;

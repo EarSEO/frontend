@@ -59,3 +59,14 @@ export interface SightDetailCardProps {
   onToggleRoute: () => void;
   onClose: () => void;
 }
+
+export interface SearchSightParams {
+  keyword: string;
+  longitude: string;
+  latitude: string;
+  minLongitude: string;
+  minLatitude: string;
+  maxLongitude: string;
+  maxLatitude: string;
+  limit: string;
+}
