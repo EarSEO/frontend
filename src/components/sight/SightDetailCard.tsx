@@ -24,32 +24,11 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   isDetailLoading,
   onClose,
 }) => {
-  const { routeCartItems, insertRouteCartItem, removeRouteCartItem } =
+  const { insertRouteCartItem, removeRouteCartItem } =
     useRouteCartStore();
+  const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
+
   if (!selectedSight) return null;
-
-  const sightId = String(selectedSight.id);
-  const isInCart = routeCartItems.some((item) => item.sightId === sightId);
-
-  const handleToggleRoute = () => {
-    if (!sightDetail) return;
-
-    if (isInCart) {
-      removeRouteCartItem(sightId);
-    } else {
-      insertRouteCartItem({
-        sightId,
-        theme: sightDetail.theme ?? "",
-        title: selectedSight.title,
-        address: sightDetail.address ?? "",
-        point: {
-          longitude: selectedSight.longitude,
-          latitude: selectedSight.latitude,
-        },
-        imageUrl: sightDetail.imgUrl ?? "",
-      });
-    }
-  };
 
   const checkData = (data: string | undefined | null) => {
     const normalized = normalizeHtmlBreaks(data);
@@ -58,11 +37,56 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       : "데이터가 존재하지 않습니다";
   };
 
+  const isInCart = routeCartItems.filter((routeCartItem)=>{
+    return routeCartItem.sightId === selectedSight.id;
+  }).length > 0;
+
   return (
     <Container>
       <HeaderRow>
         <SightTitle>{selectedSight.title}</SightTitle>
-        <IconButton onPress={handleToggleRoute}>
+
+          {/* <IconButton onPress={(e) => {
+          e.stopPropagation();
+          isInCart ? removeRouteCartItem(selectedSight.id) : insertRouteCartItem({
+            sightId : sightDetail?.id ?? "",
+            theme : sightDetail?.theme ?? "",
+            title : sightDetail?.title ?? "",
+            address: sightDetail?.address ?? "",
+            point: {
+            longitude: sightDetail?.longitude ?? selectedSight.longitude,
+            latitude: sightDetail?.latitude ?? selectedSight.latitude,
+            },
+            imageUrl: sightDetail?.imgUrl?? ""
+          })
+        }}>
+          {isInCart ? (
+            <AfterAddRoute width={28} height={28} />
+          ) : (
+            <BeforeAddRoute width={28} height={28} />
+          )}
+        </IconButton> */}
+
+        <IconButton
+          onPress={(e) => {
+            e.stopPropagation();
+            if (isInCart) {
+              removeRouteCartItem(String(selectedSight.id));
+            } else {
+              insertRouteCartItem({
+                sightId: String(sightDetail?.id ?? selectedSight.id),
+                theme: sightDetail?.theme ?? "",
+                title: sightDetail?.title ?? "",
+                address: sightDetail?.address ?? "",
+                point: {
+                  longitude: sightDetail?.longitude ?? selectedSight.longitude,
+                  latitude: sightDetail?.latitude ?? selectedSight.latitude,
+                },
+                imageUrl: sightDetail?.imgUrl ?? "",
+              });
+            }
+          }}
+        >
           {isInCart ? (
             <AfterAddRoute width={28} height={28} />
           ) : (
@@ -297,7 +321,7 @@ const Badge = styled.View<{ type: "good" | "bad" }>`
   padding: 4px 10px;
   border-radius: 4px;
   background-color: ${({ type }) =>
-    type === "good" ? "#66BB6A" : "#EF5350"}; /* 초록 / 빨강 */
+    type === "good" ? "#66BB6A" : "#EF5350"};
 `;
 
 const BadgeText = styled.Text`
