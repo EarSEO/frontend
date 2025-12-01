@@ -15,17 +15,43 @@ import { SightDetailCardProps } from "@/types/sight";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
+import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
   selectedSight,
   sightDetail,
   isDetailLoading,
-  isInCart,
-  onToggleRoute,
   onClose,
-}) => {
+}) => { 
+  
+  const { routeCartItems, insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   if (!selectedSight) return null;
+
+  const sightId = String(selectedSight.id);
+  const isInCart = routeCartItems.some(
+    (item) => item.sightId === sightId,
+  );
+
+  const handleToggleRoute = () => {
+    if (!sightDetail) return;
+
+    if (isInCart) {
+      removeRouteCartItem(sightId);
+    } else {
+      insertRouteCartItem({
+        sightId,
+        theme: sightDetail.theme ?? "",
+        title: selectedSight.title,
+        address: sightDetail.address ?? "",
+        point: {
+          longitude: selectedSight.longitude,
+          latitude: selectedSight.latitude,
+        },
+        imageUrl: sightDetail.imgUrl ?? "",
+      });
+    }
+  };
 
   const checkData = (data: string | undefined | null) => {
     const normalized = normalizeHtmlBreaks(data);
@@ -38,7 +64,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     <Container>
       <HeaderRow>
         <SightTitle>{selectedSight.title}</SightTitle>
-        <IconButton onPress={onToggleRoute}>
+        <IconButton onPress={handleToggleRoute}>
           {isInCart ? (
             <AfterAddRoute width={28} height={28} />
           ) : (
