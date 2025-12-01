@@ -36,7 +36,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const handleTextToggle = () => {
     setIsExpanded((prev) => !prev);
     setNumberOfLines((prevLines) =>
-      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3
+      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3,
     );
   };
 

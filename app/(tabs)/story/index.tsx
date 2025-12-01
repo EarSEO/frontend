@@ -13,7 +13,10 @@ import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
+import { useSightMap } from "@/hooks/useSightMap";
+
 import { MapRef } from "@/types/map";
+import { SightInfo } from "@/types/sight";
 import {
   GetMapStoriesRequest,
   GetSearchTitleRequest,
@@ -21,8 +24,6 @@ import {
 } from "@/types/storySpot";
 
 import { useStoryStore } from "@/store/useStoryStore";
-import { SightInfo } from "@/types/sight";
-import { useSightMap } from "@/hooks/useSightMap";
 
 export default function Index() {
   const Ref = useRef<any>(null);

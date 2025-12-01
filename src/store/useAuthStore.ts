@@ -28,7 +28,7 @@ interface AuthState {
   signup: (userData: SignUpRequest) => Promise<SignUpResponse>;
   socialLogin: (
     provider: Provider,
-    authCode: string
+    authCode: string,
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
   logout: () => Promise<void>;
@@ -46,7 +46,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<BaseResponse<LoginResponse>>(
         `${API_ENDPOINTS.AUTH.LOGIN}`,
-        credentials
+        credentials,
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data.data;
@@ -84,7 +84,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ isLoading: true });
       const response = await api.post<SignUpResponse>(
         `${API_ENDPOINTS.AUTH.SIGNUP}`,
-        userData
+        userData,
       );
 
       set({ isLoading: false });
@@ -101,7 +101,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<SocialLoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN}`,
-        { authCode }
+        { authCode },
       );
 
       const data = response.data;
@@ -148,7 +148,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       const response = await api.post<LoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_SIGNUP}`,
-        userData
+        userData,
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data;

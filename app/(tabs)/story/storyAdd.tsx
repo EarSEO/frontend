@@ -11,13 +11,14 @@ import Button from "@/components/common/Button";
 import CloseButton from "@/components/common/CloseButton";
 import Input from "@/components/common/Input";
 
+import { CreateStoryRequest } from "@/types/storySpot";
+
 import { theme } from "@/styles/theme";
 
-import { useAuthStore } from "@/store/useAuthStore";
-import { useStoryStore } from "@/store/useStoryStore";
-import { useRouteStore } from "@/store/useRouteStore";
-import { CreateStoryRequest } from "@/types/storySpot";
 import { createStoryTextApi } from "@/api/getStoryApi";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouteStore } from "@/store/useRouteStore";
+import { useStoryStore } from "@/store/useStoryStore";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
 
@@ -32,7 +33,7 @@ const CONCEPTS = [
 export default function StoryAdd() {
   const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
-    null
+    null,
   );
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const { newSpotName } = useStoryStore();

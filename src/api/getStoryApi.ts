@@ -16,18 +16,19 @@ import {
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
-import api from "./axios";
 import { useAuthStore } from "@/store/useAuthStore";
 
+import api from "./axios";
+
 export const getStoryApi = async (
-  param: GetStoryRequest
+  param: GetStoryRequest,
 ): Promise<GetSpotTotalInfoResponse> => {
   const { storySpotId, query } = param;
 
   try {
     const response = await api.get<BaseResponse<GetSpotTotalInfoResponse>>(
       `${API_ENDPOINTS.STORY.SPOTTOTALINFO(storySpotId)}`,
-      { params: { ...query.query } }
+      { params: { ...query.query } },
     );
     return response.data.data;
   } catch (error) {
@@ -40,7 +41,7 @@ export const getRectangle = async (param: GetMapStoriesRequest) => {
   try {
     const response = await api.get<BaseResponse<GetMapStoryResponse>>(
       `${API_ENDPOINTS.STORY.MAP_RECTANGLE}`,
-      { params: param }
+      { params: param },
     );
     return response.data.data;
   } catch (error) {
@@ -63,14 +64,14 @@ export const getSpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
 
 export const createStoryTextApi = async (
   param: CreateStoryRequest,
-  images?: string[]
+  images?: string[],
 ) => {
   try {
     const { user } = useAuthStore.getState();
 
     const createTextRes = await api.post<BaseResponse<CreateStoryResponse>>(
       `${API_ENDPOINTS.STORY.CREATE_STRORY}`,
-      param
+      param,
     );
 
     console.log("1차 텍스트 연결 성공");
@@ -96,7 +97,7 @@ export const createStoryTextApi = async (
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
     }
 
@@ -111,7 +112,7 @@ export const getSearchTitle = async (param: GetSearchTitleRequest) => {
   try {
     const response = await api.get<BaseResponse<SearchSpotInfoResponse>>(
       `${API_ENDPOINTS.STORY.SEARCH_TITLE}`,
-      { params: param }
+      { params: param },
     );
     return response.data.data;
   } catch (error) {

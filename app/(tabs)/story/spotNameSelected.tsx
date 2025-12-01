@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Alert, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSharedValue } from "react-native-reanimated";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -10,17 +12,15 @@ import BackButton from "@/components/common/BackButton";
 import Button from "@/components/common/Button";
 import CloseButton from "@/components/common/CloseButton";
 import Input from "@/components/common/Input";
+import Map from "@/components/map/Map";
 import SpotNameAdd from "@/components/storyAdd/SpotNameAdd";
 
-import { theme } from "@/styles/theme";
-
-import { useStoryStore } from "@/store/useStoryStore";
 import { MapRef } from "@/types/map";
-import { useSharedValue } from "react-native-reanimated";
+
+import { theme } from "@/styles/theme";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
-import Map from "@/components/map/Map";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useStoryStore } from "@/store/useStoryStore";
 
 export default function SpotNameSelected() {
   const { setNewSpotName, storyLocation } = useStoryStore();

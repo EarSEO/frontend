@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 
 import { Alert, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useSharedValue } from "react-native-reanimated";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -10,18 +12,17 @@ import BackButton from "@/components/common/BackButton";
 import Button from "@/components/common/Button";
 import CloseButton from "@/components/common/CloseButton";
 import Input from "@/components/common/Input";
+import Map from "@/components/map/Map";
 import SpotLocationAdd from "@/components/storyAdd/SpotLocationAdd";
 
-import { theme } from "@/styles/theme";
-
-import { useStoryStore } from "@/store/useStoryStore";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Map from "@/components/map/Map";
 import { MapRef } from "@/types/map";
-import { useSharedValue } from "react-native-reanimated";
-import MapPin from "@/assets/icons/map/MapPin.svg";
 import { GetSearchTitleRequest } from "@/types/storySpot";
+
+import { theme } from "@/styles/theme";
+import MapPin from "@/assets/icons/map/MapPin.svg";
+
 import { getSearchTitle } from "@/api/getStoryApi";
+import { useStoryStore } from "@/store/useStoryStore";
 
 export default function SpotLocationSelected() {
   const { setNewSpotName, setStoryLocation } = useStoryStore();
@@ -91,7 +92,7 @@ export default function SpotLocationSelected() {
             <MapPin width={45} height={45} />
           </CenterPin>
         </MapWrapper>
-        
+
         <Header>
           <BackButton buttonStyle="CIRCLE" />
           <Input

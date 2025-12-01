@@ -4,10 +4,11 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
+import { useStoryStore } from "@/store/useStoryStore";
+
 import Button from "../common/Button";
 import Input from "../common/Input";
 import LocationLabel from "../common/LocationLabel";
-import { useStoryStore } from "@/store/useStoryStore";
 
 interface SpotNameAddProps {
   onSpotNameChange: (name: string) => void;
@@ -41,7 +42,7 @@ const SpotLocationAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
           }}
         >
           {searchTitleInfo?.map((item) => (
-            <LocationLabel locationTitle={item.title} />
+            <LocationLabel key={item.storySpotId} locationTitle={item.title} />
           ))}
         </SearchViewWrapper>
       </Content>
