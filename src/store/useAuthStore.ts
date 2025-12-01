@@ -1,6 +1,8 @@
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 
+import { PasswordUpdateRequest,ProfileUpdateRequest, ProfileUpdateResponse } from "@/types/member";
+
 import API_ENDPOINTS from "@/constants/endpoints";
 
 import api from "@/api/axios";
@@ -11,7 +13,6 @@ import {
   LoginRequest,
   LoginResponse,
   Provider,
-  Role,
   SignUpRequest,
   SignUpResponse,
   SocialLoginResponse,
@@ -33,9 +34,13 @@ interface AuthState {
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
   logout: () => Promise<void>;
   loadUser: () => Promise<void>;
+
+  updateProfile: (data: ProfileUpdateRequest) => Promise<ProfileUpdateResponse>;
+  updateProfileImage: (file: FormData) => Promise<string>;
+  updatePassword: (data: PasswordUpdateRequest) => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isLogined: false,
   isLoading: false,
@@ -147,7 +152,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
-      const user: User = { memberId, email, nickname, role };
+      const user: User = { memberId, email, nickname, role};
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({
@@ -196,6 +201,85 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
     } catch {
       set({ user: null, isLogined: false, isLoading: false });
+    }
+  },
+
+  updateProfile: async (data: ProfileUpdateRequest) => {
+    try {
+      set({ isLoading: true });
+      const response = await api.put<BaseResponse<ProfileUpdateResponse>>(
+        API_ENDPOINTS.MEMBER.EDIT_PROFILE,
+        data
+      );
+
+      const updatedProfile = response.data.data;
+      
+      const currentUser = get().user;
+      if (currentUser) {
+        const updatedUser = {
+          ...currentUser,
+          nickname: updatedProfile.nickname,
+          gender: updatedProfile.gender,
+          birthdate: updatedProfile.birthdate,
+          nationality: updatedProfile.nationality,
+          profileImage: updatedProfile.profileImage,
+        };
+        await SecureStore.setItemAsync(USER_INFO, JSON.stringify(updatedUser));
+        set({ user: updatedUser });
+      }
+      
+      set({ isLoading: false });
+      return response.data.data;
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  updateProfileImage: async (formData: FormData) => {
+    try {
+      set({ isLoading: true });
+      const response = await api.patch<BaseResponse<{ profileImageUrl: string }>>(
+        API_ENDPOINTS.MEMBER.EDIT_PROFILE_IMAGE,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      const imageUrl = response.data.data.profileImageUrl;
+
+      const currentUser = get().user;
+      if (currentUser) {
+        const updatedUser = {
+          ...currentUser,
+          profileImage: imageUrl,
+        };
+        await SecureStore.setItemAsync(
+          USER_INFO,
+          JSON.stringify(updatedUser),
+        );
+        set({ user: updatedUser });
+      }
+      set({ isLoading: false });
+      return response.data.data.profileImageUrl;
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  updatePassword: async (data: PasswordUpdateRequest) => {
+    try {
+      set({ isLoading: true });
+      await api.put<BaseResponse<void>>(
+        API_ENDPOINTS.MEMBER.CHANGE_PASSWORD,
+        data
+      );
+      set({ isLoading: false });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
     }
   },
 }));

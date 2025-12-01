@@ -1,4 +1,7 @@
+// @/app/myPage/changePassword.tsx
 import { useState } from "react";
+
+import { Alert } from "react-native";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -7,30 +10,58 @@ import Button from "@/components/common/Button";
 
 import { theme } from "@/styles/theme";
 
+import { useAuthStore } from "@/store/useAuthStore";
+
 export default function ChangePassword() {
+  const router = useRouter();
+  const { updatePassword, isLoading } = useAuthStore();
+  
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const handleChangePassword = async () => {
+    // 유효성 검사
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      Alert.alert("오류", "모든 필드를 입력해주세요.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert("오류", "새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      Alert.alert("오류", "비밀번호는 8자 이상이어야 합니다.");
+      return;
+    }
+
+    try {
+      await updatePassword({
+        currentPassword,
+        newPassword,
+      });
+      Alert.alert("성공", "비밀번호가 변경되었습니다.", [
+        { text: "확인", onPress: () => router.back() }
+      ]);
+    } catch (error: any) {
+      const message = error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
+      Alert.alert("오류", message);
+    }
+  };
+
   return (
     <Container>
-      <Header>
-        <BackButtonPlaceholder />
-        <HeaderTitle>비밀번호 수정</HeaderTitle>
-        <HeaderSpacer />
-      </Header>
-
       <Content>
         <GuideText>새로운 비밀번호를 설정해주세요.</GuideText>
-
         <InputSection>
           <Label>현재 비밀번호 입력</Label>
           <StyledInput
             value={currentPassword}
             onChangeText={setCurrentPassword}
-            placeholder="현재 비밀번호 입력"
-            placeholderTextColor={theme.colors.text.textTertiary}
-            secureTextEntry={true}
+            secureTextEntry
+            placeholder="현재 비밀번호"
           />
         </InputSection>
 
@@ -39,9 +70,8 @@ export default function ChangePassword() {
           <StyledInput
             value={newPassword}
             onChangeText={setNewPassword}
-            placeholder="비밀번호 입력"
-            placeholderTextColor={theme.colors.text.textTertiary}
-            secureTextEntry={true}
+            secureTextEntry
+            placeholder="새 비밀번호 (8자 이상)"
           />
         </InputSection>
 
@@ -50,18 +80,17 @@ export default function ChangePassword() {
           <StyledInput
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            placeholder="비밀번호 확인"
-            placeholderTextColor={theme.colors.text.textTertiary}
-            secureTextEntry={true}
+            secureTextEntry
+            placeholder="새 비밀번호 확인"
           />
         </InputSection>
       </Content>
 
       <BottomSection>
         <Button
-          text="변경"
-          width="100%"
-          onPress={() => console.log("비밀번호 변경")}
+          text={isLoading ? "변경 중..." : "비밀번호 변경"}
+          onPress={handleChangePassword}
+          disabled={isLoading}
         />
       </BottomSection>
     </Container>
@@ -71,30 +100,6 @@ export default function ChangePassword() {
 const Container = styled.View`
   flex: 1;
   background-color: ${theme.colors.white};
-`;
-
-const Header = styled.View`
-  width: 100%;
-  height: 50px;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding-horizontal: 15px;
-`;
-
-const BackButtonPlaceholder = styled.View`
-  width: 24px;
-  height: 24px;
-`;
-
-const HeaderTitle = styled.Text`
-  font-family: ${theme.typography.fontFamily.semiBold};
-  font-size: ${theme.typography.fontSize.lg}px;
-  color: ${theme.colors.text.textPrimary};
-`;
-
-const HeaderSpacer = styled.View`
-  width: 24px;
 `;
 
 const Content = styled.View`

@@ -23,6 +23,11 @@ export const API_ENDPOINTS = {
     CREATE_IN_PROGRESS_ROUTE: "/api/user/route/in-progress",
     COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}'complete`,
   },
+  MEMBER: {
+    EDIT_PROFILE_IMAGE : "/api/user/member/profile-image",
+    EDIT_PROFILE : "/api/user/member/profile",
+    CHANGE_PASSWORD: "/api/user/member/password", 
+  }
 };
 
 export default API_ENDPOINTS;

@@ -50,3 +50,12 @@ export interface SightDetailParams {
   longitude: number;
   latitude: number;
 }
+
+export interface SightDetailCardProps {
+  selectedSight: SightInfo | null;
+  sightDetail: SightDetailInfo | null;
+  isDetailLoading: boolean;
+  isInCart: boolean;
+  onToggleRoute: () => void;
+  onClose: () => void;
+}

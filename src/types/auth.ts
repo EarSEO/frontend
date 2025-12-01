@@ -73,6 +73,10 @@ export interface User {
   email: string;
   nickname: string;
   role: Role;
+  profileImage?: string;
+  gender?: Gender;
+  birthdate?: string;
+  nationality?: string;
 }
 
 // 이메일 인증 관련
