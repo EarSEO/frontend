@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import {Point} from "@/types/geom";
+import { Point } from "@/types/geom";
 
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { useRouteStore } from "@/store/useRouteStore";

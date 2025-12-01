@@ -43,7 +43,7 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const RouteMap = forwardRef<MapRef, RouteMapProps>(function RouteMapComponent(
   { animatedPosition, markers, children },
-  ref
+  ref,
 ) {
   const mapRef = useRef<MapView>(null);
   const { location, isLoading, getCurrentLocation } = useLocation();

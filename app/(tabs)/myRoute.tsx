@@ -1,39 +1,39 @@
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 
-import {Animated, StyleSheet} from "react-native";
-import {GestureHandlerRootView} from "react-native-gesture-handler";
-import {Polyline} from "react-native-maps";
-import {useSharedValue} from "react-native-reanimated";
+import { Animated, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Polyline } from "react-native-maps";
+import { useSharedValue } from "react-native-reanimated";
 
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import EmptyTour from "@/components/docent/emptyTour/EmptyTour";
-import RouteMap, {RouteMapSightInfo} from "@/components/map/RouteMap";
+import RouteMap, { RouteMapSightInfo } from "@/components/map/RouteMap";
 import DeleteTourItemButton from "@/components/myRoute/button/DeleteTourItemButton";
 import OnTourButton from "@/components/myRoute/button/OnTourButton";
 import PreTourButton from "@/components/myRoute/button/PreTourButton";
 import MyRouteSightList from "@/components/myRoute/sight/MyRouteSightList";
 
-import {useLocation} from "@/hooks/useLocation";
-import {useSightMap} from "@/hooks/useSightMap";
+import { useLocation } from "@/hooks/useLocation";
+import { useSightMap } from "@/hooks/useSightMap";
 
-import {MapRef} from "@/types/map";
-import {SightInfo} from "@/types/sight";
+import { MapRef } from "@/types/map";
+import { SightInfo } from "@/types/sight";
 
-import {theme} from "@/styles/theme";
+import { theme } from "@/styles/theme";
 
-import {useMyRouteBottomSheetStore} from "@/store/useMyRouteBottomSheetStore";
-import {useRouteCartStore} from "@/store/useRouteCartStore";
-import {useRouteStore} from "@/store/useRouteStore";
+import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
+import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { useRouteStore } from "@/store/useRouteStore";
 import View = Animated.View;
 
 export default function MyRoute() {
   const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
-  const {location} = useLocation();
-  const {routeCartItems} = useRouteCartStore();
+  const { location } = useLocation();
+  const { routeCartItems } = useRouteCartStore();
   const isOnTour = useMyRouteBottomSheetStore((state) => state.isOnTour);
   const isPreTour = useMyRouteBottomSheetStore((state) => state.isPreTour);
   const path = useRouteStore((state) => state.path);
@@ -42,7 +42,7 @@ export default function MyRoute() {
     (state) => state.isPreTourDelete,
   );
 
-  const {selectedSight, fetchSightsDebounced, fetchSightDetail} =
+  const { selectedSight, fetchSightsDebounced, fetchSightDetail } =
     useSightMap();
 
   const sightPoints =
@@ -78,28 +78,31 @@ export default function MyRoute() {
     <></>
   );
   const content =
-    routeCartItems.length === 0 ? <EmptyTour/> : <MyRouteSightList/>;
+    routeCartItems.length === 0 ? <EmptyTour /> : <MyRouteSightList />;
   const button =
     routeCartItems.length === 0 ? (
       <></>
     ) : isPreTour ? (
-      <PreTourButton/>
+      <PreTourButton />
     ) : isPreTourDelete ? (
-      <DeleteTourItemButton/>
+      <DeleteTourItemButton />
     ) : isOnTour ? (
-      <OnTourButton/>
+      <OnTourButton />
     ) : (
       <></>
     );
 
-  const routeSights: RouteMapSightInfo[] = routeItems === undefined ? [] : routeItems?.filter((routeItem) =>
-    routeItem.itemType === "SIGHT"
-  ).map((routeItem) => ({
-    id: String(routeItem.itemId),
-    title: routeItem.itemName,
-    longitude: routeItem.point.longitude,
-    latitude: routeItem.point.latitude,
-  }))
+  const routeSights: RouteMapSightInfo[] =
+    routeItems === undefined
+      ? []
+      : routeItems
+          ?.filter((routeItem) => routeItem.itemType === "SIGHT")
+          .map((routeItem) => ({
+            id: String(routeItem.itemId),
+            title: routeItem.itemName,
+            longitude: routeItem.point.longitude,
+            latitude: routeItem.point.latitude,
+          }));
 
   return (
     <Container>
@@ -109,28 +112,26 @@ export default function MyRoute() {
           animatedPosition={animatedPosition}
           markers={routeSights}
         >
-          {
-            path &&
+          {path && (
             <Polyline
               coordinates={path?.map((point) => ({
                 latitude: point.latitude,
                 longitude: point.longitude,
-              }))
-              }
+              }))}
               strokeColor={theme.colors.main.primary400}
               strokeWidth={4}
               lineCap="round"
               lineJoin="round"
               geodesic={true}
             />
-          }
+          )}
         </RouteMap>
         <CustomBottomSheet
           bottomSheetRef={bottomSheetRef}
           animatedPosition={animatedPosition}
         >
-          <View style={{paddingBottom: 48}}>
-            <View style={{alignSelf: "center"}}>{title}</View>
+          <View style={{ paddingBottom: 48 }}>
+            <View style={{ alignSelf: "center" }}>{title}</View>
             {content}
           </View>
         </CustomBottomSheet>

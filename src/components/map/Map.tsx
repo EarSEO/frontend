@@ -56,7 +56,7 @@ const Map = forwardRef<MapRef, MapProps>(
       rotateEnabled = true,
       pitchEnabled = true,
     },
-    ref
+    ref,
   ) => {
     const mapRef = useRef<MapView>(null);
     const { location, isLoading, getCurrentLocation } = useLocation();
@@ -165,7 +165,7 @@ const Map = forwardRef<MapRef, MapProps>(
         </AnimatedTouchable>
       </>
     );
-  }
+  },
 );
 
 Map.displayName = "Map";
