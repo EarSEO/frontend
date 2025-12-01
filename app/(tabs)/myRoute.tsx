@@ -1,14 +1,15 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { Animated, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Polyline } from "react-native-maps";
 import { useSharedValue } from "react-native-reanimated";
 
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import EmptyTour from "@/components/docent/emptyTour/EmptyTour";
-import Map from "@/components/map/Map";
+import RouteMap, { RouteMapSightInfo } from "@/components/map/RouteMap";
 import DeleteTourItemButton from "@/components/myRoute/button/DeleteTourItemButton";
 import OnTourButton from "@/components/myRoute/button/OnTourButton";
 import PreTourButton from "@/components/myRoute/button/PreTourButton";
@@ -33,33 +34,39 @@ export default function MyRoute() {
   const mapRef = useRef<MapRef>(null);
   const { location } = useLocation();
   const { routeCartItems } = useRouteCartStore();
-  const { routeItems } = useRouteStore();
   const isOnTour = useMyRouteBottomSheetStore((state) => state.isOnTour);
   const isPreTour = useMyRouteBottomSheetStore((state) => state.isPreTour);
+  const path = useRouteStore((state) => state.path);
+  const routeItems = useRouteStore((state) => state.routeItems);
   const isPreTourDelete = useMyRouteBottomSheetStore(
     (state) => state.isPreTourDelete,
   );
 
-  const { sights, selectedSight, fetchSightsDebounced, fetchSightDetail } =
+  const { selectedSight, fetchSightsDebounced, fetchSightDetail } =
     useSightMap();
 
-  // 지도 영역 변경 시 관광지 조회
-  const handleRegionChangeComplete = (bounds: {
-    minLongitude: number;
-    minLatitude: number;
-    maxLongitude: number;
-    maxLatitude: number;
-  }) => {
-    fetchSightsDebounced(bounds);
-  };
+  const sightPoints =
+    routeItems
+      ?.filter((item) => item.itemType === "SIGHT")
+      .map((item) => ({
+        latitude: item.point.latitude,
+        longitude: item.point.longitude,
+      })) ?? [];
 
-  // 마커 클릭 시
-  const handleMarkerPress = (sight: SightInfo) => {
-    fetchSightDetail(sight, {
-      longitude: location.longitude,
-      latitude: location.latitude,
-    });
-  };
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const points =
+      path && path.length > 0
+        ? path.map((p) => ({ latitude: p.latitude, longitude: p.longitude }))
+        : sightPoints;
+
+    if (!points || points.length === 0) return;
+
+    setTimeout(() => {
+      mapRef.current?.fitToPoints(points);
+    }, 300);
+  }, [path, sightPoints.length]);
 
   const title = isPreTour ? (
     <Title>나의 경로</Title>
@@ -85,17 +92,40 @@ export default function MyRoute() {
       <></>
     );
 
+  const routeSights: RouteMapSightInfo[] =
+    routeItems === undefined
+      ? []
+      : routeItems
+          ?.filter((routeItem) => routeItem.itemType === "SIGHT")
+          .map((routeItem) => ({
+            id: String(routeItem.itemId),
+            title: routeItem.itemName,
+            longitude: routeItem.point.longitude,
+            latitude: routeItem.point.latitude,
+          }));
+
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
-        <Map
+        <RouteMap
           ref={mapRef}
           animatedPosition={animatedPosition}
-          markers={sights}
-          selectedMarkerId={selectedSight?.id}
-          onMarkerPress={handleMarkerPress}
-          onRegionChangeComplete={handleRegionChangeComplete}
-        />
+          markers={routeSights}
+        >
+          {path && (
+            <Polyline
+              coordinates={path?.map((point) => ({
+                latitude: point.latitude,
+                longitude: point.longitude,
+              }))}
+              strokeColor={theme.colors.main.primary400}
+              strokeWidth={4}
+              lineCap="round"
+              lineJoin="round"
+              geodesic={true}
+            />
+          )}
+        </RouteMap>
         <CustomBottomSheet
           bottomSheetRef={bottomSheetRef}
           animatedPosition={animatedPosition}

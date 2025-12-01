@@ -2,6 +2,8 @@ import { Animated } from "react-native";
 
 import Button from "@/components/common/Button";
 
+import { useLocation } from "@/hooks/useLocation";
+
 import { theme } from "@/styles/theme";
 
 import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
@@ -9,6 +11,7 @@ import View = Animated.View;
 
 const PreTourButton: React.FC = () => {
   const { setOnTour, setPreTourDelete } = useMyRouteBottomSheetStore();
+  const { location } = useLocation();
   return (
     <View
       style={{
@@ -28,7 +31,15 @@ const PreTourButton: React.FC = () => {
         onPress={() => setPreTourDelete()}
       />
       <View style={{ flex: 1 }}>
-        <Button text={"여행시작"} onPress={() => setOnTour()} />
+        <Button
+          text={"여행시작"}
+          onPress={() =>
+            setOnTour({
+              longitude: location.longitude,
+              latitude: location.latitude,
+            })
+          }
+        />
       </View>
     </View>
   );
