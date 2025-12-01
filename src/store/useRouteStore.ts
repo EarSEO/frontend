@@ -76,10 +76,14 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     const firstSightIdx = routeItems.findIndex(
       (routeItem) => routeItem.itemType === "SIGHT",
     );
-    const lastSightIdx = routeItems.findLastIndex(
-      (routeItem) => routeItem.itemType === "SIGHT",
-    );
-    if (!firstSightIdx || !lastSightIdx) return undefined;
+    let lastSightIdx = -1;
+    for (let i = routeItems.length - 1; i >= 0; i--) {
+      if (routeItems[i].itemType === "SIGHT") {
+        lastSightIdx = i;
+        break;
+      }
+    }
+    if (firstSightIdx < 0 || lastSightIdx < 0) return undefined;
     return (
       routeItems.at(firstSightIdx)?.itemName +
       "~" +
