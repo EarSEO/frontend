@@ -15,7 +15,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function ChangePassword() {
   const router = useRouter();
   const { updatePassword, isLoading } = useAuthStore();
-  
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -43,10 +43,11 @@ export default function ChangePassword() {
         newPassword,
       });
       Alert.alert("성공", "비밀번호가 변경되었습니다.", [
-        { text: "확인", onPress: () => router.back() }
+        { text: "확인", onPress: () => router.back() },
       ]);
     } catch (error: any) {
-      const message = error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
+      const message =
+        error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
       Alert.alert("오류", message);
     }
   };

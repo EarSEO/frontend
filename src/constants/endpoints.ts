@@ -24,10 +24,10 @@ export const API_ENDPOINTS = {
     COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}'complete`,
   },
   MEMBER: {
-    EDIT_PROFILE_IMAGE : "/api/user/member/profile-image",
-    EDIT_PROFILE : "/api/user/member/profile",
-    CHANGE_PASSWORD: "/api/user/member/password", 
-  }
+    EDIT_PROFILE_IMAGE: "/api/user/member/profile-image",
+    EDIT_PROFILE: "/api/user/member/profile",
+    CHANGE_PASSWORD: "/api/user/member/password",
+  },
 };
 
 export default API_ENDPOINTS;

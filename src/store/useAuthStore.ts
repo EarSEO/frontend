@@ -1,7 +1,11 @@
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 
-import { PasswordUpdateRequest,ProfileUpdateRequest, ProfileUpdateResponse } from "@/types/member";
+import {
+  PasswordUpdateRequest,
+  ProfileUpdateRequest,
+  ProfileUpdateResponse,
+} from "@/types/member";
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
@@ -152,7 +156,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
-      const user: User = { memberId, email, nickname, role};
+      const user: User = { memberId, email, nickname, role };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({
@@ -209,11 +213,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
       const response = await api.put<BaseResponse<ProfileUpdateResponse>>(
         API_ENDPOINTS.MEMBER.EDIT_PROFILE,
-        data
+        data,
       );
 
       const updatedProfile = response.data.data;
-      
+
       const currentUser = get().user;
       if (currentUser) {
         const updatedUser = {
@@ -227,7 +231,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         await SecureStore.setItemAsync(USER_INFO, JSON.stringify(updatedUser));
         set({ user: updatedUser });
       }
-      
+
       set({ isLoading: false });
       return response.data.data;
     } catch (error) {
@@ -239,13 +243,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   updateProfileImage: async (formData: FormData) => {
     try {
       set({ isLoading: true });
-      const response = await api.patch<BaseResponse<{ profileImageUrl: string }>>(
-        API_ENDPOINTS.MEMBER.EDIT_PROFILE_IMAGE,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await api.patch<
+        BaseResponse<{ profileImageUrl: string }>
+      >(API_ENDPOINTS.MEMBER.EDIT_PROFILE_IMAGE, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       const imageUrl = response.data.data.profileImageUrl;
 
@@ -255,10 +257,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           ...currentUser,
           profileImage: imageUrl,
         };
-        await SecureStore.setItemAsync(
-          USER_INFO,
-          JSON.stringify(updatedUser),
-        );
+        await SecureStore.setItemAsync(USER_INFO, JSON.stringify(updatedUser));
         set({ user: updatedUser });
       }
       set({ isLoading: false });
@@ -274,7 +273,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
       await api.put<BaseResponse<void>>(
         API_ENDPOINTS.MEMBER.CHANGE_PASSWORD,
-        data
+        data,
       );
       set({ isLoading: false });
     } catch (error) {

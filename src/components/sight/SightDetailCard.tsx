@@ -1,6 +1,13 @@
 import React from "react";
 
-import { Banknote, Clock, Headphones, Map, ParkingCircle, Phone } from "lucide-react-native";
+import {
+  Banknote,
+  Clock,
+  Headphones,
+  Map,
+  ParkingCircle,
+  Phone,
+} from "lucide-react-native";
 import styled from "styled-components/native";
 
 import { SightDetailCardProps } from "@/types/sight";
@@ -20,12 +27,12 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 }) => {
   if (!selectedSight) return null;
 
-const checkData = (data: string | undefined | null) => {
+  const checkData = (data: string | undefined | null) => {
     const normalized = normalizeHtmlBreaks(data);
-      return normalized && normalized.trim() !== "" 
-        ? normalized 
-        : "데이터가 존재하지 않습니다";
-    };
+    return normalized && normalized.trim() !== ""
+      ? normalized
+      : "데이터가 존재하지 않습니다";
+  };
 
   return (
     <Container>
@@ -42,91 +49,95 @@ const checkData = (data: string | undefined | null) => {
 
       {isDetailLoading ? (
         <LoadingText>상세 정보 로딩 중...</LoadingText>
-        ) : sightDetail ? (
+      ) : sightDetail ? (
         <>
-            <BasicInfoRow>
+          <BasicInfoRow>
             <SightDistance>{sightDetail.distance}km</SightDistance>
             <SightTheme>{sightDetail.theme}</SightTheme>
-            </BasicInfoRow>
-            <SightText>{checkData(sightDetail.address)}</SightText>
+          </BasicInfoRow>
+          <SightText>{checkData(sightDetail.address)}</SightText>
 
-            <MainImage 
-            source={{ uri: sightDetail.imgUrl || "https://via.placeholder.com/400" }} 
-            resizeMode="cover" 
-            />
+          <MainImage
+            source={{
+              uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
+            }}
+            resizeMode="cover"
+          />
 
-            <DocentButton>
+          <DocentButton>
             <Headphones size={20} color="#333" />
             <DocentText>도슨트 듣기</DocentText>
-            </DocentButton>
+          </DocentButton>
 
-            <Section>
+          <Section>
             <SectionTitle>소개</SectionTitle>
-            <DescriptionText>
-                {checkData(sightDetail.outl)}
-            </DescriptionText>
-            </Section>
-            
-            <Section>
-                <SectionTitle>방문정보</SectionTitle>
+            <DescriptionText>{checkData(sightDetail.outl)}</DescriptionText>
+          </Section>
 
-                <InfoRow>
-                    <InfoLabelArea>
-                        <Map size={18} color="#666" />
-                        <InfoLabel>주소</InfoLabel>
-                    </InfoLabelArea>
-                    <InfoValue>{checkData(sightDetail.fullAddress)}</InfoValue>
-                </InfoRow>
+          <Section>
+            <SectionTitle>방문정보</SectionTitle>
 
-                <InfoRow>
-                    <InfoLabelArea>
-                        <Clock size={18} color="#666" />
-                        <InfoLabel>운영시간</InfoLabel>
-                    </InfoLabelArea>
-                    <InfoValue>{checkData(sightDetail.useTime)}</InfoValue>
-                </InfoRow>
+            <InfoRow>
+              <InfoLabelArea>
+                <Map size={18} color="#666" />
+                <InfoLabel>주소</InfoLabel>
+              </InfoLabelArea>
+              <InfoValue>{checkData(sightDetail.fullAddress)}</InfoValue>
+            </InfoRow>
 
-                <InfoRow>
-                  <InfoLabelArea>
-                    <Clock size={18} color="#666" />
-                    <InfoLabel>휴무일</InfoLabel>
-                  </InfoLabelArea>
-                  <InfoValue>{checkData(sightDetail.restDate)}</InfoValue>
-                </InfoRow>
+            <InfoRow>
+              <InfoLabelArea>
+                <Clock size={18} color="#666" />
+                <InfoLabel>운영시간</InfoLabel>
+              </InfoLabelArea>
+              <InfoValue>{checkData(sightDetail.useTime)}</InfoValue>
+            </InfoRow>
 
-                <InfoRow>
-                    <InfoLabelArea>
-                        <Phone size={18} color="#666" />
-                        <InfoLabel>전화번호</InfoLabel>
-                    </InfoLabelArea>
-                    <InfoValue>{checkData(sightDetail.tel)}</InfoValue>
-                </InfoRow>
+            <InfoRow>
+              <InfoLabelArea>
+                <Clock size={18} color="#666" />
+                <InfoLabel>휴무일</InfoLabel>
+              </InfoLabelArea>
+              <InfoValue>{checkData(sightDetail.restDate)}</InfoValue>
+            </InfoRow>
 
-                <InfoRow>
-                    <InfoLabelArea>
-                        <Banknote size={18} color="#666" />
-                        <InfoLabel>입장료</InfoLabel>
-                    </InfoLabelArea>
-                    <InfoValue>{checkData(sightDetail.useFee)}</InfoValue>
-                </InfoRow>
+            <InfoRow>
+              <InfoLabelArea>
+                <Phone size={18} color="#666" />
+                <InfoLabel>전화번호</InfoLabel>
+              </InfoLabelArea>
+              <InfoValue>{checkData(sightDetail.tel)}</InfoValue>
+            </InfoRow>
 
-                <InfoRow>
-                    <InfoLabelArea>
-                        <ParkingCircle size={18} color="#666" />
-                        <InfoLabel>주차 가능</InfoLabel>
-                    </InfoLabelArea>
-                    
-                    {sightDetail.parking ? (
-                    <Badge type={sightDetail.parking.includes("불가") ? "bad" : "good"}>
-                        <BadgeText>{sightDetail.parking.includes("불가") ? "불가" : "가능"}</BadgeText>
-                    </Badge>
-                    ) : (
-                    <InfoValue>데이터가 존재하지 않습니다</InfoValue>
-                    )}
-                </InfoRow>
-            </Section>
+            <InfoRow>
+              <InfoLabelArea>
+                <Banknote size={18} color="#666" />
+                <InfoLabel>입장료</InfoLabel>
+              </InfoLabelArea>
+              <InfoValue>{checkData(sightDetail.useFee)}</InfoValue>
+            </InfoRow>
+
+            <InfoRow>
+              <InfoLabelArea>
+                <ParkingCircle size={18} color="#666" />
+                <InfoLabel>주차 가능</InfoLabel>
+              </InfoLabelArea>
+
+              {sightDetail.parking ? (
+                <Badge
+                  type={sightDetail.parking.includes("불가") ? "bad" : "good"}
+                >
+                  <BadgeText>
+                    {sightDetail.parking.includes("불가") ? "불가" : "가능"}
+                  </BadgeText>
+                </Badge>
+              ) : (
+                <InfoValue>데이터가 존재하지 않습니다</InfoValue>
+              )}
+            </InfoRow>
+          </Section>
         </>
-        ) : null}
+      ) : null}
 
       <CloseButton onPress={onClose}>
         <CloseButtonText>닫기</CloseButtonText>
@@ -261,7 +272,8 @@ const Section = styled.View`
 const Badge = styled.View<{ type: "good" | "bad" }>`
   padding: 4px 10px;
   border-radius: 4px;
-  background-color: ${({ type }) => (type === "good" ? "#66BB6A" : "#EF5350")}; /* 초록 / 빨강 */
+  background-color: ${({ type }) =>
+    type === "good" ? "#66BB6A" : "#EF5350"}; /* 초록 / 빨강 */
 `;
 
 const BadgeText = styled.Text`

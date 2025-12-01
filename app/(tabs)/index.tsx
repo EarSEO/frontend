@@ -16,7 +16,7 @@ import { useSightMap } from "@/hooks/useSightMap";
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
-import { RouteCartItem,useRouteCartStore } from "@/store/useRouteCartStore";
+import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 // import { useRouteStore } from "@/store/useRouteStore";
 
 export default function Index() {
@@ -25,7 +25,8 @@ export default function Index() {
   const mapRef = useRef<MapRef>(null);
   // const { setRoute, finishRoute } = useRouteStore();
   const { location } = useLocation();
-  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } = useRouteCartStore();
+  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
+    useRouteCartStore();
 
   const {
     sights,
@@ -38,29 +39,29 @@ export default function Index() {
   } = useSightMap();
 
   const isInCart = routeCartItems.some(
-    (item) => item.sightId === selectedSight?.id
+    (item) => item.sightId === selectedSight?.id,
   );
 
   const handleToggleRoute = () => {
-  if (!sightDetail || !selectedSight) return;
+    if (!sightDetail || !selectedSight) return;
 
-  if (isInCart) {
-    removeRouteCartItem(selectedSight.id);
-  } else {
-    const cartItem: RouteCartItem = {
-      sightId: selectedSight.id,
-      theme: sightDetail.theme,
-      title: sightDetail.title,
-      address: sightDetail.address,
-      point: {
-        longitude: sightDetail.longitude,
-        latitude: sightDetail.latitude,
-      },
-      imageUrl: sightDetail.imgUrl,
-    };
-    insertRouteCartItem(cartItem);
-  }
-};
+    if (isInCart) {
+      removeRouteCartItem(selectedSight.id);
+    } else {
+      const cartItem: RouteCartItem = {
+        sightId: selectedSight.id,
+        theme: sightDetail.theme,
+        title: sightDetail.title,
+        address: sightDetail.address,
+        point: {
+          longitude: sightDetail.longitude,
+          latitude: sightDetail.latitude,
+        },
+        imageUrl: sightDetail.imgUrl,
+      };
+      insertRouteCartItem(cartItem);
+    }
+  };
 
   // 지도 영역 변경 시 관광지 조회
   const handleRegionChangeComplete = (bounds: {
@@ -95,14 +96,14 @@ export default function Index() {
           bottomSheetRef={bottomSheetRef}
           animatedPosition={animatedPosition}
         >
-            <SightDetailCard
-              selectedSight={selectedSight}
-              sightDetail={sightDetail}
-              isDetailLoading={isDetailLoading}
-              isInCart={isInCart}
-              onToggleRoute={handleToggleRoute}
-              onClose={deselectSight}
-            />
+          <SightDetailCard
+            selectedSight={selectedSight}
+            sightDetail={sightDetail}
+            isDetailLoading={isDetailLoading}
+            isInCart={isInCart}
+            onToggleRoute={handleToggleRoute}
+            onClose={deselectSight}
+          />
         </CustomBottomSheet>
       </GestureHandlerRootView>
     </Container>

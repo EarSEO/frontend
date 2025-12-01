@@ -89,10 +89,10 @@ function LoggedInView({
     <>
       <ProfileSection>
         {user.profileImage ? (
-            <ProfileImageActual source={{ uri: user.profileImage }} />
-          ) : (
-            <ProfileImagePlaceholder />
-          )}
+          <ProfileImageActual source={{ uri: user.profileImage }} />
+        ) : (
+          <ProfileImagePlaceholder />
+        )}
         <ProfileInfo>
           <NicknameRow onPress={() => router.push("/myPage/editProfile")}>
             <Nickname>{user.nickname}</Nickname>
@@ -264,4 +264,3 @@ const ProfileImageActual = styled.Image`
   border-radius: 25px;
   margin-right: 15px;
 `;
-

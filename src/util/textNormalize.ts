@@ -3,6 +3,6 @@ export const normalizeHtmlBreaks = (value?: string | null): string => {
   if (!value) return "";
   return value
     .replace(/<br\s*\/?>/gi, "\n") // <br>, <br/>, <br /> 모두 처리
-    .replace(/&nbsp;/gi, " ")      // 필요하면 공백도 처리
+    .replace(/&nbsp;/gi, " ") // 필요하면 공백도 처리
     .trim();
 };

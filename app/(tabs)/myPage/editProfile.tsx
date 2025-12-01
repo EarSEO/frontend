@@ -21,8 +21,12 @@ export default function EditProfile() {
   const router = useRouter();
   const { user, updateProfile, updateProfileImage, isLoading } = useAuthStore();
   const [nickname, setNickname] = useState(user?.nickname || "");
-  const [nationality, setNationality] = useState(user?.nationality ?? "대한민국");
-  const [gender, setGender] = useState<"MALE" | "FEMALE">(user?.gender ?? "MALE");
+  const [nationality, setNationality] = useState(
+    user?.nationality ?? "대한민국",
+  );
+  const [gender, setGender] = useState<"MALE" | "FEMALE">(
+    user?.gender ?? "MALE",
+  );
   const [birthYear, setBirthYear] = useState("2000");
   const [birthMonth, setBirthMonth] = useState("01");
   const [birthDay, setBirthDay] = useState("01");
@@ -32,7 +36,7 @@ export default function EditProfile() {
   const [profileImageUri, setProfileImageUri] = useState<string | null>(
     user?.profileImage ?? null,
   );
-  
+
   const handleDateChange = (event: any, date?: Date) => {
     if (date) {
       setSelectedDate(date);
@@ -126,9 +130,9 @@ export default function EditProfile() {
           <ProfileImageWrapper>
             <ProfileImageTouchable onPress={handlePickImage}>
               {profileImageUri ? (
-                 <ProfileImageActual
-                    source={{ uri: profileImageUri ?? user!.profileImage! }}
-                  />
+                <ProfileImageActual
+                  source={{ uri: profileImageUri ?? user!.profileImage! }}
+                />
               ) : (
                 <ProfileImage />
               )}
@@ -217,9 +221,7 @@ export default function EditProfile() {
           <ModalContent>
             <ModalHeader>
               <ModalTitle>국적 선택</ModalTitle>
-              <ModalCloseButton
-                onPress={() => setShowNationalityPicker(false)}
-              >
+              <ModalCloseButton onPress={() => setShowNationalityPicker(false)}>
                 <ModalCloseText>닫기</ModalCloseText>
               </ModalCloseButton>
             </ModalHeader>
