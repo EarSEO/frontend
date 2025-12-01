@@ -1,6 +1,10 @@
 import { useCallback, useRef, useState } from "react";
 
-import { RectangleBoundsParams, SearchSightParams,SightInfo } from "@/types/sight";
+import {
+  RectangleBoundsParams,
+  SearchSightParams,
+  SightInfo,
+} from "@/types/sight";
 
 import { getSightDetail, getSightsInRectangle } from "@/api/sight";
 import { getSearchSight } from "@/api/sight/getSearchSight";
@@ -72,7 +76,6 @@ export const useSightMap = () => {
       bounds: RectangleBoundsParams,
       limit: number = 20,
     ) => {
-
       if (!keyword.trim()) {
         setSearchResults([]);
         return;
@@ -95,14 +98,14 @@ export const useSightMap = () => {
 
         const results = await getSearchSight(params);
         const mapped: SightInfo[] = results.map((item: any) => ({
-        id: item.sightId,              // ← sightId 를 id 로 변환
-        title: item.title,
-        longitude: item.longitude,
-        latitude: item.latitude,
-        geoHash: item.geoHash ?? "",
-      }));
+          id: item.sightId, // ← sightId 를 id 로 변환
+          title: item.title,
+          longitude: item.longitude,
+          latitude: item.latitude,
+          geoHash: item.geoHash ?? "",
+        }));
 
-      setSearchResults(mapped);
+        setSearchResults(mapped);
       } catch (err) {
         console.error("관광지 검색 실패:", err);
         setSearchError("검색에 실패했습니다.");

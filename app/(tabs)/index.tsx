@@ -1,6 +1,12 @@
-import React, { useCallback, useRef , useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
-import { FlatList, Keyboard, StyleSheet , TextInput, TouchableOpacity } from "react-native";
+import {
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 
@@ -26,7 +32,8 @@ export default function Index() {
   const mapRef = useRef<MapRef | null>(null);
   // const { setRoute, finishRoute } = useRouteStore();
   const { location } = useLocation();
-  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =  useRouteCartStore();
+  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
+    useRouteCartStore();
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
 
@@ -40,7 +47,7 @@ export default function Index() {
     deselectSight,
     searchSightsInBounds,
     searchSightsDebounced,
-    searchResults
+    searchResults,
   } = useSightMap();
 
   const handleSearch = useCallback(async () => {
@@ -61,22 +68,25 @@ export default function Index() {
     };
 
     // 2) 검색 API 호출
-    await searchSightsInBounds(searchText, {
-      longitude: location.longitude,
-      latitude: location.latitude,
-    }, bounds);
+    await searchSightsInBounds(
+      searchText,
+      {
+        longitude: location.longitude,
+        latitude: location.latitude,
+      },
+      bounds,
+    );
 
     // 3) 검색 결과 패널 표시 + 키보드 닫기
     setShowResults(true);
     Keyboard.dismiss();
   }, [searchText, location, searchSightsInBounds]);
 
-
   // 검색 결과 선택 시
   const handleSelectResult = (sight: SightInfo) => {
     setShowResults(false);
     setSearchText("");
-    
+
     // 해당 위치로 지도 이동
     mapRef.current?.moveToLocation({
       latitude: sight.latitude,
@@ -84,14 +94,13 @@ export default function Index() {
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     });
-    
+
     // 상세 정보 조회
     fetchSightDetail(sight, {
       longitude: location.longitude,
       latitude: location.latitude,
     });
   };
-  
 
   const isInCart = routeCartItems.some(
     (item) => item.sightId === selectedSight?.id,
