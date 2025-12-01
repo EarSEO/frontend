@@ -17,6 +17,19 @@ export const API_ENDPOINTS = {
     MAP_RECTANGLE: "/api/story/map/rectangle",
 
     SPOT_BRIEF_INFO: "/api/story/spot/info/brief",
+    DOCENT_SCRIPT: "/api/story/docent",
+  },
+
+  SIGHT: {
+    DOCENT_SCRIPT: "/api/sight/docent",
+    RECTANGLE: "/api/sight/map/rectangle",
+    CIRCLE: "/api/sight/map/circle",
+    DETAIL: "/api/sight/detail",
+  },
+
+  ROUTE: {
+    CREATE_IN_PROGRESS_ROUTE: "/api/user/route/in-progress",
+    COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}'complete`,
   },
 };
 

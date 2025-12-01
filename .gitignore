@@ -43,3 +43,6 @@ app-example
 /android
 
 .env
+
+# intelliJ
+.idea
