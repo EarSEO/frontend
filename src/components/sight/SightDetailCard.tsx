@@ -23,15 +23,13 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   sightDetail,
   isDetailLoading,
   onClose,
-}) => { 
-  
-  const { routeCartItems, insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
+}) => {
+  const { routeCartItems, insertRouteCartItem, removeRouteCartItem } =
+    useRouteCartStore();
   if (!selectedSight) return null;
 
   const sightId = String(selectedSight.id);
-  const isInCart = routeCartItems.some(
-    (item) => item.sightId === sightId,
-  );
+  const isInCart = routeCartItems.some((item) => item.sightId === sightId);
 
   const handleToggleRoute = () => {
     if (!sightDetail) return;
