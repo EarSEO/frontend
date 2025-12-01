@@ -6,6 +6,7 @@ interface RouteCartStore {
   routeCartItems: RouteCartItem[];
   insertRouteCartItem: (routeCartItem: RouteCartItem) => void;
   removeRouteCartItem: (routeCartItemId: string) => void;
+  removeAllRouteCartItem: () => void;
 }
 
 export interface RouteCartItem {
@@ -26,8 +27,15 @@ export const useRouteCartStore = create<RouteCartStore>((set, get) => ({
     }));
   },
   removeRouteCartItem: (routeCartItemId: string): void => {
-    get().routeCartItems.filter((routeCartItem) => {
-      return routeCartItem.sightId !== routeCartItemId;
+    set({
+      routeCartItems: get().routeCartItems.filter((routeCartItem) => {
+        return routeCartItem.sightId !== routeCartItemId;
+      }),
+    });
+  },
+  removeAllRouteCartItem: (): void => {
+    set({
+      routeCartItems: [],
     });
   },
 }));

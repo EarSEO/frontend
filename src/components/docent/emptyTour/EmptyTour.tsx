@@ -30,7 +30,7 @@ const EmptyTour: React.FC = () => {
 const Container = styled.View`
   flex: 1;
   justify-content: center;
-  align-items: "center";
+  min-height: ${theme.spacing.xxl * 4}px;
 `;
 
 export default EmptyTour;

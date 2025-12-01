@@ -8,10 +8,10 @@ import {
   RouteItemType,
 } from "@/types/route";
 
-import endRouteApi from "@/api/route/endRouteApi";
 import getRouteApi from "@/api/route/getRouteApi";
 import { PROCEEDING_ROUTE_ID } from "@/store/secureStoreKey";
 import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 interface RouteStore {
   path: Point[] | undefined;
@@ -63,10 +63,10 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
       set({ path: undefined, routeItems: undefined });
     }
   },
-  finishRoute: async () => {
+  finishRoute: async (normalFinish?: boolean) => {
     const routeId = Number(SecureStore.getItem(PROCEEDING_ROUTE_ID));
     useAudioPlayerStore.getState().removeItem();
-    await endRouteApi(routeId);
+    if (normalFinish) useRouteCartStore.getState().removeAllRouteCartItem();
     set({ path: undefined, routeItems: undefined });
     await SecureStore.deleteItemAsync(PROCEEDING_ROUTE_ID);
   },
@@ -76,10 +76,14 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     const firstSightIdx = routeItems.findIndex(
       (routeItem) => routeItem.itemType === "SIGHT",
     );
-    const lastSightIdx = routeItems.findLastIndex(
-      (routeItem) => routeItem.itemType === "SIGHT",
-    );
-    if (!firstSightIdx || !lastSightIdx) return undefined;
+    let lastSightIdx = -1;
+    for (let i = routeItems.length - 1; i >= 0; i--) {
+      if (routeItems[i].itemType === "SIGHT") {
+        lastSightIdx = i;
+        break;
+      }
+    }
+    if (firstSightIdx < 0 || lastSightIdx < 0) return undefined;
     return (
       routeItems.at(firstSightIdx)?.itemName +
       "~" +

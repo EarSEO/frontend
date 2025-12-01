@@ -21,7 +21,7 @@ export const API_ENDPOINTS = {
   },
   ROUTE: {
     CREATE_IN_PROGRESS_ROUTE: "/api/user/route/in-progress",
-    COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}'complete`,
+    COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}/complete`,
   },
   MEMBER: {
     EDIT_PROFILE_IMAGE: "/api/user/member/profile-image",
