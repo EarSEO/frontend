@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 
-import { Alert, Modal, Platform } from "react-native";
+import { Alert } from "react-native";
 
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
@@ -11,11 +9,10 @@ import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import AdditionalInfoForm from "@/components/signup/AdditionalInfoForm";
 
-import { BaseResponse, Gender, NicknameCheckResponse } from "@/types/auth";
+import { Gender } from "@/types/auth";
 
 import { theme } from "@/styles/theme";
 import API_ENDPOINTS from "@/constants/endpoints";
-import NATIONALITIES from "@/constants/nationalities";
 
 import api from "@/api/axios";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -33,37 +30,8 @@ export default function SignUp() {
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  // Step 2 states
-  const [nickname, setNickname] = useState("");
-  const [isNicknameChecked, setIsNicknameChecked] = useState(false);
-  const [nicknameMessage, setNicknameMessage] = useState("");
-  const [nationality, setNationality] = useState(NATIONALITIES[0].name);
-  const [gender, setGender] = useState<"MALE" | "FEMALE" | null>(null);
-  const [birthYear, setBirthYear] = useState("2000");
-  const [birthMonth, setBirthMonth] = useState("01");
-  const [birthDay, setBirthDay] = useState("01");
-
-  // Modal states
-  const [showNationalityPicker, setShowNationalityPicker] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
   // Loading states
   const [isLoading, setIsLoading] = useState(false);
-
-  // 날짜 선택 핸들러
-  const handleDateChange = (event: any, date?: Date) => {
-    if (Platform.OS === "android") {
-      setShowDatePicker(false);
-    }
-
-    if (date) {
-      setSelectedDate(date);
-      setBirthYear(date.getFullYear().toString());
-      setBirthMonth((date.getMonth() + 1).toString().padStart(2, "0"));
-      setBirthDay(date.getDate().toString().padStart(2, "0"));
-    }
-  };
 
   // 이메일 인증코드 발송
   const handleSendVerificationCode = async () => {
@@ -133,88 +101,6 @@ export default function SignUp() {
     }
 
     setStep(2);
-  };
-
-  // 닉네임 중복 확인
-  const handleCheckNickname = async () => {
-    if (!nickname) {
-      Alert.alert("알림", "닉네임을 입력해주세요.");
-      return;
-    }
-
-    if (nickname.length < 2 || nickname.length > 50) {
-      Alert.alert("알림", "닉네임은 2자 이상 50자 이하여야 합니다.");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const response = await api.get<BaseResponse<NicknameCheckResponse>>(
-        `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`,
-      );
-
-      const { available, message } = response.data.data;
-      setIsNicknameChecked(available);
-      setNicknameMessage(message);
-
-      if (!available) {
-        Alert.alert("알림", message);
-      }
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message || "닉네임 확인에 실패했습니다.";
-      Alert.alert("오류", message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // 닉네임 변경 시 중복확인 초기화
-  const handleNicknameChange = (text: string) => {
-    setNickname(text);
-    setIsNicknameChecked(false);
-    setNicknameMessage("");
-  };
-
-  // 회원가입 완료
-  const handleSignUp = async () => {
-    if (!isNicknameChecked) {
-      Alert.alert("알림", "닉네임 중복확인을 해주세요.");
-      return;
-    }
-
-    if (!gender) {
-      Alert.alert("알림", "성별을 선택해주세요.");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      const birthdate = `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
-
-      await signup({
-        email,
-        password,
-        nickname,
-        gender: gender as Gender,
-        birthdate,
-        nationality,
-      });
-
-      Alert.alert("알림", "회원가입이 완료되었습니다.", [
-        {
-          text: "확인",
-          onPress: () => router.replace("/myPage/login"),
-        },
-      ]);
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message || "회원가입에 실패했습니다.";
-      Alert.alert("오류", message);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   return (
@@ -463,104 +349,10 @@ const ButtonContainer = styled.View`
   right: 20px;
 `;
 
-const HelperText = styled.Text<{ isAvailable: boolean }>`
-  font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.xs}px;
-  color: ${(props) =>
-    props.isAvailable ? theme.colors.main.primary : theme.colors.alarm.error};
-  margin-top: 5px;
-`;
-
 const PasswordMatchText = styled.Text<{ isMatch: boolean }>`
   font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.xs}px;
   color: ${(props) =>
     props.isMatch ? theme.colors.alarm.success : theme.colors.alarm.error};
   margin-top: 5px;
-`;
-
-const SelectButton = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background-color: ${theme.colors.background.background50};
-  border-radius: ${theme.borderRadius.md}px;
-  padding-horizontal: 15px;
-  height: 50px;
-`;
-
-const SelectButtonText = styled.Text<{ selected: boolean }>`
-  font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.md}px;
-  color: ${(props) =>
-    props.selected
-      ? theme.colors.text.textPrimary
-      : theme.colors.text.textTertiary};
-`;
-
-const SelectArrow = styled.Text`
-  font-size: 12px;
-  color: ${theme.colors.text.textTertiary};
-`;
-
-const GenderRow = styled.View`
-  flex-direction: row;
-  gap: 10px;
-`;
-
-const GenderButton = styled.TouchableOpacity<{ selected: boolean }>`
-  flex: 1;
-  height: 45px;
-  justify-content: center;
-  align-items: center;
-  border-radius: ${theme.borderRadius.md}px;
-  background-color: ${(props) =>
-    props.selected
-      ? theme.colors.main.primary
-      : theme.colors.background.background50};
-`;
-
-const GenderButtonText = styled.Text<{ selected: boolean }>`
-  font-family: ${theme.typography.fontFamily.medium};
-  font-size: ${theme.typography.fontSize.md}px;
-  color: ${(props) =>
-    props.selected ? theme.colors.white : theme.colors.text.textPrimary};
-`;
-
-const ModalOverlay = styled.View`
-  flex: 1;
-  background-color: rgba(0, 0, 0, 0.5);
-  justify-content: flex-end;
-`;
-
-const ModalContent = styled.View`
-  background-color: ${theme.colors.white};
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding-bottom: 30px;
-`;
-
-const ModalHeader = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom-width: 1px;
-  border-bottom-color: ${theme.colors.grey.neutral200};
-`;
-
-const ModalTitle = styled.Text`
-  font-family: ${theme.typography.fontFamily.semiBold};
-  font-size: ${theme.typography.fontSize.md}px;
-  color: ${theme.colors.text.textPrimary};
-`;
-
-const ModalCloseButton = styled.TouchableOpacity`
-  padding: 5px 10px;
-`;
-
-const ModalCloseText = styled.Text`
-  font-family: ${theme.typography.fontFamily.medium};
-  font-size: ${theme.typography.fontSize.md}px;
-  color: ${theme.colors.main.primary};
 `;

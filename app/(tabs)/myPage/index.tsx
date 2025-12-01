@@ -88,7 +88,11 @@ function LoggedInView({
   return (
     <>
       <ProfileSection>
-        <ProfileImage />
+        {user.profileImage ? (
+          <ProfileImageActual source={{ uri: user.profileImage }} />
+        ) : (
+          <ProfileImagePlaceholder />
+        )}
         <ProfileInfo>
           <NicknameRow onPress={() => router.push("/myPage/editProfile")}>
             <Nickname>{user.nickname}</Nickname>
@@ -244,4 +248,19 @@ const LogoutText = styled.Text`
   font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textTertiary};
   text-decoration-line: underline;
+`;
+
+const ProfileImagePlaceholder = styled.View`
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color: ${theme.colors.grey.neutral200};
+  margin-right: 15px;
+`;
+
+const ProfileImageActual = styled.Image`
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  margin-right: 15px;
 `;
