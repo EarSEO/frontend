@@ -10,6 +10,11 @@ export const API_ENDPOINTS = {
     EMAIL_VERIFY: "/api/member/email/verify",
     NICKNAME_CHECK: "/api/member/nickname/check",
   },
+  SIGHT: {
+    RECTANGLE: "/api/sight/map/rectangle",
+    CIRCLE: "/api/sight/map/circle",
+    DETAIL: "/api/sight/detail",
+  },
 };
 
 export default API_ENDPOINTS;
