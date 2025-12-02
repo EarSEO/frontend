@@ -11,6 +11,7 @@ import {
   GetSpotBriefInfoRequest,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
+  MapSpotInfoList,
   SearchSpotInfoResponse,
 } from "@/types/storySpot";
 
@@ -112,6 +113,19 @@ export const getSearchTitle = async (param: GetSearchTitleRequest) => {
   try {
     const response = await api.get<BaseResponse<SearchSpotInfoResponse>>(
       `${API_ENDPOINTS.STORY.SEARCH_TITLE}`,
+      { params: param },
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("연결안됨");
+    throw error;
+  }
+};
+
+export const getSpotMapRectangle = async (param: GetMapStoriesRequest) => {
+  try {
+    const response = await api.get<BaseResponse<MapSpotInfoList>>(
+      `${API_ENDPOINTS.STORY.SPOT_MAP_RECTANGLE}`,
       { params: param },
     );
     return response.data.data;

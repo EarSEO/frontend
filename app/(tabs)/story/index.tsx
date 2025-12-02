@@ -9,6 +9,7 @@ import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import Map from "@/components/map/Map";
+import StorySpotMap from "@/components/map/StorySpotMap";
 import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
@@ -21,6 +22,7 @@ import {
   GetMapStoriesRequest,
   GetSearchTitleRequest,
   GetStoryRequest,
+  MapSpotInfoItem,
 } from "@/types/storySpot";
 
 import { useStoryStore } from "@/store/useStoryStore";
@@ -29,9 +31,16 @@ export default function Index() {
   const Ref = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
-  const { setMapStoryInfo, storyMain, setStoryInfo } = useStoryStore();
-  const [selectedMarker, setSelectedMarker] = useState<SightInfo | null>(null);
-  const { sights } = useSightMap();
+  const {
+    setMapStoryInfo,
+    storyMain,
+    setStoryInfo,
+    setSpotMapRectangle,
+    spotMapRectangle,
+  } = useStoryStore();
+  const [selectedMarker, setSelectedMarker] = useState<MapSpotInfoItem | null>(
+    null,
+  );
 
   const handleRegionChange = (bounds: {
     minLongitude: number;
@@ -50,13 +59,14 @@ export default function Index() {
     };
 
     setMapStoryInfo(mapStoriesRequest);
+    setSpotMapRectangle(mapStoriesRequest);
   };
 
-  const handleMarkerPress = (sight: SightInfo) => {
+  const handleMarkerPress = (sight: MapSpotInfoItem) => {
     setSelectedMarker(sight);
 
     const storyRequest = {
-      storySpotId: parseInt(sight.id),
+      storySpotId: sight.storySpotId,
       query: {
         query: {
           longitude: sight.longitude.toString(),
@@ -74,12 +84,13 @@ export default function Index() {
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
-        <Map
+        <StorySpotMap
           ref={mapRef}
           animatedPosition={animatedPosition}
+          markers={spotMapRectangle}
           onRegionChangeComplete={handleRegionChange}
           onMarkerPress={handleMarkerPress}
-          selectedMarkerId={selectedMarker?.id}
+          selectedMarkerId={selectedMarker?.storySpotId}
         />
 
         <CustomBottomSheet

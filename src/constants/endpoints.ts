@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
     CREATE_STRORY: "/api/user/story/create",
     DOCENT_SCRIPT: "/api/story/docent",
     SEARCH_TITLE: "/api/story/search/title",
+    SPOT_MAP_RECTANGLE: "/api/story/spot/map/rectangle",
   },
 
   SIGHT: {

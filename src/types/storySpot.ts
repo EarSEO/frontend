@@ -143,3 +143,13 @@ export interface storySpots {
 export interface SearchSpotInfoResponse {
   storySpots: storySpots[];
 }
+
+export interface MapSpotInfoList {
+  storySpots: MapSpotInfoItem[];
+}
+
+export interface MapSpotInfoItem {
+  longitude: number;
+  latitude: number;
+  storySpotId: number;
+}

@@ -8,6 +8,8 @@ import {
   GetSpotBriefInfoRequest,
   GetSpotTotalInfoResponse,
   GetStoryRequest,
+  MapSpotInfoItem,
+  MapSpotInfoList,
   SearchSpotInfoResponse,
   SpotInfoResponse,
   SpotTitleListResponse,
@@ -20,6 +22,7 @@ import {
   getRectangle,
   getSearchTitle,
   getSpotBriefInfo,
+  getSpotMapRectangle,
   getStoryApi,
 } from "@/api/getStoryApi";
 
@@ -36,6 +39,7 @@ interface StoryStore {
   newSpotLocation?: GetSpotBriefInfoRequest[];
   storyLocation?: { latitude: number; longitude: number };
   searchTitleInfo?: storySpots[];
+  spotMapRectangle?: MapSpotInfoItem[];
 
   setStoryInfo: (
     param: GetStoryRequest,
@@ -46,6 +50,9 @@ interface StoryStore {
   setSpotBriefInfo: (
     param: GetSpotBriefInfoRequest,
   ) => Promise<GetLocationSpotBriefInfoResponse | undefined>;
+  setSpotMapRectangle: (
+    param: GetMapStoriesRequest,
+  ) => Promise<MapSpotInfoItem[] | undefined>;
   setNewSpotName: (name: string) => void;
   setStoryLocation: (latitude: number, longitude: number) => void;
 }
@@ -158,6 +165,20 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
         searchTitleInfo: response.storySpots,
       });
       return response;
+    } catch (error) {
+      set({ searchTitleInfo: undefined });
+    }
+  },
+
+  setSpotMapRectangle: async (
+    param: GetMapStoriesRequest,
+  ): Promise<MapSpotInfoItem[] | undefined> => {
+    try {
+      const response: MapSpotInfoList = await getSpotMapRectangle(param);
+      set({
+        spotMapRectangle: response.storySpots,
+      });
+      return response.storySpots;
     } catch (error) {
       set({ searchTitleInfo: undefined });
     }
