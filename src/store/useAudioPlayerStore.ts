@@ -1,12 +1,12 @@
-import { AudioPlayer, createAudioPlayer, setAudioModeAsync } from "expo-audio";
-import { create } from "zustand";
+import {AudioPlayer, createAudioPlayer, setAudioModeAsync} from "expo-audio";
+import {create} from "zustand";
 
-import { RouteItemType } from "@/types/route";
+import {RouteItemType} from "@/types/route";
 
 import getSightScriptApi from "@/api/sight/getSightDocentScriptApi";
 import getStoryScriptApi from "@/api/story/getStoryDocentScriptApi";
-import { useMiniPlayerStore } from "@/store/useMiniPlayerStore";
-import { RouteItem, useRouteStore } from "@/store/useRouteStore";
+import {useMiniPlayerStore} from "@/store/useMiniPlayerStore";
+import {RouteItem, useRouteStore} from "@/store/useRouteStore";
 
 const globalPlayer = createAudioPlayer(null, {
   updateInterval: 100,
@@ -22,6 +22,7 @@ interface AudioPlayerStore {
 
   geoPlay: boolean;
 
+  listeningUrl: string | undefined;
   listeningRouteItemType: RouteItemType | undefined;
   listeningRouteItem: RouteItem | undefined;
   currentScript: string | undefined;
@@ -40,6 +41,7 @@ interface AudioPlayerStore {
 
   calSecToString: (seconds: number) => string;
   setDocentScript: () => void;
+  setListeningUrl: (url: string) => void;
 }
 
 export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
@@ -47,22 +49,24 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
 
   geoPlay: true,
   audioItem: undefined,
+  listeningUrl: undefined,
   listeningRouteItemType: undefined,
   listeningRouteItem: undefined,
   currentScript: undefined,
 
   setGeoPlay: (ativate: boolean): void => {
-    set({ geoPlay: ativate });
+    set({geoPlay: ativate});
   },
   setListeningRouteItem: (routeItem: RouteItem | undefined): void => {
     if (!routeItem || !routeItem.itemDocentUrl) return;
-    const { listeningRouteItem, listeningRouteItemType } = get();
+    const {listeningRouteItem, listeningRouteItemType} = get();
     if (
       routeItem.itemType === listeningRouteItemType &&
       routeItem.itemId === listeningRouteItem?.itemId
     )
       return;
     set({
+      listeningUrl: routeItem.itemImageUrl,
       listeningRouteItemType: routeItem.itemType,
       listeningRouteItem: routeItem,
       currentScript: undefined,
@@ -73,6 +77,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
   },
   removeItem: (): void => {
     set({
+      listeningUrl: undefined,
       listeningRouteItemType: undefined,
       listeningRouteItem: undefined,
       currentScript: undefined,
@@ -89,7 +94,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
 
   playTrack: (source: string): void => {
     if (!source) return;
-    const { player } = get();
+    const {player} = get();
     player.replace(source);
     player.play();
   },
@@ -130,7 +135,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
     }
   },
   setDocentScript: async (): Promise<void> => {
-    const { listeningRouteItem } = get();
+    const {listeningRouteItem} = get();
     if (!listeningRouteItem?.itemType || !listeningRouteItem?.itemId) return;
     let script = "";
     if (listeningRouteItem?.itemType === "SIGHT")
@@ -145,4 +150,9 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
       currentScript: script,
     });
   },
+  setListeningUrl: (url: string): void => {
+    set({
+      listeningUrl: url
+    });
+  }
 }));
