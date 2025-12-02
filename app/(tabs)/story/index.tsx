@@ -39,7 +39,7 @@ export default function Index() {
     spotMapRectangle,
   } = useStoryStore();
   const [selectedMarker, setSelectedMarker] = useState<MapSpotInfoItem | null>(
-    null
+    null,
   );
 
   const handleRegionChange = (bounds: {
