@@ -63,7 +63,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
-      const user: User = { memberId, email, nickname, role };
+      const user: User = {
+        memberId,
+        email,
+        nickname,
+        role,
+        updatedAt: new Date(),
+        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+      };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({
@@ -126,6 +133,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           email: data.email,
           nickname: data.nickname,
           role: data.role,
+          updatedAt: new Date(),
+          profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
         };
         await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -156,7 +165,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
 
-      const user: User = { memberId, email, nickname, role };
+      const user: User = {
+        memberId,
+        email,
+        nickname,
+        role,
+        updatedAt: new Date(),
+        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+      };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
       set({

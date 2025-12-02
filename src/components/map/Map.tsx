@@ -29,6 +29,10 @@ interface MapProps {
   markers?: SightInfo[];
   selectedMarkerId?: string | null;
   onMarkerPress?: (sight: SightInfo) => void;
+  scrollEnabled?: boolean;
+  zoomEnabled?: boolean;
+  rotateEnabled?: boolean;
+  pitchEnabled?: boolean;
   onRegionChangeComplete?: (bounds: {
     minLongitude: number;
     minLatitude: number;
@@ -47,6 +51,10 @@ const Map = forwardRef<MapRef, MapProps>(
       selectedMarkerId,
       onMarkerPress,
       onRegionChangeComplete,
+      scrollEnabled = true,
+      zoomEnabled = true,
+      rotateEnabled = true,
+      pitchEnabled = true,
     },
     ref,
   ) => {
@@ -112,10 +120,19 @@ const Map = forwardRef<MapRef, MapProps>(
           ref={mapRef}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
-          initialRegion={location}
+          initialRegion={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
           showsUserLocation={true}
           showsMyLocationButton={false}
           showsCompass={false}
+          scrollEnabled={scrollEnabled}
+          zoomEnabled={zoomEnabled}
+          rotateEnabled={rotateEnabled}
+          pitchEnabled={pitchEnabled}
           onRegionChangeComplete={handleRegionChangeComplete}
         >
           {markers?.map((sight) => (

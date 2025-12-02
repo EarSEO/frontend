@@ -12,6 +12,8 @@ import {useRouteCartStore} from "@/store/useRouteCartStore";
 import {normalizeHtmlBreaks} from "@/util/textNormalize";
 import {GestureResponderEvent} from "react-native";
 import {useAudioPlayerStore} from "@/store/useAudioPlayerStore";
+import { distanceToString } from "@/util/locationUtil";
+
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
                                                            selectedSight,
@@ -61,28 +63,6 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     <Container>
       <HeaderRow>
         <SightTitle>{selectedSight.title}</SightTitle>
-
-        {/* <IconButton onPress={(e) => {
-          e.stopPropagation();
-          isInCart ? removeRouteCartItem(selectedSight.id) : insertRouteCartItem({
-            sightId : sightDetail?.id ?? "",
-            theme : sightDetail?.theme ?? "",
-            title : sightDetail?.title ?? "",
-            address: sightDetail?.address ?? "",
-            point: {
-            longitude: sightDetail?.longitude ?? selectedSight.longitude,
-            latitude: sightDetail?.latitude ?? selectedSight.latitude,
-            },
-            imageUrl: sightDetail?.imgUrl?? ""
-          })
-        }}>
-          {isInCart ? (
-            <AfterAddRoute width={28} height={28} />
-          ) : (
-            <BeforeAddRoute width={28} height={28} />
-          )}
-        </IconButton> */}
-
         <IconButton
           onPress={(e) => {
             e.stopPropagation();
@@ -116,7 +96,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       ) : sightDetail ? (
         <>
           <BasicInfoRow>
-            <SightDistance>{sightDetail.distance}km</SightDistance>
+            <SightDistance>
+              {distanceToString(sightDetail.distance * 1000)}
+            </SightDistance>
             <SightTheme>{sightDetail.theme}</SightTheme>
           </BasicInfoRow>
           <SightText>{checkData(sightDetail.address)}</SightText>
