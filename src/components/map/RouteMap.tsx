@@ -1,17 +1,25 @@
-import React, {forwardRef, useCallback, useImperativeHandle, useRef,} from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+} from "react";
 
-import {StyleSheet, TouchableOpacity} from "react-native";
-import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import Animated, {SharedValue, useAnimatedStyle,} from "react-native-reanimated";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 
-import {Ionicons} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
-import {useLocation} from "@/hooks/useLocation";
+import { useLocation } from "@/hooks/useLocation";
 
-import {MapRef} from "@/types/map";
-import {SightInfo} from "@/types/sight";
+import { MapRef } from "@/types/map";
+import { SightInfo } from "@/types/sight";
 
-import {theme} from "@/styles/theme";
+import { theme } from "@/styles/theme";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
@@ -34,16 +42,9 @@ export interface RouteMapSightInfo {
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const RouteMap = forwardRef<MapRef, RouteMapProps>(
-  (
-    {
-      animatedPosition,
-      markers,
-      children,
-    },
-    ref,
-  ) => {
+  ({ animatedPosition, markers, children }, ref) => {
     const mapRef = useRef<MapView>(null);
-    const {location, isLoading, getCurrentLocation} = useLocation();
+    const { location, isLoading, getCurrentLocation } = useLocation();
 
     useImperativeHandle(ref, () => ({
       getBoundaries: async () => {
@@ -54,7 +55,7 @@ const RouteMap = forwardRef<MapRef, RouteMapProps>(
       fitToPoints: (points) => {
         if (!mapRef.current || points.length === 0) return;
         mapRef.current.fitToCoordinates(points, {
-          edgePadding: {top: 50, right: 50, bottom: 50, left: 50},
+          edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
           animated: true,
         });
       },
@@ -71,13 +72,13 @@ const RouteMap = forwardRef<MapRef, RouteMapProps>(
 
     const buttonAnimatedStyle = useAnimatedStyle(() => {
       if (!animatedPosition) {
-        return {bottom: LOCATION_BUTTON_MARGIN};
+        return { bottom: LOCATION_BUTTON_MARGIN };
       }
 
       const translateY =
         animatedPosition.value -
         (LOCATION_BUTTON_SIZE + LOCATION_BUTTON_MARGIN);
-      return {top: 0, transform: [{translateY}]};
+      return { top: 0, transform: [{ translateY }] };
     });
 
     if (isLoading) {
@@ -123,6 +124,7 @@ const RouteMap = forwardRef<MapRef, RouteMapProps>(
     );
   },
 );
+RouteMap.displayName = "RouteMap";
 
 const styles = StyleSheet.create({
   map: {
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
   },
