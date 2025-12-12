@@ -6,7 +6,7 @@ import React, {
 } from "react";
 
 import { StyleSheet, TouchableOpacity } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -17,7 +17,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocation } from "@/hooks/useLocation";
 
 import { MapRef } from "@/types/map";
-import { SightInfo } from "@/types/sight";
 import { MapSpotInfoItem } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
@@ -34,6 +33,8 @@ interface StorySpotMapProps {
   zoomEnabled?: boolean;
   rotateEnabled?: boolean;
   pitchEnabled?: boolean;
+  onMapPress?: () => void;
+
   onRegionChangeComplete?: (bounds: {
     minLongitude: number;
     minLatitude: number;
@@ -52,12 +53,13 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
       selectedMarkerId,
       onMarkerPress,
       onRegionChangeComplete,
+      onMapPress,
       scrollEnabled = true,
       zoomEnabled = true,
       rotateEnabled = true,
       pitchEnabled = true,
     },
-    ref,
+    ref
   ) => {
     const mapRef = useRef<MapView>(null);
     const { location, isLoading, getCurrentLocation } = useLocation();
@@ -120,7 +122,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
         <MapView
           ref={mapRef}
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
+          provider={PROVIDER_DEFAULT}
           initialRegion={{
             latitude: location.latitude,
             longitude: location.longitude,
@@ -135,6 +137,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           rotateEnabled={rotateEnabled}
           pitchEnabled={pitchEnabled}
           onRegionChangeComplete={handleRegionChangeComplete}
+          onPress={onMapPress}
         >
           {markers?.map((sight) => (
             <Marker
@@ -146,9 +149,13 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
               pinColor={
                 selectedMarkerId === sight.storySpotId
                   ? theme.colors.main.primary
-                  : "#FF6B6B"
+                  : theme.colors.alarm.error
               }
-              onPress={() => onMarkerPress?.(sight)}
+              onPress={(e) => {
+                e.stopPropagation?.();
+                onMarkerPress?.(sight);
+              }}
+              stopPropagation={true}
             />
           ))}
         </MapView>
@@ -165,7 +172,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
         </AnimatedTouchable>
       </>
     );
-  },
+  }
 );
 
 StorySpotMap.displayName = "StorySpotMap";

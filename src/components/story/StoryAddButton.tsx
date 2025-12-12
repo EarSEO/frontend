@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
+import { useAuthStore } from "@/store/useAuthStore";
 import { useStoryStore } from "@/store/useStoryStore";
 
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
@@ -8,12 +9,18 @@ import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 export const StoryAddButton = () => {
   const router = useRouter();
   const { storyMain } = useStoryStore();
+  const { isLogined } = useAuthStore();
 
   const handleAddStory = () => {
-    {
-      storyMain
-        ? router.push("/story/spotLocationSelected")
-        : router.push("/story/spotNameSelected");
+    if (isLogined === true) {
+      router.push("/story/spotLocationSelected");
+      {
+        storyMain
+          ? router.push("/story/spotLocationSelected")
+          : router.push("/story/spotNameSelected");
+      }
+    } else {
+      router.push("/myPage/login");
     }
   };
 

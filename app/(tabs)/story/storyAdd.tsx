@@ -33,7 +33,7 @@ const CONCEPTS = [
 export default function StoryAdd() {
   const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
-    null,
+    null
   );
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const { newSpotName } = useStoryStore();
@@ -102,53 +102,6 @@ export default function StoryAdd() {
       throw error;
     }
   };
-
-  // const handleAdd = async () => {
-  //   // 1) 기본 검증 (내용, 스팟 이름, 컨셉)
-  //   if (!content || !newSpotName || !selectedConcept) {
-  //     Alert.alert("하나라도 빠지면 안해주지롱");
-  //     return;
-  //   }
-
-  //   // 2) 더미 유저 데이터 (store 대신 사용)
-  //   const dummyUser = {
-  //     memberId: 10, // 백엔드에서 허용하는 아무 숫자
-  //     nickname: "이어동",
-  //     profileUrl: "string", // 임시 이미지 URL
-  //     updatedAt: "2025-12-01T13:42:18.385Z", // ISO 문자열 형태의 시간
-  //   };
-
-  //   // 3) 더미 위치 데이터 (스토리 위치)
-  //   const dummyLocation = {
-  //     latitude: 37.5665, // 서울 광화문 근처
-  //     longitude: 126.978,
-  //   };
-
-  //   try {
-  //     // 4) 실제 API에 보낼 요청 바디
-  //     const createRequestData: CreateStoryRequest = {
-  //       authorId: dummyUser.memberId,
-  //       authorName: dummyUser.nickname,
-  //       authorProfileUrl: dummyUser.profileUrl,
-  //       authorProfileUpdatedAt: dummyUser.updatedAt, // 이미 string
-  //       latitude: dummyLocation.latitude,
-  //       longitude: dummyLocation.longitude,
-  //       title: newSpotName, // 이건 여전히 store에서 온 값 사용
-  //       content: content,
-  //       storyConcept: selectedConcept,
-  //       locale: "KO",
-  //     };
-
-  //     console.log("📤 요청 보낼 데이터:", createRequestData);
-
-  //     await createStoryApi(createRequestData);
-  //     Alert.alert("등록 완료!");
-  //     router.push("/story");
-  //   } catch (error) {
-  //     console.error("스토리 생성 실패:", error);
-  //     Alert.alert("에러", "스토리 등록 중 오류가 발생했습니다.");
-  //   }
-  // };
 
   return (
     <Container>

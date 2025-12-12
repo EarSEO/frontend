@@ -11,8 +11,7 @@ import StoryCard from "./StoryCard";
 import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
-  const { storyItems, spotBriefInfo, summaries, spotTitleList } =
-    useStoryStore();
+  const { storyItems, summaries, spotTitleList } = useStoryStore();
 
   const spotNames = spotTitleList?.titles;
   const mainTitle = spotNames?.[0] || "제목 없음";

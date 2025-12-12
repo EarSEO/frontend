@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { ChevronRight } from "lucide-react-native";
+import { View } from "react-native";
+
+import { ChevronRight , MoreHorizontal } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
 import Heart from "./Heart";
+import MoreMenuButton from "./MoreMenuButton";
 
 interface StoryCardProps {
   profileUrl?: string;
@@ -32,12 +35,30 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const [numberOfLines, setNumberOfLines] = useState(3);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  const moreButtonRef = useRef<View>(null);
 
   const handleTextToggle = () => {
     setIsExpanded((prev) => !prev);
     setNumberOfLines((prevLines) =>
-      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3,
+      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3
     );
+  };
+
+  const handleEdit = () => {
+    setIsMenuVisible(false);
+    console.log("수정하기");
+  };
+
+  const handleDelete = () => {
+    setIsMenuVisible(false);
+
+    console.log("삭제하기");
+  };
+
+  const handleMorePress = () => {
+    setIsMenuVisible(true);
   };
 
   const getStoryConceptDisplay = (): string => {
@@ -67,13 +88,31 @@ const StoryCard: React.FC<StoryCardProps> = ({
         </ImageContainer>
         <TextContainer>
           <ContentHeaderWrapper>
-            <UserNickname>{userNickName}</UserNickname>
+            <HeaderWrapper>
+              <UserNickname>{userNickName}</UserNickname>
+              <MoreMenuWrapper>
+                <MoreMenu ref={moreButtonRef} onPress={handleMorePress}>
+                  <MoreHorizontal
+                    size={26}
+                    color={theme.colors.grey.neutral600}
+                  />
+                </MoreMenu>
+                <MoreMenuButton
+                  anchorRef={moreButtonRef}
+                  visible={isMenuVisible}
+                  onEdit={handleEdit}
+                  onClose={() => setIsMenuVisible(false)}
+                  onDelete={handleDelete}
+                />
+              </MoreMenuWrapper>
+            </HeaderWrapper>
             <SpotInfoWrapper>
               <StroySpotName>{stroySpotName}</StroySpotName>
               <ChevronRight size={18} />
               <StoryConcept>{getStoryConceptDisplay()}</StoryConcept>
             </SpotInfoWrapper>
           </ContentHeaderWrapper>
+
           <ContentWrapper>
             <TextSection>
               <Text
@@ -156,6 +195,12 @@ const ContentHeaderWrapper = styled.View`
   gap: 3px;
 `;
 
+const HeaderWrapper = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 300px;
+`;
+
 const UserNickname = styled.Text`
   font-family: ${theme.typography.fontFamily.semiBold};
   font-size: ${theme.typography.fontSize.md};
@@ -175,6 +220,8 @@ const StoryConcept = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.xs};
 `;
+const MoreMenuWrapper = styled.View``;
+const MoreMenu = styled.Pressable``;
 
 const ContentWrapper = styled.View`
   gap: 10px;

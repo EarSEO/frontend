@@ -4,26 +4,16 @@ import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 
-import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
-import Map from "@/components/map/Map";
 import StorySpotMap from "@/components/map/StorySpotMap";
 import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
-import { useSightMap } from "@/hooks/useSightMap";
-
 import { MapRef } from "@/types/map";
-import { SightInfo } from "@/types/sight";
-import {
-  GetMapStoriesRequest,
-  GetSearchTitleRequest,
-  GetStoryRequest,
-  MapSpotInfoItem,
-} from "@/types/storySpot";
+import { GetMapStoriesRequest, MapSpotInfoItem } from "@/types/storySpot";
 
 import { useStoryStore } from "@/store/useStoryStore";
 
@@ -39,8 +29,12 @@ export default function Index() {
     spotMapRectangle,
   } = useStoryStore();
   const [selectedMarker, setSelectedMarker] = useState<MapSpotInfoItem | null>(
-    null,
+    null
   );
+
+  const handleMapPress = () => {
+    setSelectedMarker(null);
+  };
 
   const handleRegionChange = (bounds: {
     minLongitude: number;
@@ -91,6 +85,7 @@ export default function Index() {
           onRegionChangeComplete={handleRegionChange}
           onMarkerPress={handleMarkerPress}
           selectedMarkerId={selectedMarker?.storySpotId}
+          onMapPress={handleMapPress}
         />
 
         <CustomBottomSheet

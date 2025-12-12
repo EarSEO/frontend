@@ -6,7 +6,6 @@ import { theme } from "@/styles/theme";
 
 import { useStoryStore } from "@/store/useStoryStore";
 
-import Button from "../common/Button";
 import Input from "../common/Input";
 import LocationLabel from "../common/LocationLabel";
 
