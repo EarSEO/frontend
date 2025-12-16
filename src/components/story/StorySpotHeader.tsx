@@ -29,7 +29,9 @@ const StorySpotHeader = () => {
         <SpotTitleList>{spotTitles}</SpotTitleList>
       </HeaderWrapper>
       <Divider />
-      <SummaryWrapper>{summaries && <SummaryCard />}</SummaryWrapper>
+      <SummaryWrapper>
+        <SummaryCard />
+      </SummaryWrapper>
       <DescriptionWrapper>
         <Description>
           {mainTitle}와 관련된 사람들의 이야기를 만나보세요.

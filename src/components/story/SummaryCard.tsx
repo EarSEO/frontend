@@ -9,6 +9,9 @@ import Divider from "./Divider";
 const SummaryCard = () => {
   const { summaries } = useStoryStore();
 
+  if (!summaries || summaries.length === 0) {
+    return null;
+  }
   return (
     <SummaryCardContainer>
       <SummaryDividerContainer>
