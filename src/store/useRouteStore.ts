@@ -8,7 +8,12 @@ import {
   RouteItemType,
 } from "@/types/route";
 
+import endRouteApi from "@/api/route/endRouteApi";
 import getRouteApi from "@/api/route/getRouteApi";
+import {
+  startGeofence,
+  stopGeofence,
+} from "@/services/geofence/geofenceService";
 import { PROCEEDING_ROUTE_ID } from "@/store/secureStoreKey";
 import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
@@ -18,13 +23,15 @@ interface RouteStore {
   routeItems: RouteItem[] | undefined;
 
   setRoute: (body: GetRouteRequest) => Promise<GetRouteResponse | undefined>;
-  finishRoute: () => Promise<void>;
+  finishRoute: (absoluteFinish?: boolean) => Promise<void>;
   getRouteTitle: () => string | undefined;
   getNumberOfQueuedDocent: () => number;
   getQueuedItems: () => RouteItem[];
 
   enQueueStorySpot: (itemId: number) => void;
   deQueueStorySpot: (itemId: number) => void;
+
+  setVisited: (routeItem: RouteItem) => void;
 }
 
 export interface RouteItem {
@@ -40,6 +47,7 @@ export interface RouteItem {
   visited: boolean;
 }
 
+// 현재 진행중인 경로 관리 스토어
 export const useRouteStore = create<RouteStore>((set, get) => ({
   path: undefined,
   routeItems: undefined,
@@ -58,17 +66,34 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
           visited: false,
         })),
       });
+      startGeofence();
       return response;
     } catch (e) {
       set({ path: undefined, routeItems: undefined });
     }
   },
-  finishRoute: async (normalFinish?: boolean) => {
-    const routeId = Number(SecureStore.getItem(PROCEEDING_ROUTE_ID));
-    useAudioPlayerStore.getState().removeItem();
-    if (normalFinish) useRouteCartStore.getState().removeAllRouteCartItem();
-    set({ path: undefined, routeItems: undefined });
-    await SecureStore.deleteItemAsync(PROCEEDING_ROUTE_ID);
+  finishRoute: async (absoluteFinish?: boolean) => {
+    stopGeofence(); // 지오펜싱 종료
+    useAudioPlayerStore.getState().removeItem(); // 오디오 끄기
+    set({ path: undefined, routeItems: undefined }); // 진행중인 경로 제거
+    const routeId = SecureStore.getItem(PROCEEDING_ROUTE_ID);
+    await SecureStore.deleteItemAsync(PROCEEDING_ROUTE_ID); // 진행중인 경로 정보 제거
+    if (!absoluteFinish) {
+      // 종료 여부 판단
+      const remains = get().routeItems?.filter(
+        (routeItem) =>
+          (routeItem.itemType === "SIGHT" && routeItem.visited === false) ||
+          (routeItem.itemType === "STORY_SPOT" &&
+            routeItem.visited === false &&
+            routeItem.isQueued),
+      ).length;
+      absoluteFinish = remains === undefined || remains <= 1;
+    }
+    if (absoluteFinish) {
+      // 관광지 경로 카드 비우기, 비정상 종료일경우 카트를 남겨둠
+      useRouteCartStore.getState().removeAllRouteCartItem();
+      if (routeId !== null) await endRouteApi(Number(routeId)); // 백엔드로 경로 종료 핑 (종료)
+    }
   },
   getRouteTitle: (): string | undefined => {
     const { routeItems } = get();
@@ -123,6 +148,7 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     });
 
     set({ routeItems: updatedRouteItems });
+    startGeofence();
   },
 
   deQueueStorySpot: (itemId: number): void => {
@@ -140,5 +166,20 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     });
 
     set({ routeItems: updatedRouteItems });
+    startGeofence();
+  },
+
+  setVisited: (routeItem: RouteItem): void => {
+    set({
+      routeItems: get().routeItems?.map((ri) => {
+        if (
+          ri.itemId === routeItem.itemId &&
+          ri.itemType === routeItem.itemType
+        ) {
+          ri.visited = true;
+        }
+        return ri;
+      }),
+    });
   },
 }));

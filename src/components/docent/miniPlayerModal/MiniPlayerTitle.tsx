@@ -17,15 +17,15 @@ import View = Animated.View;
 
 interface MiniPlayerModalTitleProps {
   onClose: (e: GestureResponderEvent) => void;
-  enableLyrics: boolean;
 }
 
 const MiniPlayerTitle: React.FC<MiniPlayerModalTitleProps> = ({
   onClose,
-  enableLyrics,
 }: MiniPlayerModalTitleProps) => {
   const { getRouteTitle, getNumberOfQueuedDocent } = useRouteStore();
-  const { listeningRouteItem } = useAudioPlayerStore();
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
+
+  if (!audioMetadata?.routeItem) return <></>;
 
   return (
     <ExpandedTitleContainer
@@ -41,7 +41,7 @@ const MiniPlayerTitle: React.FC<MiniPlayerModalTitleProps> = ({
       >
         <View>
           <Image
-            source={{ uri: listeningRouteItem?.itemImageUrl }}
+            source={{ uri: audioMetadata.routeItem.itemImageUrl }}
             style={{
               height: 80,
               width: 80,

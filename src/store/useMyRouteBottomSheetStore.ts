@@ -1,3 +1,4 @@
+import * as Location from "expo-location";
 import { create } from "zustand";
 
 import { Point } from "@/types/geom";
@@ -5,14 +6,14 @@ import { Point } from "@/types/geom";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { useRouteStore } from "@/store/useRouteStore";
 
-interface UseMyRouteBottomSheetStore {
+interface MyRouteBottomSheetStore {
   isPreTour: boolean;
   isPreTourDelete: boolean;
   isOnTour: boolean;
 
-  setPreTour: () => void;
+  setPreTour: (isFinish?: boolean) => void;
   setPreTourDelete: () => void;
-  setOnTour: (point: Point) => void;
+  setOnTour: () => void;
 
   deleteList: string[];
   addDeleteList: (itemId: string) => void;
@@ -20,15 +21,15 @@ interface UseMyRouteBottomSheetStore {
   applyDeleteList: () => void;
 }
 
-export const useMyRouteBottomSheetStore = create<UseMyRouteBottomSheetStore>(
+// 경로 탭 바텀시트 정보 관리 스토어
+export const useMyRouteBottomSheetStore = create<MyRouteBottomSheetStore>(
   (set, get) => ({
     isPreTour: true,
     isPreTourDelete: false,
     isOnTour: false,
 
-    setPreTour: (): void => {
-      useRouteStore.getState().finishRoute();
-      useRouteCartStore.getState().removeAllRouteCartItem();
+    setPreTour: (isFinish?: boolean): void => {
+      if (isFinish) useRouteStore.getState().finishRoute();
       set({
         isPreTour: true,
         isPreTourDelete: false,
@@ -42,14 +43,18 @@ export const useMyRouteBottomSheetStore = create<UseMyRouteBottomSheetStore>(
         isOnTour: false,
       });
     },
-    setOnTour: (point: Point): void => {
+    setOnTour: async (): Promise<void> => {
+      const currentPosition = await Location.getCurrentPositionAsync();
       set({
         isPreTour: false,
         isPreTourDelete: false,
         isOnTour: true,
       });
       useRouteStore.getState().setRoute({
-        point: point,
+        point: {
+          latitude: currentPosition.coords.latitude,
+          longitude: currentPosition.coords.longitude,
+        } as Point,
         placeIds: useRouteCartStore
           .getState()
           .routeCartItems.map((routCartItem) => routCartItem.sightId),

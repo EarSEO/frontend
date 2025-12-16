@@ -4,7 +4,10 @@ import SightDocentBriefInfo from "@/components/docent/common/SightDocentBriefInf
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import {
+  routeItemToCustomAudioMetadata,
+  useAudioPlayerStore,
+} from "@/store/useAudioPlayerStore";
 import { RouteItem } from "@/store/useRouteStore";
 
 export interface SightDocentCellProps {
@@ -18,11 +21,10 @@ const SightDocentCell: React.FC<SightDocentCellProps> = ({
   onPress,
   children,
 }: SightDocentCellProps) => {
-  const { listeningRouteItem } = useAudioPlayerStore();
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
 
   const isCurrentItem =
-    listeningRouteItem?.itemId === routeItem.itemId &&
-    listeningRouteItem.itemType === "SIGHT";
+    audioMetadata?.id === routeItemToCustomAudioMetadata(routeItem).id;
 
   const backgroundColor = isCurrentItem
     ? theme.colors.background.background500
