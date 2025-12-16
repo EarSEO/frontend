@@ -12,6 +12,7 @@ import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
   const { storyItems, summaries, spotTitleList } = useStoryStore();
+  console.log("check", storyItems);
 
   const spotNames = spotTitleList?.titles;
   const mainTitle = spotNames?.[0] || "제목 없음";
@@ -38,6 +39,7 @@ const StorySpotHeader = () => {
         {storyItems?.map((storyItem, index) => (
           <StoryCard
             key={`${storyItem.createdAt}-${index}`}
+            authorId={storyItem?.storyAuthor?.storyAuthorId}
             userNickName={storyItem.storyAuthor?.nickname}
             stroySpotName={storyItem.title}
             storyConcept={storyItem.storyConcept}
@@ -62,13 +64,13 @@ const HeaderWrapper = styled.View`
 
 const Title = styled.Text`
   font-family: ${theme.typography.fontFamily.semiBold};
-  font-size: ${theme.typography.fontSize.xxl};
+  font-size: ${theme.typography.fontSize.xxl}px;
   color: ${theme.colors.text.textPrimary};
 `;
 
 const SpotTitleList = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.xs};
+  font-size: ${theme.typography.fontSize.xs}px;
   color: ${theme.colors.text.textSecondary};
 `;
 
@@ -78,7 +80,7 @@ const DescriptionWrapper = styled.View`
 `;
 const Description = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textSecondary};
 `;
 

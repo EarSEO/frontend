@@ -6,11 +6,16 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
+import { useAuthStore } from "@/store/useAuthStore";
+import { useStoryStore } from "@/store/useStoryStore";
+
 interface MoreMenuProps {
   visible: boolean;
   onClose?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onComplaint?: () => void;
+  authorId?: number;
   anchorRef: React.RefObject<any>;
 }
 
@@ -20,8 +25,11 @@ const MoreMenuButton: React.FC<MoreMenuProps> = ({
   onClose,
   onEdit,
   onDelete,
+  onComplaint,
+  authorId,
 }) => {
-  const router = useRouter();
+  const { user } = useAuthStore();
+  const isMyPost = user?.memberId === authorId;
 
   if (!visible) return null;
   return (
@@ -37,14 +45,25 @@ const MoreMenuButton: React.FC<MoreMenuProps> = ({
       }}
     >
       <MenuContainer>
-        <MenuItem onPress={onEdit}>
-          <Pencil size={20} color={theme.colors.grey.neutral600} />
-          <MenuText>게시글 수정</MenuText>
-        </MenuItem>
-        <MenuItem onPress={onDelete}>
-          <Trash2Icon size={18} color={theme.colors.grey.neutral600} />
-          <MenuText>게시글 삭제</MenuText>
-        </MenuItem>
+        {isMyPost ? (
+          <>
+            (
+            <MenuItem onPress={onEdit}>
+              <Pencil size={20} color={theme.colors.grey.neutral600} />
+              <MenuText>게시글 수정</MenuText>
+            </MenuItem>
+            <MenuItem onPress={onDelete}>
+              <Trash2Icon size={18} color={theme.colors.grey.neutral600} />
+              <MenuText>게시글 삭제</MenuText>
+            </MenuItem>
+            )
+          </>
+        ) : (
+          <MenuItem onPress={onComplaint}>
+            <Trash2Icon size={18} color={theme.colors.grey.neutral600} />
+            <MenuText>게시글 신고</MenuText>
+          </MenuItem>
+        )}
       </MenuContainer>
     </Popover>
   );
@@ -72,7 +91,7 @@ const MenuItem = styled.Pressable`
 
 const MenuText = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.md}px;
   color: ${theme.colors.text.textSecondary};
 `;
 
