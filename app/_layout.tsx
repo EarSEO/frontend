@@ -11,6 +11,9 @@ import { ThemeProvider } from "styled-components";
 import { theme } from "@/styles/theme";
 
 SplashScreen.preventAutoHideAsync();
+SplashScreen.setOptions({
+  fade: true,
+});
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
