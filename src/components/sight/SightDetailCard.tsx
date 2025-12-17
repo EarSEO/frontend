@@ -1,5 +1,7 @@
 import React from "react";
 
+import {GestureResponderEvent} from "react-native";
+
 import {Banknote, Clock, Headphones, Map, ParkingCircle, Phone,} from "lucide-react-native";
 import styled from "styled-components/native";
 
@@ -8,11 +10,10 @@ import {SightDetailCardProps} from "@/types/sight";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import {useRouteCartStore} from "@/store/useRouteCartStore";
-import {normalizeHtmlBreaks} from "@/util/textNormalize";
-import {GestureResponderEvent} from "react-native";
 import {useAudioPlayerStore} from "@/store/useAudioPlayerStore";
+import {useRouteCartStore} from "@/store/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
+import {normalizeHtmlBreaks} from "@/util/textNormalize";
 
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
@@ -97,7 +98,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
         <>
           <BasicInfoRow>
             <SightDistance>
-              {distanceToString(sightDetail.distance * 1000)}
+              {distanceToString(sightDetail.distance)}
             </SightDistance>
             <SightTheme>{sightDetail.theme}</SightTheme>
           </BasicInfoRow>

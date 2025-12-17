@@ -42,7 +42,7 @@ export default function SignUp() {
 
     try {
       setIsLoading(true);
-      await api.post(API_ENDPOINTS.AUTH.EMAIL_SEND, { email });
+      await api.post(API_ENDPOINTS.AUTH.EMAIL_SIGNUP_SEND, { email });
       setIsEmailSent(true);
       Alert.alert("알림", "인증코드가 발송되었습니다. 이메일을 확인해주세요.");
     } catch (error: any) {
