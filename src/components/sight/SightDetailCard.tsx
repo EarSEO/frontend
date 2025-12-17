@@ -1,50 +1,55 @@
 import React from "react";
 
-import {GestureResponderEvent} from "react-native";
+import { GestureResponderEvent } from "react-native";
 
-import {Banknote, Clock, Headphones, Map, ParkingCircle, Phone,} from "lucide-react-native";
+import {
+  Banknote,
+  Clock,
+  Headphones,
+  Map,
+  ParkingCircle,
+  Phone,
+} from "lucide-react-native";
 import styled from "styled-components/native";
 
-import {SightDetailCardProps} from "@/types/sight";
+import { SightDetailCardProps } from "@/types/sight";
 
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import {useAudioPlayerStore} from "@/store/useAudioPlayerStore";
-import {useRouteCartStore} from "@/store/useRouteCartStore";
+import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
-import {normalizeHtmlBreaks} from "@/util/textNormalize";
-
+import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
-                                                           selectedSight,
-                                                           sightDetail,
-                                                           isDetailLoading,
-                                                           onClose,
-                                                         }) => {
-  const {insertRouteCartItem, removeRouteCartItem} = useRouteCartStore();
+  selectedSight,
+  sightDetail,
+  isDetailLoading,
+  onClose,
+}) => {
+  const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const listeningUrl = useAudioPlayerStore((state) => state.listeningUrl);
   const setListeningUrl = useAudioPlayerStore((state) => state.setListeningUrl);
   const player = useAudioPlayerStore((state) => state.player);
 
-  const {playTrack, pause} = useAudioPlayerStore();
+  const { playTrack, pause } = useAudioPlayerStore();
 
   const isMyDocentPlaying = listeningUrl === sightDetail?.docentUrl;
 
-  const onPressDocent =
-    (e: GestureResponderEvent) => {
-      e.stopPropagation();
+  const onPressDocent = (e: GestureResponderEvent) => {
+    e.stopPropagation();
 
-      if (!sightDetail?.docentUrl) return;
-      if (isMyDocentPlaying) {
-        player.pause();
-        setListeningUrl("");
-      } else {
-        playTrack(sightDetail.docentUrl);
-        setListeningUrl(sightDetail.docentUrl);
-      }
-    };
+    if (!sightDetail?.docentUrl) return;
+    if (isMyDocentPlaying) {
+      player.pause();
+      setListeningUrl("");
+    } else {
+      playTrack(sightDetail.docentUrl);
+      setListeningUrl(sightDetail.docentUrl);
+    }
+  };
 
   if (!selectedSight) return null;
 
@@ -85,9 +90,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
           }}
         >
           {isInCart ? (
-            <AfterAddRoute width={28} height={28}/>
+            <AfterAddRoute width={28} height={28} />
           ) : (
-            <BeforeAddRoute width={28} height={28}/>
+            <BeforeAddRoute width={28} height={28} />
           )}
         </IconButton>
       </HeaderRow>
@@ -110,13 +115,17 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
             }}
             resizeMode="cover"
           />
-          {
-            sightDetail.docentUrl &&
+          {sightDetail.docentUrl && (
             <DocentButton onPress={onPressDocent}>
-              <Headphones size={20} color={isMyDocentPlaying ? "#1DB954" : "#333"}/>
-              <DocentText>{isMyDocentPlaying ? "일시정지" : "도슨트 듣기"}</DocentText>
+              <Headphones
+                size={20}
+                color={isMyDocentPlaying ? "#1DB954" : "#333"}
+              />
+              <DocentText>
+                {isMyDocentPlaying ? "일시정지" : "도슨트 듣기"}
+              </DocentText>
             </DocentButton>
-          }
+          )}
 
           <Section>
             <SectionTitle>소개</SectionTitle>
@@ -128,7 +137,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
             <InfoRow>
               <InfoLabelArea>
-                <Map size={18} color="#666"/>
+                <Map size={18} color="#666" />
                 <InfoLabel>주소</InfoLabel>
               </InfoLabelArea>
               <InfoValue>{checkData(sightDetail.fullAddress)}</InfoValue>
@@ -136,7 +145,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
             <InfoRow>
               <InfoLabelArea>
-                <Clock size={18} color="#666"/>
+                <Clock size={18} color="#666" />
                 <InfoLabel>운영시간</InfoLabel>
               </InfoLabelArea>
               <InfoValue>{checkData(sightDetail.useTime)}</InfoValue>
@@ -144,7 +153,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
             <InfoRow>
               <InfoLabelArea>
-                <Clock size={18} color="#666"/>
+                <Clock size={18} color="#666" />
                 <InfoLabel>휴무일</InfoLabel>
               </InfoLabelArea>
               <InfoValue>{checkData(sightDetail.restDate)}</InfoValue>
@@ -152,7 +161,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
             <InfoRow>
               <InfoLabelArea>
-                <Phone size={18} color="#666"/>
+                <Phone size={18} color="#666" />
                 <InfoLabel>전화번호</InfoLabel>
               </InfoLabelArea>
               <InfoValue>{checkData(sightDetail.tel)}</InfoValue>
@@ -160,7 +169,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
             <InfoRow>
               <InfoLabelArea>
-                <Banknote size={18} color="#666"/>
+                <Banknote size={18} color="#666" />
                 <InfoLabel>입장료</InfoLabel>
               </InfoLabelArea>
               <InfoValue>{checkData(sightDetail.useFee)}</InfoValue>
@@ -168,7 +177,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
             <InfoRow>
               <InfoLabelArea>
-                <ParkingCircle size={18} color="#666"/>
+                <ParkingCircle size={18} color="#666" />
                 <InfoLabel>주차 가능</InfoLabel>
               </InfoLabelArea>
 
@@ -213,9 +222,9 @@ const IconButton = styled.TouchableOpacity`
 `;
 
 const SightTitle = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.xxl}px;
-  font-weight: ${({theme}) => theme.typography.fontWeight.bold};
-  color: ${({theme}) => theme.colors.text.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl}px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.text.textPrimary};
   flex: 1;
 `;
 
@@ -226,44 +235,44 @@ const BasicInfoRow = styled.View`
 `;
 
 const SightDistance = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.xs}px;
-  color: ${({theme}) => theme.colors.main.primary};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
+  color: ${({ theme }) => theme.colors.main.primary};
 `;
 
 const SightTheme = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.xs}px;
-  color: ${({theme}) => theme.colors.text.textTertiary};
+  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
+  color: ${({ theme }) => theme.colors.text.textTertiary};
 `;
 
 const SectionTitle = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.lg}px;
-  font-weight: ${({theme}) => theme.typography.fontWeight.bold};
-  color: ${({theme}) => theme.colors.text.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.lg}px;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.text.textPrimary};
   margin-top: 16px;
   margin-bottom: 16px;
 `;
 
 const SightText = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.sm}px;
-  color: ${({theme}) => theme.colors.text.textSecondary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
+  color: ${({ theme }) => theme.colors.text.textSecondary};
 `;
 
 const LoadingText = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.sm}px;
-  color: ${({theme}) => theme.colors.text.textTertiary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
+  color: ${({ theme }) => theme.colors.text.textTertiary};
 `;
 
 const CloseButton = styled.TouchableOpacity`
   margin-top: 12px;
   padding: 12px;
-  background-color: ${({theme}) => theme.colors.grey.neutral100};
+  background-color: ${({ theme }) => theme.colors.grey.neutral100};
   border-radius: 8px;
   align-items: center;
 `;
 
 const CloseButtonText = styled.Text`
-  font-size: ${({theme}) => theme.typography.fontSize.sm}px;
-  color: ${({theme}) => theme.colors.text.textSecondary};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
+  color: ${({ theme }) => theme.colors.text.textSecondary};
 `;
 
 const MainImage = styled.Image`
@@ -321,7 +330,7 @@ const Section = styled.View`
 const Badge = styled.View<{ type: "good" | "bad" }>`
   padding: 4px 10px;
   border-radius: 4px;
-  background-color: ${({type}) => (type === "good" ? "#66BB6A" : "#EF5350")};
+  background-color: ${({ type }) => (type === "good" ? "#66BB6A" : "#EF5350")};
 `;
 
 const BadgeText = styled.Text`

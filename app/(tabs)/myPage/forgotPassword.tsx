@@ -224,7 +224,12 @@ export default function ForgotPassword() {
               text="변경"
               width="100%"
               onPress={handleChangePassword}
-              disabled={isLoading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+              disabled={
+                isLoading ||
+                !newPassword ||
+                !confirmPassword ||
+                newPassword !== confirmPassword
+              }
             />
           </ButtonContainer>
         </StepContainer>
