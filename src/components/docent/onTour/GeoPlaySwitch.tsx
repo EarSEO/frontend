@@ -1,12 +1,12 @@
-import { useState } from "react";
-
 import { Animated, Switch, Text } from "react-native";
 
 import { theme } from "@/styles/theme";
 import View = Animated.View;
+import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
 
 const GeoPlaySwitch: React.FC = () => {
-  const [checked, setChecked] = useState(true);
+  const geoPlay = useAudioPlayerStore((state) => state.geoPlay);
+  const { setGeoPlay } = useAudioPlayerStore();
   const text1 = "위치기반";
   const text2 = "자동재생";
   return (
@@ -46,9 +46,9 @@ const GeoPlaySwitch: React.FC = () => {
       </View>
       <View style={{ paddingLeft: 10 }}>
         <Switch
-          value={checked}
+          value={geoPlay}
           onValueChange={(checked) => {
-            setChecked(checked);
+            setGeoPlay(checked);
           }}
           trackColor={{
             false: theme.colors.alarm.error, // false => 안드로이드 백그라운드

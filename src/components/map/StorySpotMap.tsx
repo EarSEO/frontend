@@ -6,7 +6,7 @@ import React, {
 } from "react";
 
 import { StyleSheet, TouchableOpacity } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -120,7 +120,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
         <MapView
           ref={mapRef}
           style={styles.map}
-          provider={PROVIDER_GOOGLE}
+          provider={PROVIDER_DEFAULT}
           initialRegion={{
             latitude: location.latitude,
             longitude: location.longitude,

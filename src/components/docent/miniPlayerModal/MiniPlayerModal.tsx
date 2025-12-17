@@ -36,7 +36,7 @@ const MiniPlayerModal: React.FC = () => {
             flexDirection: "column",
           }}
         >
-          <MiniPlayerTitle onClose={onClose} enableLyrics={enableLyrics} />
+          <MiniPlayerTitle onClose={onClose} />
           {enableLyrics ? (
             <MiniPlayerModalLyrics />
           ) : (

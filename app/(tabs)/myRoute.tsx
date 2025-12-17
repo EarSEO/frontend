@@ -33,7 +33,7 @@ export default function MyRoute() {
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
   const { location } = useLocation();
-  const { routeCartItems } = useRouteCartStore();
+  const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const isOnTour = useMyRouteBottomSheetStore((state) => state.isOnTour);
   const isPreTour = useMyRouteBottomSheetStore((state) => state.isPreTour);
   const path = useRouteStore((state) => state.path);
