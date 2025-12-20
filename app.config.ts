@@ -1,10 +1,11 @@
 import "dotenv/config";
+import { version } from "./package.json";
 
 export default {
   expo: {
     name: "이어서",
     slug: "earseo",
-    version: "0.1.0",
+    version: version,
     orientation: "portrait",
     icon: "./src/assets/images/earseo-icon.png",
     scheme: "earseo",
@@ -16,8 +17,12 @@ export default {
     ios: {
       bundleIdentifier: "com.earseo.earseo",
       supportsTablet: true,
+      appleTeamId: "W39CU54NKB",
       infoPlist: {
         UIBackgroundModes: ["audio", "location"],
+      },
+      config: {
+        usesNonExemptEncryption: false
       },
       icon: "./src/assets/earseo-ios.icon",
       displayName: "이어서",
