@@ -11,8 +11,17 @@ export default {
     scheme: "earseo",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    updates: {
+      url: "https://u.expo.dev/51f8ef22-b7f8-40ed-92d1-201c776e3b87"
+    },
+    runtimeVersion: {
+      policy: "appVersion"
+    },
     extra: {
       API_BASE_URL: process.env.API_BASE_URL,
+      eas: {
+        projectId: "51f8ef22-b7f8-40ed-92d1-201c776e3b87"
+      }
     },
     ios: {
       bundleIdentifier: "com.earseo.earseo",

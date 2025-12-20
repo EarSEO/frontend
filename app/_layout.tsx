@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as TaskManager from "expo-task-manager";
+import * as Updates from "expo-updates";
 import { ThemeProvider } from "styled-components";
 
 import { theme } from "@/styles/theme";
@@ -34,6 +35,23 @@ export default function RootLayout() {
     "Pretendard-Regular": require("../src/assets/fonts/Pretendard-Regular.otf"),
     "Pretendard-Medium": require("../src/assets/fonts/Pretendard-Medium.otf"),
   });
+
+  // EAS ota Upadte
+  useEffect(() => {
+    const checkForUpdates = async () => {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (error) {
+        console.error("Update error:", error);
+      }
+    };
+
+    checkForUpdates();
+  }, []);
 
   // 앱 종료 전에 진행중이던 경로 종료
   useEffect(() => {
