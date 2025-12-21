@@ -17,7 +17,10 @@ import { SightDetailCardProps } from "@/types/sight";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import {
+  sightToCustomAudioMetadata,
+  useAudioPlayerStore,
+} from "@/store/useAudioPlayerStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
 import { normalizeHtmlBreaks } from "@/util/textNormalize";
@@ -30,24 +33,22 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 }) => {
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
-  const listeningUrl = useAudioPlayerStore((state) => state.listeningUrl);
-  const setListeningUrl = useAudioPlayerStore((state) => state.setListeningUrl);
-  const player = useAudioPlayerStore((state) => state.player);
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
+  const setTemporarySightInfo = useAudioPlayerStore(
+    (state) => state.setTemporarySightInfo
+  );
 
-  const { playTrack, pause } = useAudioPlayerStore();
-
-  const isMyDocentPlaying = listeningUrl === sightDetail?.docentUrl;
+  const isMyDocentPlaying =
+    sightDetail !== null &&
+    audioMetadata?.id === sightToCustomAudioMetadata(sightDetail).id;
 
   const onPressDocent = (e: GestureResponderEvent) => {
     e.stopPropagation();
-
     if (!sightDetail?.docentUrl) return;
     if (isMyDocentPlaying) {
-      player.pause();
-      setListeningUrl("");
+      setTemporarySightInfo();
     } else {
-      playTrack(sightDetail.docentUrl);
-      setListeningUrl(sightDetail.docentUrl);
+      setTemporarySightInfo(sightDetail);
     }
   };
 

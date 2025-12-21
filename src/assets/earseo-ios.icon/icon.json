@@ -1,0 +1,45 @@
+{
+  "fill": "automatic",
+  "groups": [
+    {
+      "blend-mode": "normal",
+      "blur-material": 1,
+      "hidden": false,
+      "layers": [
+        {
+          "glass": true,
+          "image-name": "city.png",
+          "name": "city",
+          "position": {
+            "scale": 2.01,
+            "translation-in-points": [2.0799999999999272, 25]
+          }
+        },
+        {
+          "fill": "none",
+          "image-name": "docentPin.svg",
+          "name": "docentPin",
+          "position": {
+            "scale": 1,
+            "translation-in-points": [0, -28]
+          }
+        }
+      ],
+      "lighting": "individual",
+      "name": "Group",
+      "shadow": {
+        "kind": "layer-color",
+        "opacity": 1
+      },
+      "specular": false,
+      "translucency": {
+        "enabled": false,
+        "value": 0.06
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": ["watchOS"],
+    "squares": "shared"
+  }
+}

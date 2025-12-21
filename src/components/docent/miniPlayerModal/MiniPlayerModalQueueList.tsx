@@ -20,7 +20,7 @@ import View = Animated.View;
 const MiniPlayerModalQueueList: React.FC = () => {
   const { getQueuedItems } = useRouteStore();
   const { closeModal } = useMiniPlayerStore();
-  const { setListeningRouteItem } = useAudioPlayerStore();
+  const { setAudioMetadata } = useAudioPlayerStore();
   const router = useRouter();
   const onPress = useCallback(
     (itemType: RouteItemType, id: number) => {
@@ -40,7 +40,7 @@ const MiniPlayerModalQueueList: React.FC = () => {
         if (queuedItem.itemType === "SIGHT")
           return (
             <SightDocentCell
-              onPress={() => setListeningRouteItem(queuedItem)}
+              onPress={() => setAudioMetadata(queuedItem)}
               routeItem={queuedItem}
               key={idx}
             >
@@ -57,7 +57,7 @@ const MiniPlayerModalQueueList: React.FC = () => {
         else if (queuedItem.itemType === "STORY_SPOT")
           return (
             <StorySpotDocentCell
-              onPress={() => setListeningRouteItem(queuedItem)}
+              onPress={() => setAudioMetadata(queuedItem)}
               routeItem={queuedItem}
               position={"MODAL"}
               key={idx}

@@ -5,7 +5,8 @@ import { theme } from "@/styles/theme";
 import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
 
 const MiniPlayerModalLyrics: React.FC = () => {
-  const { currentScript } = useAudioPlayerStore();
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
+  if (!audioMetadata?.script) return <></>;
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -21,7 +22,7 @@ const MiniPlayerModalLyrics: React.FC = () => {
           marginTop: theme.spacing.lg,
         }}
       >
-        {currentScript}
+        {audioMetadata.script}
       </Text>
     </ScrollView>
   );
