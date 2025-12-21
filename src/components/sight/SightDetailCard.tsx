@@ -35,7 +35,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
   const setTemporarySightInfo = useAudioPlayerStore(
-    (state) => state.setTemporarySightInfo
+    (state) => state.setTemporarySightInfo,
   );
 
   const isMyDocentPlaying =
