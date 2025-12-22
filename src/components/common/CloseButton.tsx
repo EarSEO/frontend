@@ -27,12 +27,13 @@ const CloseButton: React.FC<CloseButtonProps> = ({
   onPress,
 }) => {
   const router = useRouter();
+  const handleClose = () => {
+    router.dismissAll();
+    router.navigate(onPress);
+  };
 
   return (
-    <StyledBackButton
-      onPress={() => router.navigate(onPress)}
-      disabled={disabled}
-    >
+    <StyledBackButton onPress={handleClose} disabled={disabled}>
       {buttonStyle === "NONE" ? (
         <Ionicons name="close-sharp" size={30} />
       ) : (
