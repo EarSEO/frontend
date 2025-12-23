@@ -112,7 +112,7 @@ export default function ForgotPassword() {
 
         if (errorCode === "MEM014") {
           setPasswordError(
-            "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다."
+            "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.",
           );
         } else {
           setPasswordError("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
