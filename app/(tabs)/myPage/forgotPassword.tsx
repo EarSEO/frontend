@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Alert } from "react-native";
-
+import axios from "axios";
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
@@ -16,22 +15,54 @@ import verifyEmailCodeApi from "@/api/auth/verifyEmailCodeApi";
 export default function ForgotPassword() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-
-  // Step 1 states
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Step 2 states
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  // 에러 메시지 상태
+  const [emailError, setEmailError] = useState("");
+  const [verificationError, setVerificationError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
+  // 비밀번호 유효성 상태
+  const isPasswordLengthValid = newPassword.length >= 8;
+  const isPasswordMatch = newPassword === confirmPassword;
+
+  // 버튼 비활성화 조건
+  const isStep2Valid =
+    newPassword.length > 0 &&
+    confirmPassword.length > 0 &&
+    isPasswordLengthValid &&
+    isPasswordMatch;
+
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  // 시간 포맷 함수
+  const formatTime = (seconds: number) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min}:${sec.toString().padStart(2, "0")}`;
+  };
+
   // 이메일 인증코드 발송
   const handleSendVerificationCode = async () => {
+    setEmailError("");
+
     if (!email) {
-      Alert.alert("알림", "이메일을 입력해주세요.");
+      setEmailError("이메일을 입력해주세요.");
       return;
     }
 
@@ -39,11 +70,9 @@ export default function ForgotPassword() {
       setIsLoading(true);
       await sendPasswordCodeApi(email);
       setIsEmailSent(true);
-      Alert.alert("알림", "인증코드가 발송되었습니다. 이메일을 확인해주세요.");
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message || "인증코드 발송에 실패했습니다.";
-      Alert.alert("오류", message);
+      setTimeLeft(300);
+    } catch (error) {
+      setEmailError("인증코드 발송에 실패했습니다. 다시 시도해주세요.");
     } finally {
       setIsLoading(false);
     }
@@ -51,64 +80,46 @@ export default function ForgotPassword() {
 
   // 이메일 인증코드 확인
   const handleVerifyCode = async () => {
+    setVerificationError("");
+
     if (!verificationCode) {
-      Alert.alert("알림", "인증코드를 입력해주세요.");
+      setVerificationError("인증코드를 입력해주세요.");
       return;
     }
 
     try {
       setIsLoading(true);
       await verifyEmailCodeApi(email, verificationCode);
-      setIsEmailVerified(true);
-      Alert.alert("알림", "이메일 인증이 완료되었습니다.");
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message || "인증코드가 올바르지 않습니다.";
-      Alert.alert("오류", message);
+      setStep(2);
+    } catch (error) {
+      setVerificationError("인증코드가 올바르지 않습니다.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Step 1 -> Step 2 이동
-  const handleNextStep = () => {
-    if (!isEmailVerified) {
-      Alert.alert("알림", "이메일 인증을 완료해주세요.");
-      return;
-    }
-    setStep(2);
-  };
-
   // 비밀번호 변경 처리
   const handleChangePassword = async () => {
-    if (!newPassword || !confirmPassword) {
-      Alert.alert("알림", "비밀번호를 입력해주세요.");
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      Alert.alert("알림", "비밀번호는 최소 8자 이상이어야 합니다.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Alert.alert("알림", "비밀번호가 일치하지 않습니다.");
-      return;
-    }
+    setPasswordError("");
 
     try {
       setIsLoading(true);
       await resetPasswordApi(email, newPassword);
-      Alert.alert("알림", "비밀번호가 변경되었습니다.", [
-        {
-          text: "확인",
-          onPress: () => router.replace("/myPage/login"),
-        },
-      ]);
-    } catch (error: any) {
-      const message =
-        error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
-      Alert.alert("오류", message);
+      router.replace("/myPage/login");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorCode = error.response?.data?.status;
+
+        if (errorCode === "MEM014") {
+          setPasswordError(
+            "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다."
+          );
+        } else {
+          setPasswordError("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+        }
+      } else {
+        setPasswordError("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -132,54 +143,68 @@ export default function ForgotPassword() {
               placeholder="이메일 입력"
               placeholderTextColor={theme.colors.text.textTertiary}
               value={email}
-              onChangeText={setEmail}
-              editable={!isEmailVerified}
+              onChangeText={(text) => {
+                setEmail(text);
+                setEmailError("");
+              }}
+              editable={!isEmailSent}
               keyboardType="email-address"
               autoCapitalize="none"
             />
             <InnerButton
               onPress={handleSendVerificationCode}
-              disabled={isLoading || isEmailVerified}
+              disabled={isLoading || isEmailSent}
             >
-              <InnerButtonText>
-                {isEmailSent ? "재전송" : "인증 코드 전송"}
-              </InnerButtonText>
+              <InnerButtonText>인증 코드 전송</InnerButtonText>
             </InnerButton>
           </InputWithButton>
+          {emailError && <ErrorText>{emailError}</ErrorText>}
 
-          <Gap height={10} />
+          {isEmailSent && (
+            <>
+              <Gap height={10} />
+              <SuccessText>
+                인증코드가 발송되었습니다. 이메일을 확인해주세요.
+              </SuccessText>
+              {timeLeft > 0 ? (
+                <TimerText>남은 시간: {formatTime(timeLeft)}</TimerText>
+              ) : (
+                <ErrorText>
+                  인증코드가 만료되었습니다. 다시 요청해주세요.
+                </ErrorText>
+              )}
+              <Gap height={10} />
 
-          <InputWithButton>
-            <InnerInput
-              placeholder="인증코드 입력"
-              placeholderTextColor={theme.colors.text.textTertiary}
-              value={verificationCode}
-              onChangeText={setVerificationCode}
-              editable={isEmailSent && !isEmailVerified}
-              keyboardType="number-pad"
-            />
-            {isEmailVerified ? (
-              <VerifiedBadge>
-                <VerifiedText>✓</VerifiedText>
-              </VerifiedBadge>
-            ) : (
-              <InnerButton
-                onPress={handleVerifyCode}
-                disabled={isLoading || !isEmailSent}
-              >
-                <InnerButtonText>확인</InnerButtonText>
-              </InnerButton>
-            )}
-          </InputWithButton>
-
-          <ButtonContainer>
-            <Button
-              text="다음"
-              width="100%"
-              onPress={handleNextStep}
-              disabled={isLoading || !isEmailVerified}
-            />
-          </ButtonContainer>
+              <InputWithButton>
+                <InnerInput
+                  placeholder="인증코드 입력"
+                  placeholderTextColor={theme.colors.text.textTertiary}
+                  value={verificationCode}
+                  onChangeText={(text) => {
+                    setVerificationCode(text);
+                    setVerificationError("");
+                  }}
+                  keyboardType="number-pad"
+                  editable={timeLeft > 0}
+                />
+                <InnerButton
+                  onPress={handleVerifyCode}
+                  disabled={isLoading || !verificationCode || timeLeft <= 0}
+                >
+                  <InnerButtonText>확인</InnerButtonText>
+                </InnerButton>
+              </InputWithButton>
+              {timeLeft <= 0 && (
+                <ResendButton
+                  onPress={handleSendVerificationCode}
+                  disabled={isLoading}
+                >
+                  <ResendButtonText>인증코드 재전송</ResendButtonText>
+                </ResendButton>
+              )}
+              {verificationError && <ErrorText>{verificationError}</ErrorText>}
+            </>
+          )}
         </StepContainer>
       )}
 
@@ -189,42 +214,45 @@ export default function ForgotPassword() {
           <InputWrapper>
             <StyledInput
               value={newPassword}
-              onChangeText={setNewPassword}
+              onChangeText={(text) => {
+                setNewPassword(text);
+                setPasswordError("");
+              }}
               placeholder="비밀번호 입력 (8자 이상)"
               placeholderTextColor={theme.colors.text.textTertiary}
               secureTextEntry={true}
             />
           </InputWrapper>
+          {newPassword.length > 0 &&
+            newPassword.length < 8 &&
+            !passwordError && (
+              <ErrorText>비밀번호는 최소 8자 이상이어야 합니다.</ErrorText>
+            )}
 
           <InputWrapper>
             <StyledInput
               value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                setPasswordError("");
+              }}
               placeholder="비밀번호 확인"
               placeholderTextColor={theme.colors.text.textTertiary}
               secureTextEntry={true}
             />
           </InputWrapper>
-
-          {newPassword && confirmPassword && (
-            <PasswordMatchText isMatch={newPassword === confirmPassword}>
-              {newPassword === confirmPassword
-                ? "비밀번호가 일치합니다."
-                : "비밀번호가 일치하지 않습니다."}
-            </PasswordMatchText>
+          {confirmPassword.length > 0 && !isPasswordMatch && !passwordError && (
+            <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
           )}
+
+          {passwordError && <ErrorText>{passwordError}</ErrorText>}
 
           <ButtonContainer>
             <Button
               text="변경"
               width="100%"
               onPress={handleChangePassword}
-              disabled={
-                isLoading ||
-                !newPassword ||
-                !confirmPassword ||
-                newPassword !== confirmPassword
-              }
+              disabled={isLoading || !isStep2Valid}
             />
           </ButtonContainer>
         </StepContainer>
@@ -276,7 +304,7 @@ const Label = styled.Text`
 `;
 
 const InputWrapper = styled.View`
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 `;
 
 const InputWithButton = styled.View`
@@ -320,21 +348,6 @@ const StyledInput = styled.TextInput`
   color: ${theme.colors.text.textPrimary};
 `;
 
-const VerifiedBadge = styled.View`
-  background-color: ${theme.colors.alarm.success};
-  width: 30px;
-  height: 30px;
-  border-radius: 15px;
-  justify-content: center;
-  align-items: center;
-  margin-right: 5px;
-`;
-
-const VerifiedText = styled.Text`
-  color: ${theme.colors.white};
-  font-size: 16px;
-`;
-
 const Gap = styled.View<{ height: number }>`
   height: ${(props) => props.height}px;
 `;
@@ -346,10 +359,44 @@ const ButtonContainer = styled.View`
   right: 20px;
 `;
 
-const PasswordMatchText = styled.Text<{ isMatch: boolean }>`
+const ValidationText = styled.Text<{ isValid: boolean }>`
   font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.xs}px;
   color: ${(props) =>
-    props.isMatch ? theme.colors.alarm.success : theme.colors.alarm.error};
+    props.isValid ? theme.colors.alarm.success : theme.colors.alarm.error};
+  margin-top: 2px;
+  margin-bottom: 8px;
+`;
+
+const ErrorText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${theme.colors.alarm.error};
   margin-top: 5px;
+`;
+
+const SuccessText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${theme.colors.alarm.success};
+`;
+
+const TimerText = styled.Text`
+  font-family: ${theme.typography.fontFamily.medium};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${theme.colors.main.primary};
+  margin-top: 5px;
+`;
+
+const ResendButton = styled.TouchableOpacity<{ disabled?: boolean }>`
+  margin-top: 10px;
+  padding: 10px;
+  align-items: center;
+`;
+
+const ResendButtonText = styled.Text`
+  font-family: ${theme.typography.fontFamily.medium};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${theme.colors.main.primary};
+  text-decoration-line: underline;
 `;
