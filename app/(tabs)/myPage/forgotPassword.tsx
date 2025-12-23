@@ -8,9 +8,10 @@ import styled from "styled-components/native";
 import Button from "@/components/common/Button";
 
 import { theme } from "@/styles/theme";
-import API_ENDPOINTS from "@/constants/endpoints";
 
-import api from "@/api/axios";
+import resetPasswordApi from "@/api/auth/resetPasswordApi";
+import sendPasswordCodeApi from "@/api/auth/sendPasswordCodeApi";
+import verifyEmailCodeApi from "@/api/auth/verifyEmailCodeApi";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function ForgotPassword() {
 
     try {
       setIsLoading(true);
-      await api.post(API_ENDPOINTS.AUTH.EMAIL_PASSWORD_SEND, { email });
+      await sendPasswordCodeApi(email);
       setIsEmailSent(true);
       Alert.alert("알림", "인증코드가 발송되었습니다. 이메일을 확인해주세요.");
     } catch (error: any) {
@@ -57,10 +58,7 @@ export default function ForgotPassword() {
 
     try {
       setIsLoading(true);
-      await api.post(API_ENDPOINTS.AUTH.EMAIL_VERIFY, {
-        email,
-        code: verificationCode,
-      });
+      await verifyEmailCodeApi(email, verificationCode);
       setIsEmailVerified(true);
       Alert.alert("알림", "이메일 인증이 완료되었습니다.");
     } catch (error: any) {
@@ -100,10 +98,7 @@ export default function ForgotPassword() {
 
     try {
       setIsLoading(true);
-      await api.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
-        email,
-        newPassword,
-      });
+      await resetPasswordApi(email, newPassword);
       Alert.alert("알림", "비밀번호가 변경되었습니다.", [
         {
           text: "확인",
