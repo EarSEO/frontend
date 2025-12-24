@@ -1,16 +1,16 @@
+import {APP_ENV_API_BASE_URL} from '@env'
 import axios, {
   AxiosError,
   AxiosInstance,
   InternalAxiosRequestConfig,
 } from "axios";
-import Constants from "expo-constants";
 import * as SecureStore from "expo-secure-store";
 
 import { RefreshTokenResponse } from "@/types/auth";
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
-const API_BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL as string;
+const API_BASE_URL = APP_ENV_API_BASE_URL;
 const REFRESH_URL = API_ENDPOINTS.AUTH.REFRESH;
 
 export const api: AxiosInstance = axios.create({
