@@ -46,3 +46,16 @@ app-example
 
 # intelliJ
 .idea
+
+# build file
+*.ipa
+*.apk
+*.abb
+
+# Fastlane
+fastlane/.env.*
+fastlane/*.xml
+
+# dSYM
+*.dSYM
+*.dSYM.zip

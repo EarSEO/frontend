@@ -1,4 +1,4 @@
-import Constants from "expo-constants";
+import {APP_ENV_GEOFENCE_RADIUS} from '@env';
 import * as Location from "expo-location";
 import {
   LocationAccuracy,
@@ -20,7 +20,7 @@ import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
 import { useRouteStore } from "@/store/useRouteStore";
 
 const GEOFENCE_RADIUS =
-  (Constants.expoConfig?.extra?.GEOFENCE_RADIUS as number) ?? 100;
+  Number(APP_ENV_GEOFENCE_RADIUS) ?? 100;
 const GEOFENCE_LIMIT = 20;
 
 type GeofenceTaskData = {
