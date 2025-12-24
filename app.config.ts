@@ -1,23 +1,34 @@
-import "dotenv/config";
+import { version } from "./package.json";
 
 export default {
   expo: {
     name: "이어서",
     slug: "earseo",
-    version: "0.1.0",
+    version: version,
     orientation: "portrait",
     icon: "./src/assets/images/earseo-icon.png",
     scheme: "earseo",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
+    runtimeVersion: {
+      policy: "appVersion"
+    },
     extra: {
       API_BASE_URL: process.env.API_BASE_URL,
+      GEOFENCE_RADIUS: process.env.GEOFENCE_RADIUS || 100,
+      eas: {
+        projectId: "51f8ef22-b7f8-40ed-92d1-201c776e3b87"
+      }
     },
     ios: {
       bundleIdentifier: "com.earseo.earseo",
       supportsTablet: true,
+      appleTeamId: "W39CU54NKB",
       infoPlist: {
         UIBackgroundModes: ["audio", "location"],
+      },
+      config: {
+        usesNonExemptEncryption: false
       },
       icon: "./src/assets/earseo-ios.icon",
       displayName: "이어서",
