@@ -1,0 +1,58 @@
+name: Deploy OTA Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: 'Update message'
+        required: true
+        default: 'OTA update'
+
+jobs:
+  deploy-ota-ios:
+    name: Deploy OTA Update iOS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy OTA Update
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          API_BASE_URL: ${{ secrets.PRODUCTION_API_BASE_URL }}
+          GEOFENCE_RADIUS: ${{ secrets.GEOFENCE_RADIUS || '100' }}
+        run: npx eas update --channel production --platform ios --message "${{ github.event.inputs.message }}"
+
+  deploy-ota-android:
+    name: Deploy OTA Update Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy OTA Update
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          API_BASE_URL: ${{ secrets.PRODUCTION_API_BASE_URL }}
+          GEOFENCE_RADIUS: ${{ secrets.GEOFENCE_RADIUS || '100' }}
+        run: npx eas update --channel production --platform android --message "${{ github.event.inputs.message }}"
