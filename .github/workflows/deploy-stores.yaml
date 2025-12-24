@@ -1,0 +1,57 @@
+name: Deploy to Stores
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  deploy-ios:
+    name: Deploy iOS to TestFlight
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          EXPO_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_BASE_URL }}
+          EXPO_PUBLIC_GEOFENCE_RADIUS=${{ secrets.GEOFENCE_RADIUS || '100' }}
+          EOF
+
+      - name: Build and Deploy to TestFlight
+        env:
+          APPLE_APP_IDENTIFIER: ${{ secrets.APPLE_APP_IDENTIFIER }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPSTORE_API_KEY_CONTENT: ${{ secrets.APPSTORE_API_KEY_CONTENT }}
+          APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
+          APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
+          MATCH_PASSWORD: ${{ secrets.FASTLANE_MATCH_PASSWORD }}
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+        run: fastlane ios beta
+
+      - name: Upload Xcode log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcode-build-log
+          path: /Users/runner/Library/Logs/gym/app-app.log
+          if-no-files-found: ignore
+          retention-days: 2
