@@ -44,7 +44,6 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   const onPressDocent = (e: GestureResponderEvent) => {
     e.stopPropagation();
-
     if (!sightDetail?.docentUrl) return;
     if (isMyDocentPlaying) {
       setTemporarySightInfo();
@@ -105,7 +104,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
         <>
           <BasicInfoRow>
             <SightDistance>
-              {distanceToString(sightDetail.distance * 1000)}
+              {distanceToString(sightDetail.distance)}
             </SightDistance>
             <SightTheme>{sightDetail.theme}</SightTheme>
           </BasicInfoRow>
