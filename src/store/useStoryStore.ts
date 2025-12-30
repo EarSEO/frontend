@@ -27,9 +27,9 @@ import {
 } from "@/api/getStoryApi";
 
 interface StoryStore {
-  storyMain?: boolean;
   storyItems?: StoryItem[];
   briefSpotInfo?: SpotInfoResponse;
+  mainStoryMapRequest?: GetMapStoriesRequest;
   spotTitleList?: SpotTitleListResponse;
   distance?: number;
   summaries?: StorySummaryResponse[];
@@ -41,6 +41,9 @@ interface StoryStore {
   searchTitleInfo?: storySpots[];
   spotMapRectangle?: MapSpotInfoItem[];
 
+  setSearchTitle: (
+    param: GetSearchTitleRequest
+  ) => Promise<SearchSpotInfoResponse | undefined>;
   setStoryInfo: (
     param: GetStoryRequest
   ) => Promise<GetSpotTotalInfoResponse | undefined>;
@@ -76,6 +79,7 @@ interface StoryItem {
 
 export const useStoryStore = create<StoryStore>((set, get) => ({
   briefSpotInfo: undefined,
+  mainStoryMapRequest: undefined,
   storyItems: undefined,
   spotTitleList: undefined,
   distance: undefined,
@@ -85,6 +89,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   spotBriefInfo: undefined,
   newSpotName: undefined,
   storyLocation: undefined,
+  spotMapRectangle: undefined,
   searchTitleInfo: undefined,
 
   setStoryInfo: async (
@@ -93,7 +98,6 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     try {
       const response: GetSpotTotalInfoResponse = await getStoryApi(param);
       set({
-        storyMain: false,
         briefSpotInfo: response.briefSpotInfo,
         spotTitleList: response.spotTitleList,
         distance: response.distance,
@@ -116,7 +120,6 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     try {
       const response: GetMapStoryResponse = await getRectangle(param);
       set({
-        storyMain: true,
         mapStoryInfo: response.stories?.map((mapStory) => ({
           ...mapStory,
           createdAt: formatDateArray(mapStory.createdAt),
@@ -166,6 +169,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
       return response;
     } catch (error) {
       set({ searchTitleInfo: undefined });
+      return undefined;
     }
   },
 
@@ -176,10 +180,12 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
       const response: MapSpotInfoList = await getSpotMapRectangle(param);
       set({
         spotMapRectangle: response.storySpots,
+        mainStoryMapRequest: param,
       });
       return response.storySpots;
     } catch (error) {
       set({ searchTitleInfo: undefined });
+      return undefined;
     }
   },
 }));

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -12,68 +12,20 @@ import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
-import { MapRef } from "@/types/map";
-import { GetMapStoriesRequest, MapSpotInfoItem } from "@/types/storySpot";
-
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStorySpotMap } from "@/hooks/useStorySpotMap";
 
 export default function Index() {
   const Ref = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
-  const mapRef = useRef<MapRef>(null);
+
   const {
-    setMapStoryInfo,
-    storyMain,
-    setStoryInfo,
-    setSpotMapRectangle,
+    mapRef,
     spotMapRectangle,
-  } = useStoryStore();
-  const [selectedMarker, setSelectedMarker] = useState<MapSpotInfoItem | null>(
-    null
-  );
-
-  const handleMapPress = () => {
-    setSelectedMarker(null);
-  };
-
-  const handleRegionChange = (bounds: {
-    minLongitude: number;
-    minLatitude: number;
-    maxLongitude: number;
-    maxLatitude: number;
-  }) => {
-    const mapStoriesRequest: GetMapStoriesRequest = {
-      minLongitude: bounds.minLongitude.toString(),
-      minLatitude: bounds.minLatitude.toString(),
-      maxLongitude: bounds.maxLongitude.toString(),
-      maxLatitude: bounds.maxLatitude.toString(),
-      page: 0,
-      size: 10,
-      sort: "createdAt,desc",
-    };
-
-    setMapStoryInfo(mapStoriesRequest);
-    setSpotMapRectangle(mapStoriesRequest);
-  };
-
-  const handleMarkerPress = (sight: MapSpotInfoItem) => {
-    setSelectedMarker(sight);
-
-    const storyRequest = {
-      storySpotId: sight.storySpotId,
-      query: {
-        query: {
-          longitude: sight.longitude.toString(),
-          latitude: sight.latitude.toString(),
-          locale: "KO" as const,
-          page: 0,
-          size: 1000,
-          sort: "createdAt,desc" as const,
-        },
-      },
-    };
-    setStoryInfo(storyRequest);
-  };
+    selectedMarker,
+    handleMapPress,
+    handleRegionChange,
+    handleStoryMarkerPress,
+  } = useStorySpotMap();
 
   return (
     <Container>
@@ -81,10 +33,10 @@ export default function Index() {
         <StorySpotMap
           ref={mapRef}
           animatedPosition={animatedPosition}
-          markers={spotMapRectangle}
+          storyMarkers={spotMapRectangle}
           onRegionChangeComplete={handleRegionChange}
-          onMarkerPress={handleMarkerPress}
-          selectedMarkerId={selectedMarker?.storySpotId}
+          onStoryMarkerPress={handleStoryMarkerPress}
+          selectedStoryMarkerId={selectedMarker?.storySpotId}
           onMapPress={handleMapPress}
         />
 

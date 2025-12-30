@@ -146,7 +146,6 @@ export default function StoryAdd() {
               width={340}
               height={200}
               radius={20}
-              fontSize={16}
               multiline={true}
               placeholder="여러분의 이야기를 남겨보세요."
             />
