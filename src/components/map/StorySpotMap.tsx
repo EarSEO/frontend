@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocation } from "@/hooks/useLocation";
 
 import { MapRef } from "@/types/map";
+import { SightInfo } from "@/types/sight";
 import { MapSpotInfoItem } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
@@ -26,9 +27,12 @@ const LOCATION_BUTTON_MARGIN = 16;
 
 interface StorySpotMapProps {
   animatedPosition?: SharedValue<number>;
-  markers?: MapSpotInfoItem[];
-  selectedMarkerId?: number | null;
-  onMarkerPress?: (sight: MapSpotInfoItem) => void;
+  storyMarkers?: MapSpotInfoItem[];
+  sightMarkers?: SightInfo[];
+  selectedStoryMarkerId?: number | null;
+  selectedSightMarkerId?: string | null;
+  onStoryMarkerPress?: (spot: MapSpotInfoItem) => void;
+  onSightMarkerPress?: (sight: SightInfo) => void;
   scrollEnabled?: boolean;
   zoomEnabled?: boolean;
   rotateEnabled?: boolean;
@@ -49,9 +53,12 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
   (
     {
       animatedPosition,
-      markers,
-      selectedMarkerId,
-      onMarkerPress,
+      storyMarkers: spotMarkers,
+      sightMarkers,
+      selectedStoryMarkerId: selectedSpotMarkerId,
+      selectedSightMarkerId,
+      onStoryMarkerPress,
+      onSightMarkerPress,
       onRegionChangeComplete,
       onMapPress,
       scrollEnabled = true,
@@ -85,7 +92,13 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
 
     const moveToCurrentLocation = useCallback(async () => {
       const coords = await getCurrentLocation();
-      mapRef.current?.animateToRegion(coords, 300);
+      mapRef.current?.animateToRegion(
+        {
+          ...coords,
+          latitude: coords.latitude - 0.002,
+        },
+        300
+      );
     }, [getCurrentLocation]);
 
     const handleRegionChangeComplete = useCallback(async () => {
@@ -124,7 +137,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           style={styles.map}
           provider={PROVIDER_DEFAULT}
           initialRegion={{
-            latitude: location.latitude,
+            latitude: location.latitude - 0.002,
             longitude: location.longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
@@ -139,23 +152,39 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           onRegionChangeComplete={handleRegionChangeComplete}
           onPress={onMapPress}
         >
-          {markers?.map((sight) => (
+          {spotMarkers?.map((story) => (
             <Marker
-              key={sight.storySpotId}
+              key={story.storySpotId}
               coordinate={{
-                latitude: sight.latitude,
-                longitude: sight.longitude,
+                latitude: story?.latitude,
+                longitude: story?.longitude,
               }}
               pinColor={
-                selectedMarkerId === sight.storySpotId
+                selectedSpotMarkerId === story.storySpotId
                   ? theme.colors.main.primary
                   : theme.colors.alarm.error
               }
               onPress={(e) => {
                 e.stopPropagation?.();
-                onMarkerPress?.(sight);
+                onStoryMarkerPress?.(story);
               }}
               stopPropagation={true}
+            />
+          ))}
+          {sightMarkers?.map((sight) => (
+            <Marker
+              key={sight.id}
+              coordinate={{
+                latitude: sight.latitude,
+                longitude: sight.longitude,
+              }}
+              title={sight.title}
+              pinColor={
+                selectedSightMarkerId === sight.id
+                  ? theme.colors.main.primary
+                  : "#FF6B6B"
+              }
+              onPress={() => onSightMarkerPress?.(sight)}
             />
           ))}
         </MapView>
