@@ -1,5 +1,7 @@
 import React from "react";
 
+import { GestureResponderEvent } from "react-native";
+
 import {
   Banknote,
   Clock,
@@ -15,7 +17,12 @@ import { SightDetailCardProps } from "@/types/sight";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
+import {
+  sightToCustomAudioMetadata,
+  useAudioPlayerStore,
+} from "@/store/useAudioPlayerStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { distanceToString } from "@/util/locationUtil";
 import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
@@ -26,6 +33,24 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 }) => {
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
+  const setTemporarySightInfo = useAudioPlayerStore(
+    (state) => state.setTemporarySightInfo,
+  );
+
+  const isMyDocentPlaying =
+    sightDetail !== null &&
+    audioMetadata?.id === sightToCustomAudioMetadata(sightDetail).id;
+
+  const onPressDocent = (e: GestureResponderEvent) => {
+    e.stopPropagation();
+    if (!sightDetail?.docentUrl) return;
+    if (isMyDocentPlaying) {
+      setTemporarySightInfo();
+    } else {
+      setTemporarySightInfo(sightDetail);
+    }
+  };
 
   if (!selectedSight) return null;
 
@@ -45,28 +70,6 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     <Container>
       <HeaderRow>
         <SightTitle>{selectedSight.title}</SightTitle>
-
-        {/* <IconButton onPress={(e) => {
-          e.stopPropagation();
-          isInCart ? removeRouteCartItem(selectedSight.id) : insertRouteCartItem({
-            sightId : sightDetail?.id ?? "",
-            theme : sightDetail?.theme ?? "",
-            title : sightDetail?.title ?? "",
-            address: sightDetail?.address ?? "",
-            point: {
-            longitude: sightDetail?.longitude ?? selectedSight.longitude,
-            latitude: sightDetail?.latitude ?? selectedSight.latitude,
-            },
-            imageUrl: sightDetail?.imgUrl?? ""
-          })
-        }}>
-          {isInCart ? (
-            <AfterAddRoute width={28} height={28} />
-          ) : (
-            <BeforeAddRoute width={28} height={28} />
-          )}
-        </IconButton> */}
-
         <IconButton
           onPress={(e) => {
             e.stopPropagation();
@@ -100,7 +103,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       ) : sightDetail ? (
         <>
           <BasicInfoRow>
-            <SightDistance>{sightDetail.distance}km</SightDistance>
+            <SightDistance>
+              {distanceToString(sightDetail.distance)}
+            </SightDistance>
             <SightTheme>{sightDetail.theme}</SightTheme>
           </BasicInfoRow>
           <SightText>{checkData(sightDetail.address)}</SightText>
@@ -111,11 +116,17 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
             }}
             resizeMode="cover"
           />
-
-          <DocentButton>
-            <Headphones size={20} color="#333" />
-            <DocentText>도슨트 듣기</DocentText>
-          </DocentButton>
+          {sightDetail.docentUrl && (
+            <DocentButton onPress={onPressDocent}>
+              <Headphones
+                size={20}
+                color={isMyDocentPlaying ? "#1DB954" : "#333"}
+              />
+              <DocentText>
+                {isMyDocentPlaying ? "일시정지" : "도슨트 듣기"}
+              </DocentText>
+            </DocentButton>
+          )}
 
           <Section>
             <SectionTitle>소개</SectionTitle>

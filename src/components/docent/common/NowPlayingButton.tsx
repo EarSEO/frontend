@@ -7,7 +7,10 @@ import { useAudioPlayerStatus } from "expo-audio";
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import {
+  routeItemToCustomAudioMetadata,
+  useAudioPlayerStore,
+} from "@/store/useAudioPlayerStore";
 import { RouteItem, useRouteStore } from "@/store/useRouteStore";
 
 type ButtonIcon = "PAUSE" | "PLAY" | "MUSICAL_NOTES";
@@ -27,13 +30,12 @@ const NowPlayingButton: React.FC<NowPlayingButtonProps> = ({
   const { player, pauseOrResume } = useAudioPlayerStore();
   const status = useAudioPlayerStatus(player);
 
-  const { listeningRouteItem, setListeningRouteItem, pause, resume } =
-    useAudioPlayerStore();
+  const { setAudioMetadata, pause, resume } = useAudioPlayerStore();
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
   const { routeItems } = useRouteStore();
 
   const isCurrentItem =
-    listeningRouteItem?.itemId === routeItem.itemId &&
-    listeningRouteItem.itemType === routeItem.itemType;
+    audioMetadata?.id === routeItemToCustomAudioMetadata(routeItem).id;
   const icon: ButtonIcon = useMemo(() => {
     if (!isCurrentItem) return "PLAY";
     if (buttonPosition === "LIST") return "MUSICAL_NOTES";
@@ -46,7 +48,7 @@ const NowPlayingButton: React.FC<NowPlayingButtonProps> = ({
 
       if (buttonPosition === "LIST") {
         if (!isCurrentItem) {
-          setListeningRouteItem(routeItem);
+          setAudioMetadata(routeItem);
         }
       } else if (buttonPosition === "MINI_PLAYER") {
         pauseOrResume();
@@ -58,7 +60,7 @@ const NowPlayingButton: React.FC<NowPlayingButtonProps> = ({
       status.playing,
       pause,
       resume,
-      setListeningRouteItem,
+      setAudioMetadata,
       routeItems,
     ],
   );

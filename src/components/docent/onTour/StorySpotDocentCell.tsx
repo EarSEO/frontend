@@ -11,7 +11,10 @@ import QueueStorySpotButton, {
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import {
+  routeItemToCustomAudioMetadata,
+  useAudioPlayerStore,
+} from "@/store/useAudioPlayerStore";
 import { RouteItem } from "@/store/useRouteStore";
 import View = Animated.View;
 
@@ -30,11 +33,10 @@ const StorySpotDocentCell: React.FC<StorySpotDocentCellProps> = ({
   onPress,
   children,
 }: StorySpotDocentCellProps) => {
-  const { listeningRouteItem } = useAudioPlayerStore();
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
 
   const isCurrentItem =
-    listeningRouteItem?.itemId === routeItem.itemId &&
-    listeningRouteItem.itemType === "STORY_SPOT";
+    audioMetadata?.id === routeItemToCustomAudioMetadata(routeItem).id;
 
   const backgroundColor = isCurrentItem
     ? theme.colors.background.background500

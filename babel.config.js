@@ -13,6 +13,17 @@ module.exports = function (api) {
         },
       ],
       "react-native-reanimated/plugin",
+      [
+        "module:react-native-dotenv",
+        {
+          moduleName: "@env",
+          path: ".env",
+          safe: false,
+          allowlist: ['APP_ENV_API_BASE_URL', 'APP_ENV_GEOFENCE_RADIUS'],
+          allowUndefined: true,
+          verbose: false,
+        },
+      ],
     ],
   };
 };

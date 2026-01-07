@@ -1,12 +1,85 @@
-import "dotenv/config";
+import { version } from "./package.json";
 
 export default {
   expo: {
-    name: "Front",
-    slug: "front",
-    extra: {
-      API_BASE_URL: process.env.API_BASE_URL,
+    name: "이어서",
+    slug: "earseo",
+    version: version,
+    orientation: "portrait",
+    icon: "./src/assets/images/earseo-icon.png",
+    scheme: "earseo",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    updates: {
+      url: "https://u.expo.dev/51f8ef22-b7f8-40ed-92d1-201c776e3b87"
     },
-    plugins: ["expo-secure-store", "expo-router", "expo-audio"],
+    runtimeVersion: {
+      policy: "appVersion"
+    },
+    extra: {
+      APP_ENV_API_BASE_URL: process.env.APP_ENV_API_BASE_URL,
+      APP_ENV_GEOFENCE_RADIUS: process.env.APP_ENV_GEOFENCE_RADIUS || '100',
+      eas: {
+        projectId: "51f8ef22-b7f8-40ed-92d1-201c776e3b87"
+      }
+    },
+    ios: {
+      bundleIdentifier: "com.earseo.earseo",
+      supportsTablet: true,
+      appleTeamId: "W39CU54NKB",
+      infoPlist: {
+        UIBackgroundModes: ["audio", "location"],
+      },
+      config: {
+        usesNonExemptEncryption: false
+      },
+      icon: "./src/assets/earseo-ios.icon",
+      displayName: "이어서",
+    },
+    android: {
+      package: "com.earseo.earseo",
+      adaptiveIcon: {
+        backgroundColor: "#E6F4FE",
+        foregroundImage: "./src/assets/images/earseo-icon.png",
+        backgroundImage: "./src/assets/images/earseo-icon.png",
+        monochromeImage: "./src/assets/images/earseo-icon.png",
+      },
+      edgeToEdgeEnabled: true,
+      predictiveBackGestureEnabled: false,
+      label: "이어서",
+    },
+    web: {
+      output: "static",
+      favicon: "./src/assets/images/earseo-icon.png",
+    },
+    plugins: [
+      "react-native-maps",
+      "expo-web-browser",
+      "expo-secure-store",
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          image: "./src/assets/images/earseo-transparent-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          dark: {
+            backgroundColor: "#1e2127",
+          },
+        },
+      ],
+      [
+        "expo-location",
+        {
+          isIosBackgroundLocationEnabled: true,
+          isAndroidBackgroundLocationEnabled: true,
+        },
+      ],
+      "expo-font",
+    ],
+    experiments: {
+      typedRoutes: true,
+      reactCompiler: true,
+    },
   },
 };

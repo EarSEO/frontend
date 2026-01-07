@@ -30,7 +30,7 @@ export default function Login() {
     try {
       setIsLoading(true);
       await login({ email, password });
-      router.replace("/myPage");
+      router.back();
     } catch (error: any) {
       Alert.alert("로그인 실패", "이메일 또는 비밀번호를 확인해주세요.");
     } finally {

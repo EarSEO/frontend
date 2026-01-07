@@ -31,8 +31,8 @@ const MiniPlayer: React.FC = () => {
     setMiniBarPressed(false);
   }, []);
 
-  const { listeningRouteItem } = useAudioPlayerStore();
-  if (!listeningRouteItem) return <></>;
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
+  if (!audioMetadata?.routeItem) return <></>;
 
   if (enableModal) {
     return <MiniPlayerModal />;
@@ -44,11 +44,11 @@ const MiniPlayer: React.FC = () => {
       onPressOut={onMiniBarPressOut}
       pressed={miniBarPressed}
     >
-      {listeningRouteItem.itemType === "SIGHT" ? (
+      {audioMetadata.routeItem.itemType === "SIGHT" ? (
         <SightDocentBriefInfo
-          sightImageUrl={listeningRouteItem.itemImageUrl}
-          sightTitle={listeningRouteItem.itemName}
-          itemTheme={listeningRouteItem.itemTheme}
+          sightImageUrl={audioMetadata.routeItem.itemImageUrl}
+          sightTitle={audioMetadata.routeItem.itemName}
+          itemTheme={audioMetadata.routeItem.itemTheme}
         />
       ) : (
         <Text
@@ -56,11 +56,11 @@ const MiniPlayer: React.FC = () => {
             marginHorizontal: theme.spacing.md,
           }}
         >
-          {listeningRouteItem.itemName}
+          {audioMetadata.routeItem.itemName}
         </Text>
       )}
       <NowPlayingButton
-        routeItem={listeningRouteItem}
+        routeItem={audioMetadata.routeItem}
         buttonPosition="MINI_PLAYER"
       />
     </MiniPlayerContainer>

@@ -6,9 +6,11 @@ export const API_ENDPOINTS = {
     LOGOUT: "/api/user/member/logout",
     SOCIAL_LOGIN: "/api/member/oauth/google",
     SOCIAL_SIGNUP: "/api/member/oauth/additional-info",
-    EMAIL_SEND: "/api/member/email/send",
+    EMAIL_SIGNUP_SEND: "/api/member/email/signup/send",
     EMAIL_VERIFY: "/api/member/email/verify",
+    EMAIL_PASSWORD_SEND: "/api/member/email/password/send",
     NICKNAME_CHECK: "/api/member/nickname/check",
+    RESET_PASSWORD: "/api/member/reset-password",
   },
 
   STORY: {
@@ -28,6 +30,8 @@ export const API_ENDPOINTS = {
     RECTANGLE: "/api/sight/map/rectangle",
     CIRCLE: "/api/sight/map/circle",
     DETAIL: "/api/sight/detail",
+    SEARCH: "/api/sight/search",
+    CURATION: "/api/sight/curation",
   },
 
   ROUTE: {
