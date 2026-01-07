@@ -1,6 +1,6 @@
 import styled from "styled-components/native";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 import Divider from "./Divider";
 import StoryCard from "./StoryCard";

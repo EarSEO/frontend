@@ -1,27 +1,25 @@
+import { useState } from "react";
+
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { useStoryStore } from "@/store/useStoryStore";
 
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 
 export const StoryAddButton = () => {
   const router = useRouter();
-  const { storyMain } = useStoryStore();
   const { isLogined } = useAuthStore();
+  const [disabled, setDisabled] = useState<boolean>(false);
 
   const handleAddStory = () => {
+    if (disabled) return;
+    setDisabled(true);
+    setTimeout(() => setDisabled(false), 500);
+
     if (isLogined === true) {
       router.push("/story/spotLocationSelected");
-      {
-        storyMain
-          ? router.push("/story/spotLocationSelected")
-          : router.push("/story/spotNameSelected");
-      }
-    } else {
-      router.push("/myPage/login");
-    }
+    } else router.replace("/myPage/login");
   };
 
   return (

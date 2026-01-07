@@ -1,18 +1,15 @@
 import styled from "styled-components/native";
 
-import { GetStoryRequest } from "@/types/storySpot";
-
 import { theme } from "@/styles/theme";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 import Divider from "./Divider";
 import StoryCard from "./StoryCard";
 import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
-  const { storyItems, summaries, spotTitleList } = useStoryStore();
-  console.log("check", storyItems);
+  const { storyItems, spotTitleList } = useStoryStore();
 
   const spotNames = spotTitleList?.titles;
   const mainTitle = spotNames?.[0] || "제목 없음";
@@ -28,7 +25,9 @@ const StorySpotHeader = () => {
         <Title>{mainTitle}</Title>
         <SpotTitleList>{spotTitles}</SpotTitleList>
       </HeaderWrapper>
+
       <Divider />
+
       <SummaryWrapper>
         <SummaryCard />
       </SummaryWrapper>

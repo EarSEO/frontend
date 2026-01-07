@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 import Divider from "./Divider";
 

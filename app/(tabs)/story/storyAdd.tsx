@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { Bluetooth, ChevronRight, MapPin, X } from "lucide-react-native";
+import { ChevronRight, MapPin, X } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
@@ -16,9 +16,9 @@ import { CreateStoryRequest } from "@/types/storySpot";
 import { theme } from "@/styles/theme";
 
 import { createStoryTextApi } from "@/api/getStoryApi";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouteStore } from "@/store/useRouteStore";
-import { useStoryStore } from "@/store/useStoryStore";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
 
@@ -31,12 +31,12 @@ const CONCEPTS = [
 ] as const;
 
 export default function StoryAdd() {
+  const { newSpotName } = useStoryAddStore();
   const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
     null
   );
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const { newSpotName } = useStoryStore();
   const router = useRouter();
 
   const handleMapButton = () => {
@@ -75,7 +75,7 @@ export default function StoryAdd() {
     }
 
     const { user } = useAuthStore.getState();
-    const { storyLocation } = useStoryStore.getState();
+    const { storyLocation } = useStoryAddStore.getState();
 
     if (!user || !storyLocation) {
       Alert.alert("정보를 불러오지못했습니다.");
@@ -319,12 +319,12 @@ const AddImageButton = styled.Pressable`
 `;
 
 const AddImageText = styled.Text`
-  font-size: 32px;
+  font-size: ${theme.typography.fontSize.xs}px;
   color: ${theme.colors.grey.neutral400};
 `;
 
 const AddImageSubText = styled.Text`
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.grey.neutral400};
   margin-top: 4px;
 `;

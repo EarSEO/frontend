@@ -17,8 +17,6 @@ import {
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
-import { useAuthStore } from "@/store/useAuthStore";
-
 import api from "./axios";
 
 export const getStoryApi = async (
@@ -37,7 +35,7 @@ export const getStoryApi = async (
   }
 };
 
-//지도 사각형 영역 내 이야기 스팟 조회
+//지도 사각형 영역 내 이야기 게시글 조회
 export const getRectangle = async (param: GetMapStoriesRequest) => {
   try {
     const response = await api.get<BaseResponse<GetMapStoryResponse>>(
@@ -63,13 +61,12 @@ export const getSpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
   }
 };
 
+//이야기 등록
 export const createStoryTextApi = async (
   param: CreateStoryRequest,
   images?: string[]
 ) => {
   try {
-    const { user } = useAuthStore.getState();
-
     const createTextRes = await api.post<BaseResponse<CreateStoryResponse>>(
       `${API_ENDPOINTS.STORY.CREATE_STRORY}`,
       param
@@ -99,10 +96,8 @@ export const createStoryTextApi = async (
         }
       );
     }
-
     return createTextRes.data;
   } catch (error) {
-    console.log("createStoryApi error: ", error);
     throw error;
   }
 };
@@ -111,15 +106,17 @@ export const getSearchTitle = async (param: GetSearchTitleRequest) => {
   try {
     const response = await api.get<BaseResponse<SearchSpotInfoResponse>>(
       `${API_ENDPOINTS.STORY.SEARCH_TITLE}`,
-      { params: param }
+      {
+        params: param,
+      }
     );
     return response.data.data;
   } catch (error) {
-    console.log("연결안됨");
     throw error;
   }
 };
 
+//지도 사각형 내 스팟 마커 조회
 export const getSpotMapRectangle = async (param: GetMapStoriesRequest) => {
   try {
     const response = await api.get<BaseResponse<MapSpotInfoList>>(
@@ -128,7 +125,6 @@ export const getSpotMapRectangle = async (param: GetMapStoriesRequest) => {
     );
     return response.data.data;
   } catch (error) {
-    console.log("연결안됨");
     throw error;
   }
 };

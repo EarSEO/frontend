@@ -95,7 +95,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
       mapRef.current?.animateToRegion(
         {
           ...coords,
-          latitude: coords.latitude - 0.002,
+          latitude: coords.latitude - 0.003,
         },
         300
       );
@@ -137,7 +137,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           style={styles.map}
           provider={PROVIDER_DEFAULT}
           initialRegion={{
-            latitude: location.latitude - 0.002,
+            latitude: location.latitude - 0.003,
             longitude: location.longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
@@ -150,7 +150,10 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           rotateEnabled={rotateEnabled}
           pitchEnabled={pitchEnabled}
           onRegionChangeComplete={handleRegionChangeComplete}
-          onPress={onMapPress}
+          onPress={(e) => {
+            console.log("onPressMap : ", e.target);
+            if (onMapPress) onMapPress();
+          }}
         >
           {spotMarkers?.map((story) => (
             <Marker
@@ -184,7 +187,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
                   ? theme.colors.main.primary
                   : "#FF6B6B"
               }
-              onPress={() => onSightMarkerPress?.(sight)}
+              onPress={(e) => onSightMarkerPress?.(sight)}
             />
           ))}
         </MapView>

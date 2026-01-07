@@ -1,13 +1,11 @@
 import Popover from "react-native-popover-view";
 
-import { useRouter } from "expo-router";
 import { Pencil, Trash2Icon } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { useStoryStore } from "@/store/useStoryStore";
 
 interface MoreMenuProps {
   visible: boolean;

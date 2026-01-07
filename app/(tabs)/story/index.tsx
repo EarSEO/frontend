@@ -12,7 +12,9 @@ import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
-import { useStorySpotMap } from "@/hooks/useStorySpotMap";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
+
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 export default function Index() {
   const Ref = useRef<any>(null);
@@ -20,12 +22,13 @@ export default function Index() {
 
   const {
     mapRef,
-    spotMapRectangle,
     selectedMarker,
     handleMapPress,
     handleRegionChange,
     handleStoryMarkerPress,
   } = useStorySpotMap();
+
+  const { spotMapRectangle } = useStoryStore();
 
   return (
     <Container>

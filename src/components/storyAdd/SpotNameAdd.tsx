@@ -1,25 +1,19 @@
 import { useState } from "react";
 
-import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
-
-import { GetSpotBriefInfoRequest } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
-import BackButton from "../common/BackButton";
-import Button from "../common/Button";
 import Input from "../common/Input";
 
-interface SpotNameAddProps {
-  onSpotNameChange: (name: string) => void;
-}
+const SpotNameAdd = () => {
+  const [inputSpotname, setInputSpotName] = useState<string>();
+  const { spotBriefInfo } = useStoryStore();
+  const { setNewSpotName } = useStoryAddStore();
 
-const SpotNameAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
-  const [newSpotname, setNewSpotName] = useState<string>();
-  const { setSpotBriefInfo, spotBriefInfo } = useStoryStore();
   const spotNames = spotBriefInfo?.titles;
 
   const spotTitles =
@@ -29,12 +23,8 @@ const SpotNameAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
       .join(" ") || " ";
 
   const handleSpotNamePass = (text: string) => {
+    setInputSpotName(text);
     setNewSpotName(text);
-    onSpotNameChange(text);
-  };
-
-  const handleSpotSearch = () => {
-    console.log("검색:", newSpotname);
   };
 
   return (
@@ -46,20 +36,11 @@ const SpotNameAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
 
       <InputWrapper>
         <StyledInput
-          value={newSpotname}
+          value={inputSpotname}
           onChangeText={handleSpotNamePass}
           radius={10}
           placeholder="스팟이름을 입력해주세요."
-          backgroundColor={theme.colors.grey.neutral100}
-          fontSize={theme.typography.fontSize.sm}
         />
-        <SpotCheckButton onPress={handleSpotSearch}>
-          <Ionicons
-            name="search"
-            size={18}
-            color={theme.colors.grey.neutral600}
-          />
-        </SpotCheckButton>
       </InputWrapper>
 
       <SpotTitlesWrapper>{spotTitles}</SpotTitlesWrapper>
@@ -80,12 +61,11 @@ const TitleWrapper = styled.View`
 
 const Title = styled.Text`
   font-family: ${theme.typography.fontFamily.medium};
-
   font-size: ${theme.typography.fontSize.lg}px;
   color: ${theme.colors.text.textPrimary};
 `;
 const SubTitle = styled.Text`
-  font-family: ${theme.typography.fontFamily.regular};
+  font-family: ${theme.typography.fontFamily.regular}px;
   font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textPrimary};
 `;
@@ -96,16 +76,9 @@ const InputWrapper = styled.View`
 
 const StyledInput = styled(Input)`
   padding-right: 45px;
-`;
-
-const SpotCheckButton = styled.Pressable`
-  position: absolute;
-  right: 30px;
-  top: 0;
-  bottom: 0;
-  padding: 8px;
-  justify-content: center;
-  align-items: center;
+  border-radius: 10px;
+  background-color: ${theme.colors.grey.neutral100};
+  font-size: ${theme.typography.fontSize.sm};
 `;
 
 const SpotTitlesWrapper = styled.Text`

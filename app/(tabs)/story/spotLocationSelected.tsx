@@ -15,44 +15,46 @@ import StorySpotMap from "@/components/map/StorySpotMap";
 import SpotLocationAdd from "@/components/storyAdd/SpotLocationAdd";
 import SpotNameAdd from "@/components/storyAdd/SpotNameAdd";
 
+import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
-import { useStorySpotMap } from "@/hooks/useStorySpotMap";
 
 import { SightInfo } from "@/types/sight";
-import { GetSearchTitleRequest } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
-import { SEOUL_GEOM } from "@/constants/geometry";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useStoryStore } from "@/store/useStoryStore";
 
 export default function SpotLocationSelected() {
-  const { isLogined } = useAuthStore();
-  const { location } = useLocation();
-
-  const [isNameSelected, setIsNameSelected] = useState<boolean>(true);
-
-  const {
-    setNewSpotName,
-    setStoryLocation,
-    storyLocation,
-    setSearchTitle,
-    spotMapRectangle,
-    mainStoryMapRequest,
-  } = useStoryStore();
+  const { spotMapRectangle, mainStoryMapRequest, spotBriefInfo } =
+    useStoryStore();
 
   const { mapRef, selectedMarker, handleMapPress, handleStoryMarkerPress } =
     useStorySpotMap();
 
-  const { sights, selectedSight, fetchSightDetail } = useSightMap();
+  const { resetSearchTitle } = useStoryStore();
+
+  const { moveToCustomPinLocation, getCustomPinLoction } =
+    useCustomPinNavigation();
+
+  const { storyLocation } = useStoryAddStore();
+
+  const { isLogined } = useAuthStore();
+  const { location } = useLocation();
 
   const Ref = useRef<any>(null);
   const router = useRouter();
   const animatedPosition = useSharedValue(0);
-  const [inputSpotName, setInputSpotName] = useState<string>("");
+
+  const [isNameSelected, setIsNameSelected] = useState<boolean>(true); // 이름 등록할 때 지도 움직임 false
+  const [searchedSpotId, setSearchedSpotId] = useState<number | null>(null); // 선택된 검색어 id
+  const selectedSpotName = spotBriefInfo?.titles;
+
+  const { sights, selectedSight } = useSightMap();
 
   useEffect(() => {
     if (!isLogined) {
@@ -65,71 +67,54 @@ export default function SpotLocationSelected() {
     }
   }, [isLogined]);
 
+  //등록 페이지 들어오기 전 지도 화면 기반 핀 이동
   useEffect(() => {
-    if (location && !mainStoryMapRequest) {
-      const pinLat = location.latitude;
-      const pinLng = location.longitude;
+    resetSearchTitle();
 
-      setStoryLocation(pinLat, pinLng);
+    if (!location) {
+      return;
     }
-    const minLat = Number(mainStoryMapRequest?.minLatitude);
-    const maxLat = Number(mainStoryMapRequest?.maxLatitude);
-    const minLng = Number(mainStoryMapRequest?.minLongitude);
-    const maxLng = Number(mainStoryMapRequest?.maxLongitude);
+    if (location && !mainStoryMapRequest) {
+      moveToCustomPinLocation(mapRef, location.latitude, location.longitude);
+    }
 
-    const pinLat = (minLat + maxLat) / 2;
-    const pinLng = (minLng + maxLng) / 2;
+    const minLatitude = Number(mainStoryMapRequest?.minLatitude);
+    const maxLatitude = Number(mainStoryMapRequest?.maxLatitude);
+    const minLongitude = Number(mainStoryMapRequest?.minLongitude);
+    const maxLongitude = Number(mainStoryMapRequest?.maxLongitude);
 
-    setStoryLocation(pinLat, pinLng);
+    const mapLat = (minLatitude + maxLatitude) / 2;
+    const mapLng = (minLongitude + maxLongitude) / 2;
 
-    setTimeout(() => {
-      mapRef.current?.moveToLocation({
-        latitude: pinLat,
-        longitude: pinLng,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      });
-    }, 500);
-  }, [mainStoryMapRequest]);
+    console.log(mapLat, mapLng);
+    console.log("\n");
 
+    (mapRef.current?.moveToLocation({
+      latitude: mapLat,
+      longitude: mapLng,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    }),
+      console.log("처음 들어올 때 위도 경도? 값 ", mapLat, mapLng));
+    console.timeLog("\n");
+  }, [location, mainStoryMapRequest]);
+
+  //등록 페이지에서 지도 움직이기
   const handleRegionChange = (bounds: {
     minLongitude: number;
     minLatitude: number;
     maxLongitude: number;
     maxLatitude: number;
   }) => {
-    const pinLat = (bounds.minLatitude + bounds.maxLatitude) / 2;
-    const pinLng = (bounds.minLongitude + bounds.maxLongitude) / 2;
-    setStoryLocation(pinLat, pinLng);
+    getCustomPinLoction(bounds);
   };
 
-  const handleSearch = async () => {
-    try {
-      if (!inputSpotName.trim() || !storyLocation) {
-        return;
-      }
-      const searchParams: GetSearchTitleRequest = {
-        keyword: inputSpotName,
-        longitude: storyLocation?.longitude,
-        latitude: storyLocation.latitude,
-        minLongitude: SEOUL_GEOM.LOGITUDE.MIN,
-        minLatitude: SEOUL_GEOM.LATITUDE.MIN,
-        maxLongitude: SEOUL_GEOM.LOGITUDE.MAX,
-        maxLatitude: SEOUL_GEOM.LATITUDE.MAX,
-        limit: "10",
-      };
-
-      await setSearchTitle(searchParams);
-    } catch (error) {
-      throw error;
-    }
-  };
-
+  //마커선택 시 지도 이동
   const handleMarkerPress = (sight: SightInfo) => {
-    fetchSightDetail(sight, {
-      longitude: location.longitude,
-      latitude: location.latitude,
-    });
+    const mapLat = sight.latitude;
+    const mapLng = sight.longitude;
+
+    moveToCustomPinLocation(mapRef, mapLat, mapLng);
   };
 
   const handleLocationAdd = () => {
@@ -141,8 +126,6 @@ export default function SpotLocationSelected() {
   };
 
   const handleAdd = () => {
-    setNewSpotName(inputSpotName);
-
     router.push("/story/storyAdd");
   };
 
@@ -172,6 +155,7 @@ export default function SpotLocationSelected() {
 
           <Header>
             <BackButton buttonStyle="CIRCLE" />
+            <StorySpotName>{selectedSpotName}</StorySpotName>
             <CloseButton buttonStyle="CIRCLE" onPress={"./"} />
           </Header>
         </MapWrapper>
@@ -184,10 +168,7 @@ export default function SpotLocationSelected() {
           keyboardBehavior="interactive"
         >
           {isNameSelected ? (
-            <SpotLocationAdd
-              onSpotNameChange={setInputSpotName}
-              onSearch={handleSearch}
-            />
+            <SpotLocationAdd onSelectSpotId={setSearchedSpotId} />
           ) : (
             <SpotNameAdd />
           )}
@@ -223,6 +204,8 @@ const MapWrapper = styled.View`
   flex: 1;
 `;
 
+const StorySpotName = styled.TextInput``;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -256,8 +239,8 @@ const ButtonWrapper = styled.View`
 `;
 const CenterPin = styled.View`
   position: absolute;
-  top: 35%;
-  left: 50%;
+  top: 30%;
+  left: 48%;
   z-index: 5;
   margin-left: -15px;
   margin-top: -30px;

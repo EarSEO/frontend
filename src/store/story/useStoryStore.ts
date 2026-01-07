@@ -35,18 +35,18 @@ interface StoryStore {
   summaries?: StorySummaryResponse[];
   mapStoryInfo?: StoryInfoResponse[];
   spotBriefInfo?: GetLocationSpotBriefInfoResponse;
-  newSpotName?: string;
   newSpotLocation?: GetSpotBriefInfoRequest[];
-  storyLocation?: { latitude: number; longitude: number };
   searchTitleInfo?: storySpots[];
   spotMapRectangle?: MapSpotInfoItem[];
 
   setSearchTitle: (
     param: GetSearchTitleRequest
   ) => Promise<SearchSpotInfoResponse | undefined>;
+  resetSearchTitle: () => void;
   setStoryInfo: (
     param: GetStoryRequest
   ) => Promise<GetSpotTotalInfoResponse | undefined>;
+  resetStoryInfo: () => void;
   setMapStoryInfo: (
     param: GetMapStoriesRequest
   ) => Promise<StoryInfoResponse | undefined>;
@@ -56,8 +56,6 @@ interface StoryStore {
   setSpotMapRectangle: (
     param: GetMapStoriesRequest
   ) => Promise<MapSpotInfoItem[] | undefined>;
-  setNewSpotName: (name: string) => void;
-  setStoryLocation: (latitude: number, longitude: number) => void;
 }
 
 interface StoryItem {
@@ -87,11 +85,10 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   mapStoryInfo: undefined,
   storyMain: true,
   spotBriefInfo: undefined,
-  newSpotName: undefined,
-  storyLocation: undefined,
   spotMapRectangle: undefined,
   searchTitleInfo: undefined,
 
+  //마커 선택 시 이야기게시글 불러오기
   setStoryInfo: async (
     param: GetStoryRequest
   ): Promise<GetSpotTotalInfoResponse | undefined> => {
@@ -113,7 +110,16 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
       return undefined;
     }
   },
+  resetStoryInfo: () =>
+    set({
+      storyItems: undefined,
+      briefSpotInfo: undefined,
+      spotTitleList: undefined,
+      distance: undefined,
+      summaries: undefined,
+    }),
 
+  //지도 사각형 영역 내 이야기 게시글 조회
   setMapStoryInfo: async (
     param: GetMapStoriesRequest
   ): Promise<GetMapStoryResponse | undefined> => {
@@ -148,16 +154,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     }
   },
 
-  setNewSpotName: (name: string) => set({ newSpotName: name }),
-
-  setStoryLocation: (latitude: number, longitude: number) =>
-    set({
-      storyLocation: {
-        latitude,
-        longitude,
-      },
-    }),
-
+  //스토리 검색
   setSearchTitle: async (
     param: GetSearchTitleRequest
   ): Promise<SearchSpotInfoResponse | undefined> => {
@@ -173,6 +170,11 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     }
   },
 
+  resetSearchTitle: () => {
+    set({ searchTitleInfo: undefined });
+  },
+
+  //지도 사각형 내 스팟 마커 조회
   setSpotMapRectangle: async (
     param: GetMapStoriesRequest
   ): Promise<MapSpotInfoItem[] | undefined> => {

@@ -123,19 +123,19 @@ export interface CreateStoryResponse {
 
 export interface GetSearchTitleRequest {
   keyword: string;
-  longitude: string;
-  latitude: string;
-  minLongitude: string;
-  minLatitude: string;
-  maxLongitude: string;
-  maxLatitude: string;
+  longitude: number;
+  latitude: number;
+  minLongitude: number;
+  minLatitude: number;
+  maxLongitude: number;
+  maxLatitude: number;
   limit?: string;
 }
 
 export interface storySpots {
-  longitude?: number;
-  latitude?: number;
-  storySpotId?: number;
+  longitude: number;
+  latitude: number;
+  storySpotId: number;
   distance?: number;
   title?: string;
 }
