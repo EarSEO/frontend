@@ -14,8 +14,12 @@ export interface LocationLabelProps {
   locationInfo?: LocationInfo;
   locationTitle?: string;
   address?: string;
-  distance?: number | null;
+  distance?: number;
+  logitude?: number;
+  latitude?: number;
   locationtheme?: string;
+  isSelected?: boolean;
+  onPress?: () => void;
 }
 
 const LocationLabel: React.FC<LocationLabelProps> = ({
@@ -23,7 +27,11 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
   locationTitle,
   address,
   distance,
+  logitude,
+  latitude,
   locationtheme,
+  isSelected = false,
+  onPress,
 }) => {
   const onlyTitle = !address && !distance && !locationtheme;
 
@@ -54,14 +62,14 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
 
   if (onlyTitle) {
     return (
-      <OnlyTitleContainer>
+      <OnlyTitleContainer onPress={onPress} isSelected={isSelected}>
         {getIconName()}
         <LocationTitle>{locationTitle}</LocationTitle>
       </OnlyTitleContainer>
     );
   } else
     return (
-      <LabelContainer>
+      <LabelContainer onPress={onPress} isSelected={isSelected}>
         {getIconName()}
         <ContentWrapper>
           <TopRow>
@@ -77,22 +85,31 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
     );
 };
 
-const OnlyTitleContainer = styled.View`
+const OnlyTitleContainer = styled.Pressable<{ isSelected: boolean }>`
   flex-direction: row;
-  gap: 15;
+  gap: 15px;
   width: 90%;
+  padding: 10px;
+  border-radius: ${theme.borderRadius.md}px;
+  border-color: ${({ isSelected }) =>
+    isSelected ? theme.colors.grey.neutral400 : "transparent"};
+  border-width: ${({ isSelected }) => (isSelected ? "1px" : "0px")};
 `;
 
-const LabelContainer = styled.View`
+const LabelContainer = styled.Pressable<{ isSelected: boolean }>`
   flex-direction: row;
   align-items: center;
   gap: 15;
   width: 90%;
-  margin: 10px;
+  padding: 10px;
+  border-radius: ${theme.borderRadius.md}px;
+  border-color: ${({ isSelected }) =>
+    isSelected ? theme.colors.grey.neutral400 : "transparent"};
+  border-width: ${({ isSelected }) => (isSelected ? "2px" : "0px")};
 `;
 
 const ContentWrapper = styled.View`
-  gap: 5;
+  gap: 5px;
   flex: 1;
 `;
 
@@ -103,12 +120,12 @@ const TopRow = styled.View`
 
 const LocationTitle = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.md}px;
 `;
 
 const LocationTheme = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 const BottomRow = styled.View`
@@ -120,13 +137,13 @@ const BottomRow = styled.View`
 const Address = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
   color: ${theme.colors.text.textSecondary};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 const Distance = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
   color: ${theme.colors.text.textBlue};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 export default LocationLabel;

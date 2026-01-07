@@ -1,7 +1,3 @@
-import { useCallback } from "react";
-
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 
 import { BottomSheetProps } from "@/types/bottomSheet";
@@ -13,15 +9,19 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   children,
   animatedPosition,
   snapPoints,
+  keyboardBehavior = "interactive",
+  initialIndex,
 }) => {
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={snapPoints || ["15%", "45%", "90%"]}
-      index={1}
+      snapPoints={snapPoints || ["15%", "45%", "100%"]}
+      index={initialIndex || 2}
       enablePanDownToClose={false}
       enableOverDrag={false}
       animatedPosition={animatedPosition}
+      keyboardBehavior={keyboardBehavior}
+      keyboardBlurBehavior="restore"
       handleIndicatorStyle={{
         backgroundColor: theme.colors.grey.neutral300,
         height: 4,
@@ -44,6 +44,7 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
           flex: 1,
         }}
         showsVerticalScrollIndicator={true}
+        keyboardShouldPersistTaps="handled"
       >
         {children}
       </BottomSheetScrollView>
