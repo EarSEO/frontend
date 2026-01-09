@@ -38,7 +38,7 @@ interface AuthState {
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
   logout: () => Promise<void>;
   loadUser: () => Promise<void>;
-
+  fetchProfile: () => Promise<void>;
   updateProfile: (data: ProfileUpdateRequest) => Promise<ProfileUpdateResponse>;
   updateProfileImage: (file: FormData) => Promise<string>;
   updatePassword: (data: PasswordUpdateRequest) => Promise<void>;
@@ -78,6 +78,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         isLogined: true,
         isLoading: false,
       });
+      await get().fetchProfile();
     } catch (error) {
       set({
         user: null,
@@ -292,6 +293,38 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         data,
       );
       set({ isLoading: false });
+    } catch (error) {
+      set({ isLoading: false });
+      throw error;
+    }
+  },
+
+  fetchProfile: async () => {
+    try {
+      set({ isLoading: true });
+
+      const response = await api.get<BaseResponse<ProfileUpdateResponse>>(
+        API_ENDPOINTS.MEMBER.GET_PROFILE,
+      );
+
+      const profile = response.data.data;
+      const currentUser = get().user;
+
+      if (currentUser) {
+        const updatedUser: User = {
+          ...currentUser,
+          nickname: profile.nickname,
+          gender: profile.gender,
+          birthdate: profile.birthdate,
+          nationality: profile.nationality,
+          profileImage: profile.profileImage,
+        };
+
+        await SecureStore.setItemAsync(USER_INFO, JSON.stringify(updatedUser));
+        set({ user: updatedUser, isLoading: false });
+      } else {
+        set({ isLoading: false });
+      }
     } catch (error) {
       set({ isLoading: false });
       throw error;
