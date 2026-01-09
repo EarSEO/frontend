@@ -17,7 +17,6 @@ import { theme } from "@/styles/theme";
 
 import { createStoryTextApi } from "@/api/getStoryApi";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
-import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
@@ -31,7 +30,7 @@ const CONCEPTS = [
 ] as const;
 
 export default function StoryAdd() {
-  const { newSpotName } = useStoryAddStore();
+  const { selectedSpotTitle, newSpotName } = useStoryAddStore();
   const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
     null
@@ -95,7 +94,7 @@ export default function StoryAdd() {
         storyConcept: selectedConcept,
         locale: "KO",
       };
-
+      console.log("이야기 추가 클릭");
       await createStoryTextApi(createRequestData, selectedImages);
       router.push("/story");
     } catch (error) {
@@ -118,7 +117,7 @@ export default function StoryAdd() {
           <MapButtonWrapper onPress={handleMapButton}>
             <MapText>
               <MapPin size={24} />
-              <LocationText>{newSpotName}</LocationText>
+              <LocationText>{newSpotName || selectedSpotTitle}</LocationText>
             </MapText>
             <ChevronRight size={20} />
           </MapButtonWrapper>

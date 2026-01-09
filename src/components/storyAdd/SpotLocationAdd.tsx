@@ -1,12 +1,10 @@
-import { useState } from "react";
-
 import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 
-import { GetSearchTitleRequest } from "@/types/storySpot";
+import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 
 import { theme } from "@/styles/theme";
-import { SEOUL_GEOM } from "@/constants/geometry";
 
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
@@ -14,43 +12,31 @@ import { useStoryStore } from "@/store/story/useStoryStore";
 import Input from "../common/Input";
 import LocationLabel from "../common/LocationLabel";
 
-type SpotLocationAddProps = {
-  onSelectSpotId: (id: number) => void;
-};
+const SpotLocationAdd = () => {
+  const { setSelectedSpot, moveToCustomPinLocation } = useCustomPinNavigation();
+  const { searchTitleInfo } = useStoryStore();
+  const { selectedSpotId, setStoryLocation } = useStoryAddStore();
 
-const SpotLocationAdd = ({ onSelectSpotId }: SpotLocationAddProps) => {
-  const { searchTitleInfo, setSearchTitle } = useStoryStore();
-  const { storyLocation } = useStoryAddStore();
-  const [inputSpotName, setInputSpotName] = useState<string>("");
-  const [selectedSpotId, setSelectedSpotId] = useState<number | undefined>();
+  const { mapRef, setInputSpotName, inputSpotName, handleSearch } =
+    useStorySpotMap();
 
   const handleSpotNamePass = (text: string) => {
     setInputSpotName(text);
   };
 
-  const handleSearch = async () => {
-    try {
-      if (!storyLocation) {
-        return;
-      }
-      const searchParams: GetSearchTitleRequest = {
-        keyword: inputSpotName,
-        longitude: storyLocation.longitude,
-        latitude: storyLocation.latitude,
-        minLongitude: SEOUL_GEOM.LOGITUDE.MIN,
-        minLatitude: SEOUL_GEOM.LATITUDE.MIN,
-        maxLongitude: SEOUL_GEOM.LOGITUDE.MAX,
-        maxLatitude: SEOUL_GEOM.LATITUDE.MAX,
-        limit: "10",
-      };
-      await setSearchTitle(searchParams);
-    } catch (error) {
-      throw error;
+  const handleSearchedSpot = (
+    spotId: number,
+    spotTitle: string | undefined,
+    latitude: number,
+    logitude: number
+  ) => {
+    if (selectedSpotId === spotId) {
+      setSelectedSpot(undefined, undefined);
+    } else {
+      setSelectedSpot(spotId, spotTitle);
+      setStoryLocation(latitude, logitude);
+      moveToCustomPinLocation(mapRef, latitude, logitude);
     }
-  };
-  const handleSelectedSpot = (spotId: number) => {
-    setSelectedSpotId(spotId);
-    onSelectSpotId(spotId);
   };
 
   return (
@@ -74,7 +60,7 @@ const SpotLocationAdd = ({ onSelectSpotId }: SpotLocationAddProps) => {
 
         <SearchListViewWrapper>
           <SearchList>
-            {searchTitleInfo ? (
+            {searchTitleInfo && searchTitleInfo.length > 0 ? (
               searchTitleInfo?.map((item) => (
                 <LocationLabel
                   key={item.storySpotId}
@@ -82,11 +68,18 @@ const SpotLocationAdd = ({ onSelectSpotId }: SpotLocationAddProps) => {
                   latitude={item.latitude}
                   logitude={item.longitude}
                   isSelected={selectedSpotId === item.storySpotId}
-                  onPress={() => handleSelectedSpot(item.storySpotId)}
+                  onPress={() =>
+                    handleSearchedSpot(
+                      item.storySpotId,
+                      item?.title,
+                      item.latitude,
+                      item.longitude
+                    )
+                  }
                 />
               ))
-            ) : inputSpotName.trim() ? null : (
-              <NoResultText>검색 결과가 없습니다</NoResultText>
+            ) : (
+              <NoResultText>검색 결과가 없습니다..</NoResultText>
             )}
           </SearchList>
         </SearchListViewWrapper>
@@ -119,14 +112,15 @@ const SearchButtonWrapper = styled.Pressable`
 `;
 
 const SearchListViewWrapper = styled.ScrollView`
-  padding: 25px;
-  flex: 1;
+  padding: 20px;
+  padding-bottom: 80px;
 `;
 
 const SearchList = styled.View`
   gap: 15px;
 `;
 const NoResultText = styled.Text`
+  padding: 12px;
   font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textSecondary};

@@ -3,13 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import { MapRef } from "@/types/map";
 import {
   GetMapStoriesRequest,
+  GetSearchTitleRequest,
   MapSpotInfoItem,
-  storySpots,
 } from "@/types/storySpot";
 
 import { useStoryStore } from "@/store/story/useStoryStore";
 
 import { useCustomPinNavigation } from "./useCustomPinNavigation";
+import { SightInfo } from "@/types/sight";
+import { Keyboard } from "react-native";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import { SEOUL_GEOM } from "@/constants/geometry";
 
 export const useStorySpotMap = () => {
   const {
@@ -17,27 +21,29 @@ export const useStorySpotMap = () => {
     setStoryInfo,
     setSpotMapRectangle,
     resetStoryInfo,
-    spotTitleList,
+    setSpotBriefInfo,
+    spotBriefInfo,
+    setSearchTitle,
   } = useStoryStore();
 
-  const { moveToCustomPinLocation } = useCustomPinNavigation();
+  const { storyLocation } = useStoryAddStore();
+
+  const { moveToCustomPinLocation, setSelectedSpot } = useCustomPinNavigation();
 
   const mapRef = useRef<MapRef>(null);
 
-  const [selectedMarker, setSelectedMarker] = useState<storySpots | undefined>(
-    undefined
-  );
-  const [selectedStoryName, setSelectedStoryName] = useState<
-    string | undefined
-  >(undefined);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<
+    number | undefined
+  >();
+  const [inputSpotName, setInputSpotName] = useState<string>("");
 
-  //지도 선택했을 때
+  //지도 선택했을 때(마커 선택 취소 시)
   const handleMapPress = () => {
-    setSelectedMarker(undefined);
+    setSelectedMarkerId(undefined);
     resetStoryInfo();
   };
 
-  //지도 이동 시 위치저장
+  //main 지도 이동 시 위치저장
   const handleRegionChange = (bounds: {
     minLongitude: number;
     minLatitude: number;
@@ -60,13 +66,6 @@ export const useStorySpotMap = () => {
 
   // 스토리 마커 선택 시
   const handleStoryMarkerPress = (story: MapSpotInfoItem) => {
-    setSelectedMarker(story);
-
-    if (selectedMarker?.storySpotId === story.storySpotId) {
-      handleMapPress();
-      return;
-    }
-
     const storyRequest = {
       storySpotId: story.storySpotId,
       query: {
@@ -80,26 +79,62 @@ export const useStorySpotMap = () => {
         },
       },
     };
-    setSelectedStoryName(spotTitleList?.titles?.[0]);
-    console.log("storySpot이름", spotTitleList?.titles?.[0]);
+    setSpotBriefInfo({
+      latitude: String(story.latitude),
+      longitude: String(story.longitude),
+    });
 
     setStoryInfo(storyRequest);
     moveToCustomPinLocation(mapRef, story.latitude, story.longitude);
+    setSelectedMarkerId(spotBriefInfo?.spotId);
+  };
 
-    console.log(
-      "마커 위치 정보 :  ",
-      storyRequest.query.query.latitude,
-      storyRequest.query.query.longitude
-    );
-    console.log("\n");
+  //sight 마커선택 시
+  const handleSightMarkerPress = (sight: SightInfo) => {
+    const mapLat = sight.latitude;
+    const mapLng = sight.longitude;
+
+    setSelectedSpot(Number(sight.id), sight.title);
+    moveToCustomPinLocation(mapRef, mapLat, mapLng);
+  };
+
+  //이야기 검색 시
+  const handleSearch = async () => {
+    Keyboard.dismiss();
+    try {
+      if (!storyLocation) {
+        return;
+      }
+      const searchParams: GetSearchTitleRequest = {
+        keyword: inputSpotName,
+        longitude: storyLocation.longitude,
+        latitude: storyLocation.latitude,
+        minLongitude: SEOUL_GEOM.LOGITUDE.MIN,
+        minLatitude: SEOUL_GEOM.LATITUDE.MIN,
+        maxLongitude: SEOUL_GEOM.LOGITUDE.MAX,
+        maxLatitude: SEOUL_GEOM.LATITUDE.MAX,
+        limit: "10",
+      };
+      await setSearchTitle(searchParams);
+      setSpotBriefInfo({
+        latitude: String(storyLocation.latitude),
+        longitude: String(storyLocation.longitude),
+      });
+    } catch (error) {
+      throw error;
+    }
   };
 
   return {
     mapRef,
-    selectedMarker,
+    selectedMarker: selectedMarkerId,
     handleMapPress,
     handleRegionChange,
     handleStoryMarkerPress,
-    selectedStoryName,
+    handleSightMarkerPress,
+    setSearchTitle,
+    inputSpotName,
+    setInputSpotName,
+    handleSearch,
   };
 };

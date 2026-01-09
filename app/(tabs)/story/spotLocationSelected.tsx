@@ -20,8 +20,6 @@ import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
-import { SightInfo } from "@/types/sight";
-
 import { theme } from "@/styles/theme";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
@@ -30,31 +28,39 @@ import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SpotLocationSelected() {
-  const { spotMapRectangle, mainStoryMapRequest, spotBriefInfo } =
+  const { spotMapRectangle, mainStoryMapRequest } = useStoryStore();
+
+  const {
+    mapRef,
+    selectedMarker,
+    handleMapPress,
+    handleStoryMarkerPress,
+    handleSightMarkerPress,
+  } = useStorySpotMap();
+
+  const { resetSearchTitle, resetStoryInfo, resetSpotBriefInfo } =
     useStoryStore();
-
-  const { mapRef, selectedMarker, handleMapPress, handleStoryMarkerPress } =
-    useStorySpotMap();
-
-  const { resetSearchTitle } = useStoryStore();
 
   const { moveToCustomPinLocation, getCustomPinLoction } =
     useCustomPinNavigation();
 
-  const { storyLocation } = useStoryAddStore();
+  const {
+    storyLocation,
+    resetNewSpotName,
+    selectedSpotTitle,
+    resetSavedStorySpot,
+  } = useStoryAddStore();
 
   const { isLogined } = useAuthStore();
   const { location } = useLocation();
+  const { sights, selectedSight } = useSightMap();
 
   const Ref = useRef<any>(null);
   const router = useRouter();
   const animatedPosition = useSharedValue(0);
 
   const [isNameSelected, setIsNameSelected] = useState<boolean>(true); // 이름 등록할 때 지도 움직임 false
-  const [searchedSpotId, setSearchedSpotId] = useState<number | null>(null); // 선택된 검색어 id
-  const selectedSpotName = spotBriefInfo?.titles;
-
-  const { sights, selectedSight } = useSightMap();
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 버튼 중복 클릭 방지
 
   useEffect(() => {
     if (!isLogined) {
@@ -67,39 +73,35 @@ export default function SpotLocationSelected() {
     }
   }, [isLogined]);
 
-  //등록 페이지 들어오기 전 지도 화면 기반 핀 이동
   useEffect(() => {
     resetSearchTitle();
+    resetNewSpotName();
+    resetStoryInfo();
+    resetSavedStorySpot();
+    resetSpotBriefInfo();
+  }, []);
 
-    if (!location) {
+  //등록 페이지 들어오기 전 지도 화면 기반 핀 이동
+  useEffect(() => {
+    if (location) {
+      moveToCustomPinLocation(mapRef, location.latitude, location.longitude);
       return;
     }
-    if (location && !mainStoryMapRequest) {
-      moveToCustomPinLocation(mapRef, location.latitude, location.longitude);
+
+    if (mainStoryMapRequest) {
+      const minLatitude = Number(mainStoryMapRequest.minLatitude);
+      const maxLatitude = Number(mainStoryMapRequest.maxLatitude);
+      const minLongitude = Number(mainStoryMapRequest.minLongitude);
+      const maxLongitude = Number(mainStoryMapRequest.maxLongitude);
+
+      const mapLat = (minLatitude + maxLatitude) / 2;
+      const mapLng = (minLongitude + maxLongitude) / 2;
+
+      moveToCustomPinLocation(mapRef, mapLat, mapLng);
     }
-
-    const minLatitude = Number(mainStoryMapRequest?.minLatitude);
-    const maxLatitude = Number(mainStoryMapRequest?.maxLatitude);
-    const minLongitude = Number(mainStoryMapRequest?.minLongitude);
-    const maxLongitude = Number(mainStoryMapRequest?.maxLongitude);
-
-    const mapLat = (minLatitude + maxLatitude) / 2;
-    const mapLng = (minLongitude + maxLongitude) / 2;
-
-    console.log(mapLat, mapLng);
-    console.log("\n");
-
-    (mapRef.current?.moveToLocation({
-      latitude: mapLat,
-      longitude: mapLng,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    }),
-      console.log("처음 들어올 때 위도 경도? 값 ", mapLat, mapLng));
-    console.timeLog("\n");
   }, [location, mainStoryMapRequest]);
 
-  //등록 페이지에서 지도 움직이기
+  //지도 이동 시 위치저장
   const handleRegionChange = (bounds: {
     minLongitude: number;
     minLatitude: number;
@@ -107,14 +109,6 @@ export default function SpotLocationSelected() {
     maxLatitude: number;
   }) => {
     getCustomPinLoction(bounds);
-  };
-
-  //마커선택 시 지도 이동
-  const handleMarkerPress = (sight: SightInfo) => {
-    const mapLat = sight.latitude;
-    const mapLng = sight.longitude;
-
-    moveToCustomPinLocation(mapRef, mapLat, mapLng);
   };
 
   const handleLocationAdd = () => {
@@ -126,6 +120,10 @@ export default function SpotLocationSelected() {
   };
 
   const handleAdd = () => {
+    if (buttonDisabled) return;
+    setButtonDisabled(true);
+    setTimeout(() => setButtonDisabled(false), 500);
+
     router.push("/story/storyAdd");
   };
 
@@ -139,9 +137,9 @@ export default function SpotLocationSelected() {
             onRegionChangeComplete={handleRegionChange}
             storyMarkers={spotMapRectangle}
             onStoryMarkerPress={handleStoryMarkerPress}
-            selectedStoryMarkerId={selectedMarker?.storySpotId}
+            selectedStoryMarkerId={selectedMarker}
             sightMarkers={sights}
-            onSightMarkerPress={handleMarkerPress}
+            onSightMarkerPress={handleSightMarkerPress}
             selectedSightMarkerId={selectedSight?.id}
             onMapPress={handleMapPress}
             scrollEnabled={isNameSelected}
@@ -155,7 +153,7 @@ export default function SpotLocationSelected() {
 
           <Header>
             <BackButton buttonStyle="CIRCLE" />
-            <StorySpotName>{selectedSpotName}</StorySpotName>
+            <SpotName>{selectedSpotTitle}</SpotName>
             <CloseButton buttonStyle="CIRCLE" onPress={"./"} />
           </Header>
         </MapWrapper>
@@ -163,15 +161,11 @@ export default function SpotLocationSelected() {
         <CustomBottomSheet
           animatedPosition={animatedPosition}
           bottomSheetRef={Ref}
-          snapPoints={["20%", "50%"]}
-          initialIndex={2}
           keyboardBehavior="interactive"
+          snapPoints={["25%", "50%", "85%"]}
+          initialIndex={1}
         >
-          {isNameSelected ? (
-            <SpotLocationAdd onSelectSpotId={setSearchedSpotId} />
-          ) : (
-            <SpotNameAdd />
-          )}
+          {isNameSelected ? <SpotLocationAdd /> : <SpotNameAdd />}
         </CustomBottomSheet>
 
         <ButtonWrapper>
@@ -204,7 +198,15 @@ const MapWrapper = styled.View`
   flex: 1;
 `;
 
-const StorySpotName = styled.TextInput``;
+const SpotName = styled.TextInput`
+  font-family: ${theme.typography.fontFamily.medium};
+  font-size: ${theme.typography.fontSize.md}px;
+  background-color: ${theme.colors.white};
+  border-radius: 20px;
+  text-align: center;
+  height: 40px;
+  width: 200px;
+`;
 
 const styles = StyleSheet.create({
   container: {

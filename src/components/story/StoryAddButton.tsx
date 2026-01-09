@@ -10,12 +10,12 @@ import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 export const StoryAddButton = () => {
   const router = useRouter();
   const { isLogined } = useAuthStore();
-  const [disabled, setDisabled] = useState<boolean>(false);
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 중복 클릭 방지
 
   const handleAddStory = () => {
-    if (disabled) return;
-    setDisabled(true);
-    setTimeout(() => setDisabled(false), 500);
+    if (buttonDisabled) return;
+    setButtonDisabled(true);
+    setTimeout(() => setButtonDisabled(false), 500);
 
     if (isLogined === true) {
       router.push("/story/spotLocationSelected");

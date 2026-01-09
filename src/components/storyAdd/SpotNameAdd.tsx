@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import styled from "styled-components/native";
 
@@ -12,7 +12,7 @@ import Input from "../common/Input";
 const SpotNameAdd = () => {
   const [inputSpotname, setInputSpotName] = useState<string>();
   const { spotBriefInfo } = useStoryStore();
-  const { setNewSpotName } = useStoryAddStore();
+  const { setNewSpotName, selectedSpotTitle, newSpotName } = useStoryAddStore();
 
   const spotNames = spotBriefInfo?.titles;
 
@@ -22,7 +22,14 @@ const SpotNameAdd = () => {
       .map((spotNames) => `📍${spotNames}`)
       .join(" ") || " ";
 
-  const handleSpotNamePass = (text: string) => {
+  useEffect(() => {
+    if (selectedSpotTitle) {
+      setInputSpotName(selectedSpotTitle);
+      setNewSpotName(selectedSpotTitle);
+    }
+  }, [setInputSpotName]);
+
+  const handleSpotName = (text: string) => {
     setInputSpotName(text);
     setNewSpotName(text);
   };
@@ -37,9 +44,9 @@ const SpotNameAdd = () => {
       <InputWrapper>
         <StyledInput
           value={inputSpotname}
-          onChangeText={handleSpotNamePass}
+          onChangeText={handleSpotName}
           radius={10}
-          placeholder="스팟이름을 입력해주세요."
+          placeholder={"스팟 이름을 입력해주세요."}
         />
       </InputWrapper>
 

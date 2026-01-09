@@ -3,10 +3,11 @@ import { RefObject, useRef } from "react";
 import { MapRef } from "@/types/map";
 
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
-import { useStoryStore } from "@/store/story/useStoryStore";
 
 export const useCustomPinNavigation = () => {
-  const { storyLocation, setStoryLocation } = useStoryAddStore();
+  const { setStoryLocation, setSavedStorySpot, resetSavedStorySpot } =
+    useStoryAddStore();
+
   const PIN_RATIO_FROM_TOP = 0.3;
   const PIN_OFFSET_FROM_CENTER = 0.5 - PIN_RATIO_FROM_TOP;
 
@@ -19,8 +20,6 @@ export const useCustomPinNavigation = () => {
     targetLat: number,
     targetLng: number
   ) => {
-    if (!mapRef.current) return;
-
     const latDelta = latDeltaRef.current ?? 0.01;
     const lngDelta = lngDeltaRef.current ?? 0.01;
 
@@ -54,11 +53,17 @@ export const useCustomPinNavigation = () => {
     const pinLat = centerLat + latDelta * PIN_OFFSET_FROM_CENTER;
 
     setStoryLocation(pinLat, centerLng);
-    console.log("지도 이동한 곳의 위치 정보 ", pinLat, centerLng);
-    console.log("\n");
 
     return { latitude: pinLat, longitude: centerLng };
   };
 
-  return { moveToCustomPinLocation, getCustomPinLoction };
+  //마커 선택&검색 정보 선택 시 정보 저장
+  const setSelectedSpot = (
+    id: number | undefined,
+    title: string | undefined
+  ) => {
+    setSavedStorySpot(id, title);
+  };
+
+  return { moveToCustomPinLocation, getCustomPinLoction, setSelectedSpot };
 };

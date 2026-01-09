@@ -53,7 +53,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
   (
     {
       animatedPosition,
-      storyMarkers: spotMarkers,
+      storyMarkers,
       sightMarkers,
       selectedStoryMarkerId: selectedSpotMarkerId,
       selectedSightMarkerId,
@@ -151,11 +151,10 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           pitchEnabled={pitchEnabled}
           onRegionChangeComplete={handleRegionChangeComplete}
           onPress={(e) => {
-            console.log("onPressMap : ", e.target);
             if (onMapPress) onMapPress();
           }}
         >
-          {spotMarkers?.map((story) => (
+          {storyMarkers?.map((story) => (
             <Marker
               key={story.storySpotId}
               coordinate={{

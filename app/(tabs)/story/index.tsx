@@ -39,7 +39,7 @@ export default function Index() {
           storyMarkers={spotMapRectangle}
           onRegionChangeComplete={handleRegionChange}
           onStoryMarkerPress={handleStoryMarkerPress}
-          selectedStoryMarkerId={selectedMarker?.storySpotId}
+          selectedStoryMarkerId={selectedMarker}
           onMapPress={handleMapPress}
         />
 

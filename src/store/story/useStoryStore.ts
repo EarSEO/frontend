@@ -53,6 +53,7 @@ interface StoryStore {
   setSpotBriefInfo: (
     param: GetSpotBriefInfoRequest
   ) => Promise<GetLocationSpotBriefInfoResponse | undefined>;
+  resetSpotBriefInfo: () => void;
   setSpotMapRectangle: (
     param: GetMapStoriesRequest
   ) => Promise<MapSpotInfoItem[] | undefined>;
@@ -152,6 +153,11 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     } catch (error) {
       set({ spotBriefInfo: undefined });
     }
+  },
+  resetSpotBriefInfo: () => {
+    set({
+      spotBriefInfo: undefined,
+    });
   },
 
   //스토리 검색
