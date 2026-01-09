@@ -104,7 +104,8 @@ export default function ForgotPassword() {
     try {
       setIsLoading(true);
       await resetPasswordApi(email, newPassword);
-      router.replace("/myPage/login");
+      // router.replace("/myPage/login");
+      router.back();
     } catch (error) {
       if (error instanceof ApiError) {
         if (error.code === "MEM014") {

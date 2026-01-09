@@ -1,121 +1,53 @@
-import { useState } from "react";
-
-import { Alert, Modal, Platform } from "react-native";
+import { ActivityIndicator, Modal, Platform } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
 
-import { Gender } from "@/types/auth";
+import { useEditProfile } from "@/hooks/useEditProfile";
 
 import { theme } from "@/styles/theme";
 import { NATIONALITIES } from "@/constants/nationalities";
 
-import { useAuthStore } from "@/store/useAuthStore";
-
 export default function EditProfile() {
-  const router = useRouter();
-  const { user, updateProfile, updateProfileImage, isLoading } = useAuthStore();
-  const [nickname, setNickname] = useState(user?.nickname || "");
-  const [nationality, setNationality] = useState(
-    user?.nationality ?? "대한민국",
-  );
-  const [gender, setGender] = useState<"MALE" | "FEMALE">(
-    user?.gender ?? "MALE",
-  );
-  const [birthYear, setBirthYear] = useState("2000");
-  const [birthMonth, setBirthMonth] = useState("01");
-  const [birthDay, setBirthDay] = useState("01");
-  const [showNationalityPicker, setShowNationalityPicker] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date(2000, 0, 1));
-  const [profileImageUri, setProfileImageUri] = useState<string | null>(
-    user?.profileImage ?? null,
-  );
+  const {
+    user,
+    isLoading,
+    isInitializing,
+    nickname,
+    setNickname,
+    nationality,
+    setNationality,
+    gender,
+    setGender,
+    birthYear,
+    birthMonth,
+    birthDay,
+    selectedDate,
+    profileImageUri,
+    showNationalityPicker,
+    setShowNationalityPicker,
+    showDatePicker,
+    setShowDatePicker,
+    handleDateChange,
+    handlePickImage,
+    handleSave,
+    handleOpenPasswordChange,
+    nicknameError,
+    setNicknameError,
+    profileImageError,
+    saveError,
+  } = useEditProfile();
 
-  const handleDateChange = (event: any, date?: Date) => {
-    if (date) {
-      setSelectedDate(date);
-      setBirthYear(date.getFullYear().toString());
-      setBirthMonth((date.getMonth() + 1).toString().padStart(2, "0"));
-      setBirthDay(date.getDate().toString().padStart(2, "0"));
-    }
-  };
-  const handlePickImage = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("권한 필요", "갤러리 접근 권한이 필요합니다.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      const asset = result.assets[0];
-      setProfileImageUri(asset.uri);
-
-      const formData = new FormData();
-      formData.append("file", {
-        uri: asset.uri,
-        type: "image/jpeg",
-        name: "profile.jpg",
-      } as any);
-
-      try {
-        await updateProfileImage(formData);
-        Alert.alert("성공", "프로필 사진이 변경되었습니다.");
-      } catch (error) {
-        Alert.alert("오류", "프로필 사진 업로드에 실패했습니다.");
-      }
-    }
-  };
-
-  const handleSave = async () => {
-    if (!nickname) {
-      Alert.alert("오류", "닉네임을 입력해주세요.");
-      return;
-    }
-
-    if (nickname.length < 2 || nickname.length > 50) {
-      Alert.alert("오류", "닉네임은 2자 이상 50자 이하여야 합니다.");
-      return;
-    }
-
-    const birthdate = `${birthYear}-${birthMonth.padStart(
-      2,
-      "0",
-    )}-${birthDay.padStart(2, "0")}`;
-
-    try {
-      await updateProfile({
-        nickname,
-        gender: gender === "MALE" ? Gender.MALE : Gender.FEMALE,
-        birthdate,
-        nationality,
-      });
-
-      Alert.alert("성공", "프로필이 수정되었습니다.", [
-        { text: "확인", onPress: () => router.back() },
-      ]);
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message || "프로필 수정에 실패했습니다.";
-      Alert.alert("오류", message);
-    }
-  };
-
-  const handleOpenPasswordChange = () => {
-    router.push("/myPage/changePassword");
-  };
+  if (isInitializing) {
+    return (
+      <LoadingContainer>
+        <ActivityIndicator size="large" color={theme.colors.main.primary} />
+      </LoadingContainer>
+    );
+  }
 
   return (
     <Container>
@@ -131,13 +63,15 @@ export default function EditProfile() {
             <ProfileImageTouchable onPress={handlePickImage}>
               {profileImageUri ? (
                 <ProfileImageActual
-                  source={{ uri: profileImageUri ?? user!.profileImage! }}
+                  source={{ uri: profileImageUri }}
                 />
               ) : (
                 <ProfileImage />
-              )}
+                
+              )} 
             </ProfileImageTouchable>
           </ProfileImageWrapper>
+          {profileImageError && <ErrorText>{profileImageError}</ErrorText>}
         </ProfileImageSection>
 
         <InputSection>
@@ -150,10 +84,14 @@ export default function EditProfile() {
           <Label>닉네임</Label>
           <StyledInput
             value={nickname}
-            onChangeText={setNickname}
+            onChangeText={(text) => {
+              setNickname(text);
+              setNicknameError("");
+            }}
             placeholder="닉네임을 입력하세요"
             maxLength={50}
           />
+          {nicknameError && <ErrorText>{nicknameError}</ErrorText>}
         </InputSection>
 
         <InputSection>
@@ -202,6 +140,7 @@ export default function EditProfile() {
       </Content>
 
       <BottomSection>
+        {saveError && <ErrorText>{saveError}</ErrorText>}
         <Button
           text={isLoading ? "저장 중..." : "저장"}
           onPress={handleSave}
@@ -480,4 +419,18 @@ const ModalCloseText = styled.Text`
   font-family: ${theme.typography.fontFamily.medium};
   font-size: ${theme.typography.fontSize.md}px;
   color: ${theme.colors.main.primary};
+`;
+
+const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: ${theme.colors.white};
+`;
+
+const ErrorText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${theme.colors.alarm.error};
+  margin-top: 5px;
 `;
