@@ -68,10 +68,10 @@ export default function EditProfile() {
               ) : (
                 <ProfileImage />
                 
-              )}
-              {profileImageError && <ErrorText>{profileImageError}</ErrorText>}
+              )} 
             </ProfileImageTouchable>
           </ProfileImageWrapper>
+          {profileImageError && <ErrorText>{profileImageError}</ErrorText>}
         </ProfileImageSection>
 
         <InputSection>
