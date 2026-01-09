@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { Alert } from "react-native";
-
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 
@@ -9,22 +7,11 @@ import { Gender } from "@/types/auth";
 
 import { useAuthStore } from "@/store/useAuthStore";
 
-const parseBirthdate = (birthdate: number[] | string | null | undefined) => {
+const parseBirthdate = (birthdate: string | null | undefined) => {
     if (!birthdate) {
         return { year: "2000", month: "01", day: "01", date: new Date(2000, 0, 1) };
     }
 
-    if (Array.isArray(birthdate)) {
-        const [year, month, day] = birthdate;
-        return {
-            year: year.toString(),
-            month: month.toString().padStart(2, "0"),
-            day: day.toString().padStart(2, "0"),
-            date: new Date(year, month - 1, day),
-        };
-    }
-
-    // 문자열인 경우
     const [year, month, day] = birthdate.split("-");
     return {
         year,
