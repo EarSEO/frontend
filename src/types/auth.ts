@@ -77,7 +77,7 @@ export interface User {
   profileUrl: string;
   profileImage?: string;
   gender?: Gender;
-  birthdate?: string;
+  birthdate?: number[] | string;
   nationality?: string;
 }
 
