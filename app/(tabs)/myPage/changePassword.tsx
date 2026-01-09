@@ -1,7 +1,4 @@
-// @/app/myPage/changePassword.tsx
 import { useState } from "react";
-
-import { Alert } from "react-native";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -19,36 +16,55 @@ export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPasswordError, setCurrentPasswordError] = useState("");
+  const [newPasswordError, setNewPasswordError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const isNewPasswordValid = newPassword.length >= 8;
+  const isPasswordMatch = newPassword === confirmPassword && confirmPassword.length > 0;
 
   const handleChangePassword = async () => {
-    // 유효성 검사
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert("오류", "모든 필드를 입력해주세요.");
-      return;
+    // 에러 초기화
+    setCurrentPasswordError("");
+    setNewPasswordError("");
+    setConfirmPasswordError("");
+    setApiError("");
+
+    let hasError = false;
+
+    if (!currentPassword) {
+      setCurrentPasswordError("현재 비밀번호를 입력해주세요.");
+      hasError = true;
     }
 
-    if (newPassword !== confirmPassword) {
-      Alert.alert("오류", "새 비밀번호가 일치하지 않습니다.");
-      return;
+    if (!newPassword) {
+      setNewPasswordError("새 비밀번호를 입력해주세요.");
+      hasError = true;
+    } else if (newPassword.length < 8) {
+      setNewPasswordError("비밀번호는 8자 이상이어야 합니다.");
+      hasError = true;
     }
 
-    if (newPassword.length < 8) {
-      Alert.alert("오류", "비밀번호는 8자 이상이어야 합니다.");
-      return;
+    if (!confirmPassword) {
+      setConfirmPasswordError("비밀번호 확인을 입력해주세요.");
+      hasError = true;
+    } else if (newPassword !== confirmPassword) {
+      setConfirmPasswordError("새 비밀번호가 일치하지 않습니다.");
+      hasError = true;
     }
+
+    if (hasError) return;
 
     try {
       await updatePassword({
         currentPassword,
         newPassword,
+        newPasswordConfirm: confirmPassword,
       });
-      Alert.alert("성공", "비밀번호가 변경되었습니다.", [
-        { text: "확인", onPress: () => router.back() },
-      ]);
+      router.back();
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
-      Alert.alert("오류", message);
+      const message = error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
+      setApiError(message);
     }
   };
 
@@ -56,35 +72,62 @@ export default function ChangePassword() {
     <Container>
       <Content>
         <GuideText>새로운 비밀번호를 설정해주세요.</GuideText>
+
         <InputSection>
           <Label>현재 비밀번호 입력</Label>
           <StyledInput
             value={currentPassword}
-            onChangeText={setCurrentPassword}
+            onChangeText={(text) => {
+              setCurrentPassword(text);
+              setCurrentPasswordError("");
+              setApiError("");
+            }}
             secureTextEntry
             placeholder="현재 비밀번호"
+            placeholderTextColor={theme.colors.text.textTertiary}
           />
+          {currentPasswordError && <ErrorText>{currentPasswordError}</ErrorText>}
         </InputSection>
 
         <InputSection>
           <Label>비밀번호 입력</Label>
           <StyledInput
             value={newPassword}
-            onChangeText={setNewPassword}
+            onChangeText={(text) => {
+              setNewPassword(text);
+              setNewPasswordError("");
+              setApiError("");
+            }}
             secureTextEntry
             placeholder="새 비밀번호 (8자 이상)"
+            placeholderTextColor={theme.colors.text.textTertiary}
           />
+          {newPasswordError && <ErrorText>{newPasswordError}</ErrorText>}
+          {newPassword.length > 0 && newPassword.length < 8 && !newPasswordError && (
+            <ErrorText>비밀번호는 최소 8자 이상이어야 합니다.</ErrorText>
+          )}
         </InputSection>
 
         <InputSection>
           <Label>비밀번호 확인</Label>
           <StyledInput
             value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            onChangeText={(text) => {
+              setConfirmPassword(text);
+              setConfirmPasswordError("");
+              setApiError("");
+            }}
             secureTextEntry
             placeholder="새 비밀번호 확인"
+            placeholderTextColor={theme.colors.text.textTertiary}
           />
+          {confirmPasswordError && <ErrorText>{confirmPasswordError}</ErrorText>}
+          {confirmPassword.length > 0 && !isPasswordMatch && !confirmPasswordError && (
+            <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
+          )}
         </InputSection>
+
+        {apiError && <ApiErrorText>{apiError}</ApiErrorText>}
       </Content>
 
       <BottomSection>
@@ -98,6 +141,20 @@ export default function ChangePassword() {
   );
 }
 
+const ErrorText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${theme.colors.alarm.error};
+  margin-top: 5px;
+`;
+
+const ApiErrorText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${theme.colors.alarm.error};
+  margin-top: 15px;
+  text-align: center;
+`;
 const Container = styled.View`
   flex: 1;
   background-color: ${theme.colors.white};

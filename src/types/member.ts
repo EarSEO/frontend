@@ -20,4 +20,5 @@ export interface ProfileUpdateResponse {
 export interface PasswordUpdateRequest {
   currentPassword: string;
   newPassword: string;
+  newPasswordConfirm: string;
 }
