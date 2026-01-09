@@ -22,6 +22,7 @@ export default function ChangePassword() {
   const [apiError, setApiError] = useState("");
   const isNewPasswordValid = newPassword.length >= 8;
   const isPasswordMatch = newPassword === confirmPassword && confirmPassword.length > 0;
+  const isFormValid = currentPassword.length > 0 && isNewPasswordValid && isPasswordMatch;
 
   const handleChangePassword = async () => {
     // 에러 초기화
@@ -61,6 +62,9 @@ export default function ChangePassword() {
         newPassword,
         newPasswordConfirm: confirmPassword,
       });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
       router.back();
     } catch (error: any) {
       const message = error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
@@ -134,7 +138,7 @@ export default function ChangePassword() {
         <Button
           text={isLoading ? "변경 중..." : "비밀번호 변경"}
           onPress={handleChangePassword}
-          disabled={isLoading}
+          disabled={isLoading || !isFormValid}
         />
       </BottomSection>
     </Container>
