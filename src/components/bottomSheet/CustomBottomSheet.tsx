@@ -16,12 +16,13 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={snapPoints || ["15%", "45%", "100%"]}
-      index={initialIndex || 2}
+      index={initialIndex || 1}
       enablePanDownToClose={false}
       enableOverDrag={false}
       animatedPosition={animatedPosition}
       keyboardBehavior={keyboardBehavior}
       keyboardBlurBehavior="restore"
+      enableDynamicSizing={false}
       handleIndicatorStyle={{
         backgroundColor: theme.colors.grey.neutral300,
         height: 4,

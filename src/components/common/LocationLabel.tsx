@@ -88,11 +88,11 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
 const OnlyTitleContainer = styled.Pressable<{ isSelected: boolean }>`
   flex-direction: row;
   gap: 15px;
-  width: 90%;
+  width: 100%;
   padding: 10px;
   border-radius: ${theme.borderRadius.md}px;
   border-color: ${({ isSelected }) =>
-    isSelected ? theme.colors.grey.neutral400 : "transparent"};
+    isSelected ? theme.colors.grey.neutral200 : "transparent"};
   border-width: ${({ isSelected }) => (isSelected ? "1px" : "0px")};
 `;
 
@@ -100,7 +100,7 @@ const LabelContainer = styled.Pressable<{ isSelected: boolean }>`
   flex-direction: row;
   align-items: center;
   gap: 15;
-  width: 90%;
+  width: 100%;
   padding: 10px;
   border-radius: ${theme.borderRadius.md}px;
   border-color: ${({ isSelected }) =>
