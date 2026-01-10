@@ -12,7 +12,7 @@ const StorySpotHeader = () => {
   const { storyItems, spotTitleList } = useStoryStore();
 
   const spotNames = spotTitleList?.titles;
-  const mainTitle = spotNames?.[0] || "제목 없음";
+  const mainTitle = spotNames?.[spotNames.length - 1] || "제목 없음";
   const spotTitles =
     spotNames
       ?.slice(1, 4)
