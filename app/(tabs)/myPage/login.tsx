@@ -23,6 +23,7 @@ export default function Login() {
   const router = useRouter();
   const { login } = useAuthStore();
   const { handleAppleLogin, isLoading: isAppleLoading, error: appleError } = useAppleLogin();
+  const isIOS = Platform.OS === "ios";
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -95,7 +96,7 @@ export default function Login() {
         <SocialButton onPress={() => console.log("Google login")}>
           <GoogleLogo width={40} height={40} />
         </SocialButton>
-        {Platform.OS === "ios" && (
+        {isIOS && (
           <SocialButton onPress={handleAppleLogin} disabled={isAppleLoading}>
             <AppleLogo width={40} height={40} />
           </SocialButton>
