@@ -36,6 +36,7 @@ interface AuthState {
     authCode: string,
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
+  appleLogin: (identityToken: string, fullName?: string) => Promise<void>;
   logout: () => Promise<void>;
   loadUser: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -110,7 +111,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
 
       const response = await api.post<SocialLoginResponse>(
-        `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN}`,
+        `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE}`,
         { authCode },
       );
 
@@ -183,6 +184,47 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (error) {
       set({ user: null, isLogined: false, isLoading: false });
+      throw error;
+    }
+  },
+
+  appleLogin: async (identityToken: string, fullName?: string) => {
+    try {
+      set({ isLoading: true });
+      const response = await api.post<BaseResponse<LoginResponse>>(
+        API_ENDPOINTS.AUTH.SOCIAL_LOGIN_APPLE,
+        { identityToken, fullName },
+      );
+
+      const { accessToken, refreshToken, memberId, email, nickname, role } = response.data.data;
+
+      if (!refreshToken) {
+        throw new Error("No refresh token");
+      }
+
+      await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
+      await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
+
+      const user: User = {
+        memberId,
+        email,
+        nickname,
+        role,
+        updatedAt: new Date(),
+        profileUrl: "",
+      };
+      await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
+
+      set({
+        user,
+        isLogined: true,
+        isLoading: false,
+      });
+
+      await get().fetchProfile();
+    } catch (error) {
+      console.log("에러 발생 위치 확인:", error);
+      set({ isLoading: false });
       throw error;
     }
   },
