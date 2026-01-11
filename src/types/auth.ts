@@ -45,6 +45,11 @@ export interface LoginResponse {
   role: Role;
 }
 
+export interface AppleLoginRequest {
+  identityToken: string;
+  fullName?: string;
+}
+
 export interface SignUpResponse {
   memberId: number;
   email: string;
