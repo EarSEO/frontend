@@ -37,12 +37,9 @@ export const useAppleLogin = () => {
             });
 
             if (credential.identityToken) {
-                console.log("identityToken:", credential.identityToken.substring(0, 50) + "...");
-
                 const fullName = credential.fullName
                     ? `${credential.fullName.familyName || ""}${credential.fullName.givenName || ""}`.trim()
                     : undefined;
-                console.log("fullName:", fullName);
                 await appleLogin(credential.identityToken, fullName || undefined);
                 router.back();
             }
