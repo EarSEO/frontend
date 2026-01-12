@@ -15,7 +15,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SocialSignUp() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ email: string; provider: string }>();
+  const params = useLocalSearchParams<{ email: string; provider: string; providerId: string; }>();
   const { socialSignup } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +44,7 @@ export default function SocialSignUp() {
               await socialSignup({
                 email: params.email,
                 provider: params.provider as Provider,
+                providerId: params.providerId,
                 nickname: data.nickname,
                 gender: data.gender as Gender,
                 birthdate: data.birthdate,
