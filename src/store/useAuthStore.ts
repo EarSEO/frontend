@@ -36,7 +36,7 @@ interface AuthState {
     authCode: string,
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
-  appleLogin: (identityToken: string, fullName?: string) => Promise<void>;
+  appleLogin: (identityToken: string, fullName?: string) => Promise<SocialLoginResponse>;
   logout: () => Promise<void>;
   loadUser: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -157,12 +157,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ isLoading: true });
 
-      const response = await api.post<LoginResponse>(
+      const response = await api.post<BaseResponse<LoginResponse>>(
         `${API_ENDPOINTS.AUTH.SOCIAL_SIGNUP}`,
         userData,
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
-        response.data;
+        response.data.data;
 
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
@@ -188,42 +188,47 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  appleLogin: async (identityToken: string, fullName?: string) => {
+  appleLogin: async (identityToken: string, fullName?: string): Promise<SocialLoginResponse> => {
     try {
       set({ isLoading: true });
-      const response = await api.post<BaseResponse<LoginResponse>>(
+      const response = await api.post<BaseResponse<SocialLoginResponse>>(
         API_ENDPOINTS.AUTH.SOCIAL_LOGIN_APPLE,
         { identityToken, fullName },
       );
 
-      const { accessToken, refreshToken, memberId, email, nickname, role } = response.data.data;
+      const data = response.data.data;
 
-      if (!refreshToken) {
-        throw new Error("No refresh token");
+      if (data.isNewMember) {
+        set({ isLoading: false });
+        return data;
       }
 
-      await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
-      await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
+      // 기존 회원이면 토큰 저장 및 로그인 처리
+      if (data.accessToken && data.refreshToken && data.memberId) {
+        await SecureStore.setItemAsync(ACCESS_TOKEN, data.accessToken);
+        await SecureStore.setItemAsync(REFRESH_TOKEN, data.refreshToken);
 
-      const user: User = {
-        memberId,
-        email,
-        nickname,
-        role,
-        updatedAt: new Date(),
-        profileUrl: "",
-      };
-      await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
+        const user: User = {
+          memberId: data.memberId,
+          email: data.email,
+          nickname: data.nickname || "",
+          role: data.role!,
+          updatedAt: new Date(),
+          profileUrl: "",
+        };
+        await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
-      set({
-        user,
-        isLogined: true,
-        isLoading: false,
-      });
+        set({
+          user,
+          isLogined: true,
+          isLoading: false,
+        });
 
-      await get().fetchProfile();
+        await get().fetchProfile();
+      }
+
+      return data;
     } catch (error) {
-      console.log("에러 발생 위치 확인:", error);
       set({ isLoading: false });
       throw error;
     }
