@@ -45,7 +45,6 @@ const MoreMenuButton: React.FC<MoreMenuProps> = ({
       <MenuContainer>
         {isMyPost ? (
           <>
-            (
             <MenuItem onPress={onEdit}>
               <Pencil size={20} color={theme.colors.grey.neutral600} />
               <MenuText>게시글 수정</MenuText>
@@ -54,7 +53,6 @@ const MoreMenuButton: React.FC<MoreMenuProps> = ({
               <Trash2Icon size={18} color={theme.colors.grey.neutral600} />
               <MenuText>게시글 삭제</MenuText>
             </MenuItem>
-            )
           </>
         ) : (
           <MenuItem onPress={onComplaint}>
