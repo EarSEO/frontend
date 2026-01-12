@@ -15,7 +15,7 @@ import { CreateStoryRequest } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
 
-import { createStoryTextApi } from "@/api/getStoryApi";
+import { getcreateStory } from "@/api/story/getStoryAddApi";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useAuthStore } from "@/store/useAuthStore";
 
@@ -94,8 +94,7 @@ export default function StoryAdd() {
         storyConcept: selectedConcept,
         locale: "KO",
       };
-      console.log("이야기 추가 클릭");
-      await createStoryTextApi(createRequestData, selectedImages);
+      await getcreateStory(createRequestData, selectedImages);
       router.push("/story");
     } catch (error) {
       throw error;

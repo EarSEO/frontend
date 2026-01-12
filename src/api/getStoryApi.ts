@@ -1,5 +1,3 @@
-import axios from "axios";
-
 import { BaseResponse } from "@/types/auth";
 import {
   CreateStoryRequest,
@@ -13,20 +11,23 @@ import {
   GetStoryRequest,
   MapSpotInfoList,
   SearchSpotInfoResponse,
+  StoryEditRequest,
+  StoryEditResponse,
 } from "@/types/storySpot";
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
 import api from "./axios";
 
-export const getStoryApi = async (
+//스팟 위치 정보 -> 이야기게시글 불러오기
+export const getStoryInfo = async (
   param: GetStoryRequest
 ): Promise<GetSpotTotalInfoResponse> => {
   const { storySpotId, query } = param;
 
   try {
     const response = await api.get<BaseResponse<GetSpotTotalInfoResponse>>(
-      `${API_ENDPOINTS.STORY.SPOTTOTALINFO(storySpotId)}`,
+      `${API_ENDPOINTS.STORY.SPOT_INFO(storySpotId)}`,
       { params: { ...query.query } }
     );
     return response.data.data;
@@ -34,78 +35,25 @@ export const getStoryApi = async (
     throw error;
   }
 };
+//스팟 선택(storyId) -> 관련스팟 제목
 
-//지도 사각형 영역 내 이야기 게시글 조회
-export const getRectangle = async (param: GetMapStoriesRequest) => {
-  try {
-    const response = await api.get<BaseResponse<GetMapStoryResponse>>(
-      `${API_ENDPOINTS.STORY.MAP_RECTANGLE}`,
-      { params: param }
-    );
-    return response.data.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-//
-export const getSpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
+//스팟 선택(위치정보) -> 관련 스팟 제목,id 가져오기
+export const getStorySpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
   try {
     const response = await api.get<
       BaseResponse<GetLocationSpotBriefInfoResponse>
     >(`${API_ENDPOINTS.STORY.SPOT_BRIEF_INFO}`, { params: param });
     return response.data.data;
   } catch (error) {
-    console.log("연결안됨");
     throw error;
   }
 };
 
-//이야기 등록
-export const createStoryTextApi = async (
-  param: CreateStoryRequest,
-  images?: string[]
-) => {
-  try {
-    const createTextRes = await api.post<BaseResponse<CreateStoryResponse>>(
-      `${API_ENDPOINTS.STORY.CREATE_STRORY}`,
-      param
-    );
-
-    const storyData = createTextRes.data.data;
-    const storyId = storyData.storyId;
-
-    if (images && images.length > 0) {
-      const formData = new FormData();
-
-      images.forEach((imageUri, index) => {
-        formData.append("images", {
-          uri: imageUri,
-          type: "image/jpeg",
-          name: `image_${index}.jpg`,
-        } as any);
-      });
-
-      await api.post<BaseResponse<void>>(
-        `/api/user/story/image/${storyId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-    }
-    return createTextRes.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getSearchTitle = async (param: GetSearchTitleRequest) => {
+//이야기 이름으로 검색
+export const getSearchStory = async (param: GetSearchTitleRequest) => {
   try {
     const response = await api.get<BaseResponse<SearchSpotInfoResponse>>(
-      `${API_ENDPOINTS.STORY.SEARCH_TITLE}`,
+      `${API_ENDPOINTS.STORY.SEARCH}`,
       {
         params: param,
       }
@@ -116,11 +64,11 @@ export const getSearchTitle = async (param: GetSearchTitleRequest) => {
   }
 };
 
-//지도 사각형 내 스팟 마커 조회
-export const getSpotMapRectangle = async (param: GetMapStoriesRequest) => {
+//지도 사각형 내 스토리 스팟 목록 조회
+export const getStorySpotListInMap = async (param: GetMapStoriesRequest) => {
   try {
     const response = await api.get<BaseResponse<MapSpotInfoList>>(
-      `${API_ENDPOINTS.STORY.SPOT_MAP_RECTANGLE}`,
+      `${API_ENDPOINTS.STORY.SPOT_LIST_IN_MAP}`,
       { params: param }
     );
     return response.data.data;
@@ -128,3 +76,17 @@ export const getSpotMapRectangle = async (param: GetMapStoriesRequest) => {
     throw error;
   }
 };
+
+//지도 사각형 영역 내 이야기 게시글 조회
+export const getStoryListInMap = async (param: GetMapStoriesRequest) => {
+  try {
+    const response = await api.get<BaseResponse<GetMapStoryResponse>>(
+      `${API_ENDPOINTS.STORY.STORY_LIST_IN_MAP}`,
+      { params: param }
+    );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+

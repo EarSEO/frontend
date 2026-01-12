@@ -1,16 +1,16 @@
 import { create } from "zustand";
 
 import {
-  GetLocationSpotBriefInfoResponse,
-  GetMapStoriesRequest,
+  GetLocationSpotBriefInfoResponse as StorySpotInfoResponse,
+  GetMapStoriesRequest as GetStoriesInMapRequest,
   GetMapStoryResponse,
-  GetSearchTitleRequest,
-  GetSpotBriefInfoRequest,
+  GetSearchTitleRequest as GetSearchStoryRequest,
+  GetSpotBriefInfoRequest as GetStorySpotInfoRequest,
   GetSpotTotalInfoResponse,
-  GetStoryRequest,
+  GetStoryRequest as GetStoryMarkerInfoRequest,
   MapSpotInfoItem,
   MapSpotInfoList,
-  SearchSpotInfoResponse,
+  SearchSpotInfoResponse as SearchStoryInfoResponse,
   SpotInfoResponse,
   SpotTitleListResponse,
   StoryInfoResponse,
@@ -19,43 +19,47 @@ import {
 } from "@/types/storySpot";
 
 import {
-  getRectangle,
-  getSearchTitle,
-  getSpotBriefInfo,
-  getSpotMapRectangle,
-  getStoryApi,
+  getSearchStory,
+  getStoryInfo,
+  getStoryListInMap,
+  getStorySpotBriefInfo,
+  getStorySpotListInMap,
 } from "@/api/getStoryApi";
 
 interface StoryStore {
   storyItems?: StoryItem[];
   briefSpotInfo?: SpotInfoResponse;
-  mainStoryMapRequest?: GetMapStoriesRequest;
+  mainStoryMapRequest?: GetStoriesInMapRequest;
   spotTitleList?: SpotTitleListResponse;
   distance?: number;
   summaries?: StorySummaryResponse[];
-  mapStoryInfo?: StoryInfoResponse[];
-  spotBriefInfo?: GetLocationSpotBriefInfoResponse;
-  newSpotLocation?: GetSpotBriefInfoRequest[];
-  searchTitleInfo?: storySpots[];
-  spotMapRectangle?: MapSpotInfoItem[];
+  storiesInMap?: StoryInfoResponse[];
+  storySpotInfo?: StorySpotInfoResponse;
+  newSpotLocation?: GetStorySpotInfoRequest[];
+  searchedStoryInfo?: storySpots[];
+  spotLocationInMao?: MapSpotInfoItem[];
 
-  setSearchTitle: (
-    param: GetSearchTitleRequest
-  ) => Promise<SearchSpotInfoResponse | undefined>;
-  resetSearchTitle: () => void;
-  setStoryInfo: (
-    param: GetStoryRequest
+  setSearchStory: (
+    param: GetSearchStoryRequest
+  ) => Promise<SearchStoryInfoResponse | undefined>;
+  resetSearchStory: () => void;
+
+  setStoryMarkerInfo: (
+    param: GetStoryMarkerInfoRequest
   ) => Promise<GetSpotTotalInfoResponse | undefined>;
-  resetStoryInfo: () => void;
-  setMapStoryInfo: (
-    param: GetMapStoriesRequest
+  resetStoryMarkerInfo: () => void;
+
+  setStoriesInMap: (
+    param: GetStoriesInMapRequest
   ) => Promise<StoryInfoResponse | undefined>;
-  setSpotBriefInfo: (
-    param: GetSpotBriefInfoRequest
-  ) => Promise<GetLocationSpotBriefInfoResponse | undefined>;
-  resetSpotBriefInfo: () => void;
-  setSpotMapRectangle: (
-    param: GetMapStoriesRequest
+
+  setStorySpotInfo: (
+    param: GetStorySpotInfoRequest
+  ) => Promise<StorySpotInfoResponse | undefined>;
+  resetStorySpotInfo: () => void;
+
+  setStoryLocationInMap: (
+    param: GetStoriesInMapRequest
   ) => Promise<MapSpotInfoItem[] | undefined>;
 }
 
@@ -83,18 +87,18 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   spotTitleList: undefined,
   distance: undefined,
   summaries: undefined,
-  mapStoryInfo: undefined,
+  storiesInMap: undefined,
   storyMain: true,
-  spotBriefInfo: undefined,
-  spotMapRectangle: undefined,
-  searchTitleInfo: undefined,
+  storySpotInfo: undefined,
+  spotLocationInMao: undefined,
+  searchedStoryInfo: undefined,
 
   //마커 선택 시 이야기게시글 불러오기
-  setStoryInfo: async (
-    param: GetStoryRequest
+  setStoryMarkerInfo: async (
+    param: GetStoryMarkerInfoRequest
   ): Promise<GetSpotTotalInfoResponse | undefined> => {
     try {
-      const response: GetSpotTotalInfoResponse = await getStoryApi(param);
+      const response: GetSpotTotalInfoResponse = await getStoryInfo(param);
       set({
         briefSpotInfo: response.briefSpotInfo,
         spotTitleList: response.spotTitleList,
@@ -111,7 +115,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
       return undefined;
     }
   },
-  resetStoryInfo: () =>
+  resetStoryMarkerInfo: () =>
     set({
       storyItems: undefined,
       briefSpotInfo: undefined,
@@ -121,78 +125,78 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     }),
 
   //지도 사각형 영역 내 이야기 게시글 조회
-  setMapStoryInfo: async (
-    param: GetMapStoriesRequest
+  setStoriesInMap: async (
+    param: GetStoriesInMapRequest
   ): Promise<GetMapStoryResponse | undefined> => {
     try {
-      const response: GetMapStoryResponse = await getRectangle(param);
+      const response: GetMapStoryResponse = await getStoryListInMap(param);
       set({
-        mapStoryInfo: response.stories?.map((mapStory) => ({
+        storiesInMap: response.stories?.map((mapStory) => ({
           ...mapStory,
           createdAt: formatDateArray(mapStory.createdAt),
         })),
       });
       return response;
     } catch (error) {
-      set({ mapStoryInfo: undefined });
+      set({ storiesInMap: undefined });
       return undefined;
     }
   },
 
-  //스팟 이름 검색 -> 관련 스팟 이름 가져오기
-  setSpotBriefInfo: async (
-    param: GetSpotBriefInfoRequest
-  ): Promise<GetLocationSpotBriefInfoResponse | undefined> => {
+  //스팟 위치 정보 -> 관련 스팟 이름,id 가져오기
+  setStorySpotInfo: async (
+    param: GetStorySpotInfoRequest
+  ): Promise<StorySpotInfoResponse | undefined> => {
     try {
-      const response: GetLocationSpotBriefInfoResponse =
-        await getSpotBriefInfo(param);
+      const response: StorySpotInfoResponse =
+        await getStorySpotBriefInfo(param);
       set({
-        spotBriefInfo: response,
+        storySpotInfo: response,
       });
       return response;
     } catch (error) {
-      set({ spotBriefInfo: undefined });
+      set({ storySpotInfo: undefined });
     }
   },
-  resetSpotBriefInfo: () => {
+  resetStorySpotInfo: () => {
     set({
-      spotBriefInfo: undefined,
+      storySpotInfo: undefined,
     });
   },
 
   //스토리 검색
-  setSearchTitle: async (
-    param: GetSearchTitleRequest
-  ): Promise<SearchSpotInfoResponse | undefined> => {
+  setSearchStory: async (
+    param: GetSearchStoryRequest
+  ): Promise<SearchStoryInfoResponse | undefined> => {
     try {
-      const response: SearchSpotInfoResponse = await getSearchTitle(param);
+      const response: SearchStoryInfoResponse = await getSearchStory(param);
       set({
-        searchTitleInfo: response.storySpots,
+        searchedStoryInfo: response.storySpots,
       });
       return response;
     } catch (error) {
-      set({ searchTitleInfo: undefined });
+      set({ searchedStoryInfo: undefined });
       return undefined;
     }
   },
 
-  resetSearchTitle: () => {
-    set({ searchTitleInfo: undefined });
+  resetSearchStory: () => {
+    set({ searchedStoryInfo: undefined });
   },
 
   //지도 사각형 내 스팟 마커 조회
-  setSpotMapRectangle: async (
-    param: GetMapStoriesRequest
+  setStoryLocationInMap: async (
+    param: GetStoriesInMapRequest
   ): Promise<MapSpotInfoItem[] | undefined> => {
     try {
-      const response: MapSpotInfoList = await getSpotMapRectangle(param);
+      const response: MapSpotInfoList = await getStorySpotListInMap(param);
       set({
-        spotMapRectangle: response.storySpots,
+        spotLocationInMao: response.storySpots,
         mainStoryMapRequest: param,
       });
       return response.storySpots;
     } catch (error) {
-      set({ searchTitleInfo: undefined });
+      set({ searchedStoryInfo: undefined });
       return undefined;
     }
   },
