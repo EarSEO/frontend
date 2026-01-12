@@ -71,7 +71,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         nickname,
         role,
         updatedAt: new Date(),
-        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+        profileUrl: "",
       };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -137,7 +137,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           nickname: data.nickname,
           role: data.role,
           updatedAt: new Date(),
-          profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+          profileUrl: "",
         };
         await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -170,7 +170,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         nickname,
         role,
         updatedAt: new Date(),
-        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+        profileUrl: "",
       };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
