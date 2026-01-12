@@ -9,6 +9,7 @@ import {
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
+import appleLoginApi from "@/api/auth/appleLoginApi";
 import socialSignupApi from "@/api/auth/socialSignupApi";
 import api from "@/api/axios";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from "@/store/secureStoreKey";
@@ -188,12 +189,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   appleLogin: async (identityToken: string, fullName?: string): Promise<SocialLoginResponse> => {
     try {
       set({ isLoading: true });
-      const response = await api.post<BaseResponse<SocialLoginResponse>>(
-        API_ENDPOINTS.AUTH.SOCIAL_LOGIN_APPLE,
-        { identityToken, fullName },
-      );
-
-      const data = response.data.data;
+      const data = await appleLoginApi(identityToken, fullName);
 
       if (data.isNewMember) {
         set({ isLoading: false });
