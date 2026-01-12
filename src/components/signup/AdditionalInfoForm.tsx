@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Alert, Modal, Platform } from "react-native";
+import { Modal, Platform } from "react-native";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -35,17 +35,23 @@ export default function AdditionalInfoForm({
   const [nickname, setNickname] = useState("");
   const [isNicknameChecked, setIsNicknameChecked] = useState(false);
   const [nicknameMessage, setNicknameMessage] = useState("");
-  const [nationality, setNationality] = useState("대한민국");
+  const [nationality, setNationality] = useState("");
   const [gender, setGender] = useState<"MALE" | "FEMALE" | null>(null);
-  const [birthYear, setBirthYear] = useState("2000");
-  const [birthMonth, setBirthMonth] = useState("01");
-  const [birthDay, setBirthDay] = useState("01");
+  const [birthYear, setBirthYear] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
+  const [isBirthdateSelected, setIsBirthdateSelected] = useState(false);
 
   const [showNationalityPicker, setShowNationalityPicker] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date(2000, 0, 1));
 
   const [isChecking, setIsChecking] = useState(false);
+
+  const [nicknameError, setNicknameError] = useState("");
+  const [nationalityError, setNationalityError] = useState("");
+  const [genderError, setGenderError] = useState("");
+  const [birthdateError, setBirthdateError] = useState("");
 
   const handleDateChange = (event: any, date?: Date) => {
     if (Platform.OS === "android") {
@@ -57,22 +63,25 @@ export default function AdditionalInfoForm({
       setBirthYear(date.getFullYear().toString());
       setBirthMonth((date.getMonth() + 1).toString().padStart(2, "0"));
       setBirthDay(date.getDate().toString().padStart(2, "0"));
+      setIsBirthdateSelected(true);
+      setBirthdateError("");
     }
   };
 
   const handleCheckNickname = async () => {
     if (!nickname) {
-      Alert.alert("알림", "닉네임을 입력해주세요.");
+      setNicknameError("닉네임을 입력해주세요.");
       return;
     }
 
     if (nickname.length < 2 || nickname.length > 50) {
-      Alert.alert("알림", "닉네임은 2자 이상 50자 이하여야 합니다.");
+      setNicknameError("닉네임은 2자 이상 50자 이하여야 합니다.");
       return;
     }
 
     try {
       setIsChecking(true);
+      setNicknameError("");
       const response = await api.get<BaseResponse<NicknameCheckResponse>>(
         `${API_ENDPOINTS.AUTH.NICKNAME_CHECK}?nickname=${nickname}`,
       );
@@ -82,12 +91,11 @@ export default function AdditionalInfoForm({
       setNicknameMessage(message);
 
       if (!available) {
-        Alert.alert("알림", message);
+        setNicknameError(message);
       }
     } catch (error: any) {
-      const message =
-        error.response?.data?.message || "닉네임 확인에 실패했습니다.";
-      Alert.alert("오류", message);
+      const message = error.response?.data?.message || "닉네임 확인에 실패했습니다.";
+      setNicknameError(message);
     } finally {
       setIsChecking(false);
     }
@@ -97,25 +105,39 @@ export default function AdditionalInfoForm({
     setNickname(text);
     setIsNicknameChecked(false);
     setNicknameMessage("");
+    setNicknameError("");
   };
 
   const handleSubmit = async () => {
+    let hasError = false;
     if (!isNicknameChecked) {
-      Alert.alert("알림", "닉네임 중복확인을 해주세요.");
-      return;
+      setNicknameError("닉네임 중복확인을 해주세요.");
+      hasError = true;
+    }
+
+    if (!nationality) {
+      setNationalityError("국적을 선택해주세요.");
+      hasError = true;
     }
 
     if (!gender) {
-      Alert.alert("알림", "성별을 선택해주세요.");
-      return;
+      setGenderError("성별을 선택해주세요.");
+      hasError = true;
     }
 
-    const birthdate = `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
+    if (!isBirthdateSelected) {
+      setBirthdateError("생년월일을 선택해주세요.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const birthdate = `${birthYear}-${birthMonth}-${birthDay}`;
 
     await onSubmit({
       nickname,
       nationality,
-      gender,
+      gender: gender!,
       birthdate,
     });
   };
@@ -137,21 +159,24 @@ export default function AdditionalInfoForm({
           <InnerButtonText>중복확인</InnerButtonText>
         </InnerButton>
       </InputWithButton>
-      {nicknameMessage && (
+      {nicknameError ? (
+        <ErrorText>{nicknameError}</ErrorText>
+      ) : nicknameMessage ? (
         <HelperText isAvailable={isNicknameChecked}>
           {nicknameMessage}
         </HelperText>
-      )}
+      ) : null}
 
       <Gap height={20} />
 
       <Label>국적을 선택해주세요.</Label>
       <SelectButton onPress={() => setShowNationalityPicker(true)}>
         <SelectButtonText selected={!!nationality}>
-          {nationality}
+          {nationality || "국적을 선택하세요"}
         </SelectButtonText>
         <SelectArrow>▼</SelectArrow>
       </SelectButton>
+      {nationalityError && <ErrorText>{nationalityError}</ErrorText>}
 
       <Gap height={20} />
 
@@ -159,29 +184,38 @@ export default function AdditionalInfoForm({
       <GenderRow>
         <GenderButton
           selected={gender === "MALE"}
-          onPress={() => setGender("MALE")}
+          onPress={() => { setGender("MALE"); 
+            setGenderError("");
+          }} 
         >
           <GenderButtonText selected={gender === "MALE"}>남자</GenderButtonText>
         </GenderButton>
         <GenderButton
           selected={gender === "FEMALE"}
-          onPress={() => setGender("FEMALE")}
+          onPress={() => {
+            setGender("FEMALE");
+            setGenderError("");
+          }}
         >
           <GenderButtonText selected={gender === "FEMALE"}>
             여자
           </GenderButtonText>
         </GenderButton>
       </GenderRow>
+      {genderError && <ErrorText>{genderError}</ErrorText>}
 
       <Gap height={20} />
 
       <Label>생년월일을 선택해주세요.</Label>
       <SelectButton onPress={() => setShowDatePicker(true)}>
-        <SelectButtonText selected={true}>
-          {birthYear}년 {birthMonth}월 {birthDay}일
+        <SelectButtonText selected={isBirthdateSelected}>
+          {isBirthdateSelected
+            ? `${birthYear}년 ${birthMonth}월 ${birthDay}일`
+            : "생년월일을 선택하세요"}
         </SelectButtonText>
         <SelectArrow>▼</SelectArrow>
       </SelectButton>
+      {birthdateError && <ErrorText>{birthdateError}</ErrorText>}
 
       <ButtonContainer>
         <Button
@@ -207,9 +241,19 @@ export default function AdditionalInfoForm({
             </ModalHeader>
             <Picker
               selectedValue={nationality}
-              onValueChange={(value) => setNationality(value)}
+              onValueChange={(value) => {
+                    if (value !== "") {
+                      setNationality(value);
+                      setNationalityError("");
+                    }
+                  }}
               style={{ color: theme.colors.text.textPrimary }}
             >
+              <Picker.Item
+                label="국적을 선택하세요"
+                value=""
+                color={theme.colors.text.textTertiary}
+              />
               {NATIONALITIES.map((nation) => (
                 <Picker.Item
                   key={nation.code}
@@ -264,6 +308,13 @@ export default function AdditionalInfoForm({
     </Container>
   );
 }
+
+const ErrorText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${theme.colors.alarm.error};
+  margin-top: 5px;
+`;
 
 const Container = styled.View`
   flex: 1;
