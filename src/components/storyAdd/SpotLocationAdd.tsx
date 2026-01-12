@@ -14,7 +14,7 @@ import LocationLabel from "../common/LocationLabel";
 
 const SpotLocationAdd = () => {
   const { setSelectedSpot, moveToCustomPinLocation } = useCustomPinNavigation();
-  const { searchTitleInfo } = useStoryStore();
+  const { searchedStoryInfo } = useStoryStore();
   const { selectedSpotId, setStoryLocation } = useStoryAddStore();
 
   const { mapRef, setInputSpotName, inputSpotName, handleSearch } =
@@ -60,8 +60,8 @@ const SpotLocationAdd = () => {
 
         <SearchListViewWrapper>
           <SearchList>
-            {searchTitleInfo && searchTitleInfo.length > 0 ? (
-              searchTitleInfo?.map((item) => (
+            {searchedStoryInfo && searchedStoryInfo.length > 0 ? (
+              searchedStoryInfo?.map((item) => (
                 <LocationLabel
                   key={item.storySpotId}
                   locationTitle={item.title}

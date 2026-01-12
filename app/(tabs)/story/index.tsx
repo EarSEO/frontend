@@ -17,7 +17,7 @@ import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 import { useStoryStore } from "@/store/story/useStoryStore";
 
 export default function Index() {
-  const Ref = useRef<any>(null);
+  const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
 
   const {
@@ -28,7 +28,7 @@ export default function Index() {
     handleStoryMarkerPress,
   } = useStorySpotMap();
 
-  const { spotMapRectangle } = useStoryStore();
+  const { spotLocationInMap } = useStoryStore();
 
   return (
     <Container>
@@ -36,7 +36,7 @@ export default function Index() {
         <StorySpotMap
           ref={mapRef}
           animatedPosition={animatedPosition}
-          storyMarkers={spotMapRectangle}
+          storyMarkers={spotLocationInMap}
           onRegionChangeComplete={handleRegionChange}
           onStoryMarkerPress={handleStoryMarkerPress}
           selectedStoryMarkerId={selectedMarker}
@@ -44,7 +44,7 @@ export default function Index() {
         />
 
         <CustomBottomSheet
-          bottomSheetRef={Ref}
+          bottomSheetRef={bottomSheetRef}
           animatedPosition={animatedPosition}
         >
           {selectedMarker ? <StorySpotHeader /> : <MainStoryHeader />}

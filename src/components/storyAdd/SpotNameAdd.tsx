@@ -11,10 +11,10 @@ import Input from "../common/Input";
 
 const SpotNameAdd = () => {
   const [inputSpotname, setInputSpotName] = useState<string>();
-  const { spotBriefInfo } = useStoryStore();
+  const { storySpotBriefInfo } = useStoryStore();
   const { setNewSpotName, selectedSpotTitle, newSpotName } = useStoryAddStore();
 
-  const spotNames = spotBriefInfo?.titles;
+  const spotNames = storySpotBriefInfo?.titles;
 
   const spotTitles =
     spotNames

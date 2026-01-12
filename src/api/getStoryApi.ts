@@ -1,7 +1,5 @@
 import { BaseResponse } from "@/types/auth";
 import {
-  CreateStoryRequest,
-  CreateStoryResponse,
   GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
   GetMapStoryResponse,
@@ -11,8 +9,6 @@ import {
   GetStoryRequest,
   MapSpotInfoList,
   SearchSpotInfoResponse,
-  StoryEditRequest,
-  StoryEditResponse,
 } from "@/types/storySpot";
 
 import API_ENDPOINTS from "@/constants/endpoints";
@@ -89,4 +85,3 @@ export const getStoryListInMap = async (param: GetMapStoriesRequest) => {
     throw error;
   }
 };
-

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Alert, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -28,7 +28,7 @@ import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SpotLocationSelected() {
-  const { spotMapRectangle, mainStoryMapRequest } = useStoryStore();
+  const { spotLocationInMap, mainStoryMapRequest } = useStoryStore();
 
   const {
     mapRef,
@@ -38,7 +38,7 @@ export default function SpotLocationSelected() {
     handleSightMarkerPress,
   } = useStorySpotMap();
 
-  const { resetSearchTitle, resetStoryInfo, resetSpotBriefInfo } =
+  const { resetSearchStory, resetStoryInfo, resetStorySpotInfo } =
     useStoryStore();
 
   const { moveToCustomPinLocation, getCustomPinLoction } =
@@ -74,11 +74,11 @@ export default function SpotLocationSelected() {
   }, [isLogined]);
 
   useEffect(() => {
-    resetSearchTitle();
+    resetSearchStory();
     resetNewSpotName();
     resetStoryInfo();
     resetSavedStorySpot();
-    resetSpotBriefInfo();
+    resetStorySpotInfo();
   }, []);
 
   //등록 페이지 들어오기 전 지도 화면 기반 핀 이동
@@ -102,14 +102,17 @@ export default function SpotLocationSelected() {
   }, [location, mainStoryMapRequest]);
 
   //지도 이동 시 위치저장
-  const handleRegionChange = (bounds: {
-    minLongitude: number;
-    minLatitude: number;
-    maxLongitude: number;
-    maxLatitude: number;
-  }) => {
-    getCustomPinLoction(bounds);
-  };
+  const handleRegionChange = useCallback(
+    (bounds: {
+      minLongitude: number;
+      minLatitude: number;
+      maxLongitude: number;
+      maxLatitude: number;
+    }) => {
+      getCustomPinLoction(bounds);
+    },
+    []
+  );
 
   const handleLocationAdd = () => {
     if (!storyLocation) {
@@ -135,7 +138,7 @@ export default function SpotLocationSelected() {
             ref={mapRef}
             animatedPosition={animatedPosition}
             onRegionChangeComplete={handleRegionChange}
-            storyMarkers={spotMapRectangle}
+            storyMarkers={spotLocationInMap}
             onStoryMarkerPress={handleStoryMarkerPress}
             selectedStoryMarkerId={selectedMarker}
             sightMarkers={sights}

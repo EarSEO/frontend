@@ -228,4 +228,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StorySpotMap;
+export default React.memo(StorySpotMap);
