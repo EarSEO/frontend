@@ -40,8 +40,22 @@ export const useAppleLogin = () => {
                 const fullName = credential.fullName
                     ? `${credential.fullName.familyName || ""}${credential.fullName.givenName || ""}`.trim()
                     : undefined;
-                await appleLogin(credential.identityToken, fullName || undefined);
-                router.back();
+
+                const response = await appleLogin(credential.identityToken, fullName || undefined);
+
+                if (response.isNewMember) {
+                    router.push({
+                        pathname: "/myPage/socialSignup",
+                        params: {
+                            email: response.email,
+                            provider: response.provider,
+                            providerId: response.providerId,
+                            nickname: response.nickname || "",
+                        },
+                    });
+                } else {
+                    router.back();
+                }
             }
         } catch (error: any) {
             if (error.code === "ERR_REQUEST_CANCELED") {
