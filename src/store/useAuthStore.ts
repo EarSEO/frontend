@@ -9,6 +9,7 @@ import {
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
+import socialSignupApi from "@/api/auth/socialSignupApi";
 import api from "@/api/axios";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from "@/store/secureStoreKey";
 
@@ -157,12 +158,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ isLoading: true });
 
-      const response = await api.post<BaseResponse<LoginResponse>>(
-        `${API_ENDPOINTS.AUTH.SOCIAL_SIGNUP}`,
-        userData,
-      );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
-        response.data.data;
+        await socialSignupApi(userData);
 
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
