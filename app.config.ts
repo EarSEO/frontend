@@ -27,6 +27,7 @@ export default {
       bundleIdentifier: "com.earseo.earseo",
       supportsTablet: true,
       appleTeamId: "W39CU54NKB",
+      usesAppleSignIn: true,
       infoPlist: {
         UIBackgroundModes: ["audio", "location"],
       },
@@ -57,6 +58,7 @@ export default {
       "expo-web-browser",
       "expo-secure-store",
       "expo-router",
+      "expo-apple-authentication",
       [
         "expo-splash-screen",
         {

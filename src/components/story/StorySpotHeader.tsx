@@ -1,21 +1,18 @@
 import styled from "styled-components/native";
 
-import { GetStoryRequest } from "@/types/storySpot";
-
 import { theme } from "@/styles/theme";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 import Divider from "./Divider";
 import StoryCard from "./StoryCard";
 import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
-  const { storyItems, spotBriefInfo, summaries, spotTitleList } =
-    useStoryStore();
+  const { storyItems, spotTitleList } = useStoryStore();
 
   const spotNames = spotTitleList?.titles;
-  const mainTitle = spotNames?.[0] || "제목 없음";
+  const mainTitle = spotNames?.[spotNames.length - 1] || "제목 없음";
   const spotTitles =
     spotNames
       ?.slice(1, 4)
@@ -28,8 +25,12 @@ const StorySpotHeader = () => {
         <Title>{mainTitle}</Title>
         <SpotTitleList>{spotTitles}</SpotTitleList>
       </HeaderWrapper>
+
       <Divider />
-      <SummaryWrapper>{summaries && <SummaryCard />}</SummaryWrapper>
+
+      <SummaryWrapper>
+        <SummaryCard />
+      </SummaryWrapper>
       <DescriptionWrapper>
         <Description>
           {mainTitle}와 관련된 사람들의 이야기를 만나보세요.
@@ -39,6 +40,7 @@ const StorySpotHeader = () => {
         {storyItems?.map((storyItem, index) => (
           <StoryCard
             key={`${storyItem.createdAt}-${index}`}
+            authorId={storyItem?.storyAuthor?.storyAuthorId}
             userNickName={storyItem.storyAuthor?.nickname}
             stroySpotName={storyItem.title}
             storyConcept={storyItem.storyConcept}
@@ -63,13 +65,13 @@ const HeaderWrapper = styled.View`
 
 const Title = styled.Text`
   font-family: ${theme.typography.fontFamily.semiBold};
-  font-size: ${theme.typography.fontSize.xxl};
+  font-size: ${theme.typography.fontSize.xxl}px;
   color: ${theme.colors.text.textPrimary};
 `;
 
 const SpotTitleList = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.xs};
+  font-size: ${theme.typography.fontSize.xs}px;
   color: ${theme.colors.text.textSecondary};
 `;
 
@@ -79,7 +81,7 @@ const DescriptionWrapper = styled.View`
 `;
 const Description = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textSecondary};
 `;
 

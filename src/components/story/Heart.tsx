@@ -5,8 +5,6 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
-import { useStoryStore } from "@/store/useStoryStore";
-
 interface HearProps {
   heartCount?: number;
 }

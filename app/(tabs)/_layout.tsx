@@ -65,6 +65,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="story"
         options={{
+          href: "/story",
           tabBarLabel: () => null,
           tabBarIcon: ({ focused, color, size }) => (
             <Ionicons

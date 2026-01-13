@@ -4,7 +4,8 @@ export const API_ENDPOINTS = {
     LOGIN: "/api/member/login",
     SIGNUP: "/api/member/signup",
     LOGOUT: "/api/user/member/logout",
-    SOCIAL_LOGIN: "/api/member/oauth/google",
+    SOCIAL_LOGIN_GOOGLE: "/api/member/oauth/google",
+    SOCIAL_LOGIN_APPLE: "/api/member/oauth/apple",
     SOCIAL_SIGNUP: "/api/member/oauth/additional-info",
     EMAIL_SIGNUP_SEND: "/api/member/email/signup/send",
     EMAIL_VERIFY: "/api/member/email/verify",
@@ -14,15 +15,14 @@ export const API_ENDPOINTS = {
   },
 
   STORY: {
-    SPOTTOTALINFO: (storySpotId: number) =>
-      `/api/story/spot/${storySpotId}/info`,
-    MAP_RECTANGLE: "/api/story/map/rectangle",
-
+    SPOT_INFO: (storySpotId: number) => `/api/story/spot/${storySpotId}/info`,
     SPOT_BRIEF_INFO: "/api/story/spot/info/brief",
-    CREATE_STRORY: "/api/user/story/create",
+    CREATE: "/api/user/story/create",
     DOCENT_SCRIPT: "/api/story/docent",
-    SEARCH_TITLE: "/api/story/search/title",
-    SPOT_MAP_RECTANGLE: "/api/story/spot/map/rectangle",
+    SEARCH: "/api/story/search/title",
+    STORY_LIST_IN_MAP: "/api/story/map/rectangle",
+    SPOT_LIST_IN_MAP: "/api/story/spot/map/rectangle",
+    EDIT: (storyId: number) => `/api/user/story/${storyId}`,
   },
 
   SIGHT: {

@@ -15,7 +15,6 @@ interface InputProps {
   height?: number | string;
   shadow?: keyof typeof theme.shadows;
   autoFocus?: boolean;
-  fontSize?: number | string;
   blurOnSubmit?: boolean;
   onSubmitEditing?: () => void;
   returnKeyType?: "done" | "go" | "next" | "search" | "send";
@@ -51,7 +50,6 @@ const Input: React.FC<InputProps> = ({
   width,
   height,
   shadow,
-  fontSize,
   autoFocus = false,
   blurOnSubmit = true,
   onSubmitEditing,
@@ -76,7 +74,6 @@ const Input: React.FC<InputProps> = ({
       width={width || "90%"}
       height={height || "50px"}
       style={shadowStyle}
-      fontSize={fontSize || theme.typography.fontSize.lg}
       autoFocus={autoFocus}
       blurOnSubmit={blurOnSubmit}
       onSubmitEditing={onSubmitEditing}
@@ -98,17 +95,13 @@ const StyledInput = styled.TextInput<{
   width: number | string;
   height: number | string;
   placeholderTextColor: string;
-  fontSize: number | string;
   autoFocus: boolean;
   blurOnSubmit?: boolean;
   multiline?: boolean;
 }>`
-  width: ${(props) => props.width};
-  height: ${(props) => props.height};
   padding: 12px 16px;
   background-color: ${(props) => props.backgroundColor};
   border-radius: ${(props) => props.radius}px;
-  font-size: ${(props) => props.fontSize}px;
   ${(props) => props.multiline && `padding-top: 12px;`}
   align-self: center;
 `;

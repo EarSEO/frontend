@@ -1,12 +1,18 @@
+import { useState } from "react";
+
 import styled from "styled-components/native";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 import Divider from "./Divider";
 import StoryCard from "./StoryCard";
 
 const MainStoryHeader = () => {
-  const { mapStoryInfo } = useStoryStore();
+  const { storyListInMap } = useStoryStore();
+
+  const handleSelectStoryCard = () => {
+    console.log("이야기 카드 클릭");
+  };
 
   return (
     <HeaderContainer>
@@ -15,10 +21,11 @@ const MainStoryHeader = () => {
         <SubTitle>근처에 재밌는 얘기를 확인해보세요.</SubTitle>
       </HeaderWrapper>
       <Divider />
-      <ContentWrapper>
-        {mapStoryInfo?.map((mapStory, index) => (
+      <ContentWrapper onPress={handleSelectStoryCard}>
+        {storyListInMap?.map((mapStory, index) => (
           <StoryCard
             key={`${mapStory.createdAt}-${index}`}
+            authorId={mapStory.storyAuthor?.storyAuthorId}
             userNickName={mapStory.storyAuthor?.nickname}
             stroySpotName={mapStory.title}
             storyConcept={mapStory.storyConcept}
@@ -53,6 +60,6 @@ const HeaderWrapper = styled.View`
   margin-right: 20px;
 `;
 
-const ContentWrapper = styled.View``;
+const ContentWrapper = styled.Pressable``;
 
 export default MainStoryHeader;

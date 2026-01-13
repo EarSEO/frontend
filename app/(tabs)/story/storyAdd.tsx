@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { Bluetooth, ChevronRight, MapPin, X } from "lucide-react-native";
+import { ChevronRight, MapPin, X } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
@@ -15,10 +15,9 @@ import { CreateStoryRequest } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
 
-import { createStoryTextApi } from "@/api/getStoryApi";
+import { getcreateStory } from "@/api/story/getStoryAddApi";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { useRouteStore } from "@/store/useRouteStore";
-import { useStoryStore } from "@/store/useStoryStore";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
 
@@ -31,12 +30,12 @@ const CONCEPTS = [
 ] as const;
 
 export default function StoryAdd() {
+  const { selectedSpotTitle, newSpotName } = useStoryAddStore();
   const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
-    null,
+    null
   );
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const { newSpotName } = useStoryStore();
   const router = useRouter();
 
   const handleMapButton = () => {
@@ -75,7 +74,7 @@ export default function StoryAdd() {
     }
 
     const { user } = useAuthStore.getState();
-    const { storyLocation } = useStoryStore.getState();
+    const { storyLocation } = useStoryAddStore.getState();
 
     if (!user || !storyLocation) {
       Alert.alert("정보를 불러오지못했습니다.");
@@ -95,66 +94,22 @@ export default function StoryAdd() {
         storyConcept: selectedConcept,
         locale: "KO",
       };
-
-      await createStoryTextApi(createRequestData, selectedImages);
-      router.push("/story");
+      await getcreateStory(createRequestData, selectedImages);
+      router.replace("/story");
     } catch (error) {
       throw error;
     }
   };
 
-  // const handleAdd = async () => {
-  //   // 1) 기본 검증 (내용, 스팟 이름, 컨셉)
-  //   if (!content || !newSpotName || !selectedConcept) {
-  //     Alert.alert("하나라도 빠지면 안해주지롱");
-  //     return;
-  //   }
-
-  //   // 2) 더미 유저 데이터 (store 대신 사용)
-  //   const dummyUser = {
-  //     memberId: 10, // 백엔드에서 허용하는 아무 숫자
-  //     nickname: "이어동",
-  //     profileUrl: "string", // 임시 이미지 URL
-  //     updatedAt: "2025-12-01T13:42:18.385Z", // ISO 문자열 형태의 시간
-  //   };
-
-  //   // 3) 더미 위치 데이터 (스토리 위치)
-  //   const dummyLocation = {
-  //     latitude: 37.5665, // 서울 광화문 근처
-  //     longitude: 126.978,
-  //   };
-
-  //   try {
-  //     // 4) 실제 API에 보낼 요청 바디
-  //     const createRequestData: CreateStoryRequest = {
-  //       authorId: dummyUser.memberId,
-  //       authorName: dummyUser.nickname,
-  //       authorProfileUrl: dummyUser.profileUrl,
-  //       authorProfileUpdatedAt: dummyUser.updatedAt, // 이미 string
-  //       latitude: dummyLocation.latitude,
-  //       longitude: dummyLocation.longitude,
-  //       title: newSpotName, // 이건 여전히 store에서 온 값 사용
-  //       content: content,
-  //       storyConcept: selectedConcept,
-  //       locale: "KO",
-  //     };
-
-  //     console.log("📤 요청 보낼 데이터:", createRequestData);
-
-  //     await createStoryApi(createRequestData);
-  //     Alert.alert("등록 완료!");
-  //     router.push("/story");
-  //   } catch (error) {
-  //     console.error("스토리 생성 실패:", error);
-  //     Alert.alert("에러", "스토리 등록 중 오류가 발생했습니다.");
-  //   }
-  // };
+  const handleCloseButton = () => {
+    router.replace("/story");
+  };
 
   return (
     <Container>
       <ScrollContainer>
         <Header>
-          <CloseButton buttonStyle="NONE" onPress={"/story"} />
+          <CloseButton buttonStyle="NONE" onPress={handleCloseButton} />
         </Header>
 
         <StoryAddContainer>
@@ -165,7 +120,7 @@ export default function StoryAdd() {
           <MapButtonWrapper onPress={handleMapButton}>
             <MapText>
               <MapPin size={24} />
-              <LocationText>{newSpotName}</LocationText>
+              <LocationText>{newSpotName || selectedSpotTitle}</LocationText>
             </MapText>
             <ChevronRight size={20} />
           </MapButtonWrapper>
@@ -193,7 +148,6 @@ export default function StoryAdd() {
               width={340}
               height={200}
               radius={20}
-              fontSize={16}
               multiline={true}
               placeholder="여러분의 이야기를 남겨보세요."
             />
@@ -367,12 +321,12 @@ const AddImageButton = styled.Pressable`
 `;
 
 const AddImageText = styled.Text`
-  font-size: 32px;
+  font-size: ${theme.typography.fontSize.xs}px;
   color: ${theme.colors.grey.neutral400};
 `;
 
 const AddImageSubText = styled.Text`
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.grey.neutral400};
   margin-top: 4px;
 `;

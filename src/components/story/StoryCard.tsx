@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { ChevronRight } from "lucide-react-native";
+import { View } from "react-native";
+
+import { ChevronRight, MoreHorizontal } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
+import { useAuthStore } from "@/store/useAuthStore";
+
 import Heart from "./Heart";
+import MoreMenuButton from "./MoreMenuButton";
 
 interface StoryCardProps {
   profileUrl?: string;
@@ -17,6 +22,7 @@ interface StoryCardProps {
   createdAt?: string;
   likeCount?: number;
   imageUrls?: string[];
+  authorId?: number;
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({
@@ -28,16 +34,37 @@ const StoryCard: React.FC<StoryCardProps> = ({
   createdAt,
   likeCount,
   imageUrls,
+  authorId,
 }) => {
+  const { isLogined } = useAuthStore();
   const [numberOfLines, setNumberOfLines] = useState(3);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  const moreButtonRef = useRef<View>(null);
 
   const handleTextToggle = () => {
     setIsExpanded((prev) => !prev);
     setNumberOfLines((prevLines) =>
-      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3,
+      prevLines === 3 ? Number.MAX_SAFE_INTEGER : 3
     );
+  };
+
+  const handleMorePress = () => {
+    setIsMenuVisible(true);
+  };
+
+  const handleEdit = () => {
+    setIsMenuVisible(false);
+  };
+
+  const handleDelete = () => {
+    setIsMenuVisible(false);
+  };
+
+  const handleComplaint = () => {
+    setIsMenuVisible(true);
   };
 
   const getStoryConceptDisplay = (): string => {
@@ -67,13 +94,36 @@ const StoryCard: React.FC<StoryCardProps> = ({
         </ImageContainer>
         <TextContainer>
           <ContentHeaderWrapper>
-            <UserNickname>{userNickName}</UserNickname>
+            <HeaderWrapper>
+              <UserNickname>{userNickName}</UserNickname>
+
+              {isLogined ? (
+                <MoreMenuWrapper>
+                  <MoreMenu ref={moreButtonRef} onPress={handleMorePress}>
+                    <MoreHorizontal
+                      size={26}
+                      color={theme.colors.grey.neutral600}
+                    />
+                  </MoreMenu>
+                  <MoreMenuButton
+                    anchorRef={moreButtonRef}
+                    visible={isMenuVisible}
+                    onEdit={handleEdit}
+                    onClose={() => setIsMenuVisible(false)}
+                    onDelete={handleDelete}
+                    onComplaint={handleComplaint}
+                    authorId={authorId}
+                  />
+                </MoreMenuWrapper>
+              ) : null}
+            </HeaderWrapper>
             <SpotInfoWrapper>
               <StroySpotName>{stroySpotName}</StroySpotName>
               <ChevronRight size={18} />
               <StoryConcept>{getStoryConceptDisplay()}</StoryConcept>
             </SpotInfoWrapper>
           </ContentHeaderWrapper>
+
           <ContentWrapper>
             <TextSection>
               <Text
@@ -156,9 +206,15 @@ const ContentHeaderWrapper = styled.View`
   gap: 3px;
 `;
 
+const HeaderWrapper = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  width: 300px;
+`;
+
 const UserNickname = styled.Text`
   font-family: ${theme.typography.fontFamily.semiBold};
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.md}px;
 `;
 
 const SpotInfoWrapper = styled.View`
@@ -168,13 +224,15 @@ const SpotInfoWrapper = styled.View`
 
 const StroySpotName = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.xs};
+  font-size: ${theme.typography.fontSize.xs}px;
 `;
 
 const StoryConcept = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.xs};
+  font-size: ${theme.typography.fontSize.xs}px;
 `;
+const MoreMenuWrapper = styled.View``;
+const MoreMenu = styled.Pressable``;
 
 const ContentWrapper = styled.View`
   gap: 10px;
@@ -190,13 +248,13 @@ const MoreButton = styled.Pressable`
 
 const MoreButtonText = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.grey.neutral500};
 `;
 
 const Text = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 const PostingImageWrapper = styled.View`
@@ -233,7 +291,7 @@ const HeartIconSection = styled.View``;
 const CreatedAtSection = styled.Text`
   padding-top: 2px;
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 export default StoryCard;
