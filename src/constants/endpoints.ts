@@ -15,15 +15,14 @@ export const API_ENDPOINTS = {
   },
 
   STORY: {
-    SPOTTOTALINFO: (storySpotId: number) =>
-      `/api/story/spot/${storySpotId}/info`,
-    MAP_RECTANGLE: "/api/story/map/rectangle",
-
+    SPOT_INFO: (storySpotId: number) => `/api/story/spot/${storySpotId}/info`,
     SPOT_BRIEF_INFO: "/api/story/spot/info/brief",
-    CREATE_STRORY: "/api/user/story/create",
+    CREATE: "/api/user/story/create",
     DOCENT_SCRIPT: "/api/story/docent",
-    SEARCH_TITLE: "/api/story/search/title",
-    SPOT_MAP_RECTANGLE: "/api/story/spot/map/rectangle",
+    SEARCH: "/api/story/search/title",
+    STORY_LIST_IN_MAP: "/api/story/map/rectangle",
+    SPOT_LIST_IN_MAP: "/api/story/spot/map/rectangle",
+    EDIT: (storyId: number) => `/api/user/story/${storyId}`,
   },
 
   SIGHT: {

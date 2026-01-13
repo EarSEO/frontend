@@ -6,4 +6,6 @@ export interface BottomSheetProps {
   children: React.ReactNode;
   animatedPosition?: SharedValue<number>;
   snapPoints?: string[];
+  keyboardBehavior?: "interactive" | "extend" | "fillParent";
+  initialIndex?: number;
 }

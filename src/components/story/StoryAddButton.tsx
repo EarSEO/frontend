@@ -1,20 +1,25 @@
+import { useState } from "react";
+
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 
 export const StoryAddButton = () => {
   const router = useRouter();
-  const { storyMain } = useStoryStore();
+  const { isLogined } = useAuthStore();
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 중복 클릭 방지
 
   const handleAddStory = () => {
-    {
-      storyMain
-        ? router.push("/story/spotLocationSelected")
-        : router.push("/story/spotNameSelected");
-    }
+    if (buttonDisabled) return;
+    setButtonDisabled(true);
+    setTimeout(() => setButtonDisabled(false), 500);
+
+    if (isLogined === true) {
+      router.push("/story/spotLocationSelected");
+    } else router.replace("/myPage/login");
   };
 
   return (

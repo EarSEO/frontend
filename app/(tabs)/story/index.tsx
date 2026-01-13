@@ -1,85 +1,34 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 
-import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
-import Map from "@/components/map/Map";
 import StorySpotMap from "@/components/map/StorySpotMap";
 import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
-import { useSightMap } from "@/hooks/useSightMap";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 
-import { MapRef } from "@/types/map";
-import { SightInfo } from "@/types/sight";
-import {
-  GetMapStoriesRequest,
-  GetSearchTitleRequest,
-  GetStoryRequest,
-  MapSpotInfoItem,
-} from "@/types/storySpot";
-
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 export default function Index() {
-  const Ref = useRef<any>(null);
+  const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
-  const mapRef = useRef<MapRef>(null);
+
   const {
-    setMapStoryInfo,
-    storyMain,
-    setStoryInfo,
-    setSpotMapRectangle,
-    spotMapRectangle,
-  } = useStoryStore();
-  const [selectedMarker, setSelectedMarker] = useState<MapSpotInfoItem | null>(
-    null,
-  );
+    mapRef,
+    selectedMarker,
+    handleMapPress,
+    handleRegionChange,
+    handleStoryMarkerPress,
+  } = useStorySpotMap();
 
-  const handleRegionChange = (bounds: {
-    minLongitude: number;
-    minLatitude: number;
-    maxLongitude: number;
-    maxLatitude: number;
-  }) => {
-    const mapStoriesRequest: GetMapStoriesRequest = {
-      minLongitude: bounds.minLongitude.toString(),
-      minLatitude: bounds.minLatitude.toString(),
-      maxLongitude: bounds.maxLongitude.toString(),
-      maxLatitude: bounds.maxLatitude.toString(),
-      page: 0,
-      size: 10,
-      sort: "createdAt,desc",
-    };
-
-    setMapStoryInfo(mapStoriesRequest);
-    setSpotMapRectangle(mapStoriesRequest);
-  };
-
-  const handleMarkerPress = (sight: MapSpotInfoItem) => {
-    setSelectedMarker(sight);
-
-    const storyRequest = {
-      storySpotId: sight.storySpotId,
-      query: {
-        query: {
-          longitude: sight.longitude.toString(),
-          latitude: sight.latitude.toString(),
-          locale: "KO" as const,
-          page: 0,
-          size: 1000,
-          sort: "createdAt,desc" as const,
-        },
-      },
-    };
-    setStoryInfo(storyRequest);
-  };
+  const { spotLocationInMap } = useStoryStore();
 
   return (
     <Container>
@@ -87,14 +36,15 @@ export default function Index() {
         <StorySpotMap
           ref={mapRef}
           animatedPosition={animatedPosition}
-          markers={spotMapRectangle}
+          storyMarkers={spotLocationInMap}
           onRegionChangeComplete={handleRegionChange}
-          onMarkerPress={handleMarkerPress}
-          selectedMarkerId={selectedMarker?.storySpotId}
+          onStoryMarkerPress={handleStoryMarkerPress}
+          selectedStoryMarkerId={selectedMarker}
+          onMapPress={handleMapPress}
         />
 
         <CustomBottomSheet
-          bottomSheetRef={Ref}
+          bottomSheetRef={bottomSheetRef}
           animatedPosition={animatedPosition}
         >
           {selectedMarker ? <StorySpotHeader /> : <MainStoryHeader />}

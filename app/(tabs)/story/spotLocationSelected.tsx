@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Alert, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -11,110 +11,186 @@ import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import BackButton from "@/components/common/BackButton";
 import Button from "@/components/common/Button";
 import CloseButton from "@/components/common/CloseButton";
-import Input from "@/components/common/Input";
-import Map from "@/components/map/Map";
+import StorySpotMap from "@/components/map/StorySpotMap";
 import SpotLocationAdd from "@/components/storyAdd/SpotLocationAdd";
+import SpotNameAdd from "@/components/storyAdd/SpotNameAdd";
 
-import { MapRef } from "@/types/map";
-import { GetSearchTitleRequest } from "@/types/storySpot";
+import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
+import { useLocation } from "@/hooks/useLocation";
+import { useSightMap } from "@/hooks/useSightMap";
 
 import { theme } from "@/styles/theme";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
-import { getSearchTitle } from "@/api/getStoryApi";
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SpotLocationSelected() {
-  const { setNewSpotName, setStoryLocation } = useStoryStore();
+  const { spotLocationInMap, mainStoryMapRequest } = useStoryStore();
+
+  const {
+    mapRef,
+    selectedMarker,
+    handleMapPress,
+    handleStoryMarkerPress,
+    handleSightMarkerPress,
+  } = useStorySpotMap();
+
+  const { resetSearchStory, resetStoryInfo, resetStorySpotInfo } =
+    useStoryStore();
+
+  const { moveToCustomPinLocation, getCustomPinLoction } =
+    useCustomPinNavigation();
+
+  const {
+    storyLocation,
+    resetNewSpotName,
+    selectedSpotTitle,
+    resetSavedStorySpot,
+  } = useStoryAddStore();
+
+  const { isLogined } = useAuthStore();
+  const { location } = useLocation();
+  const { sights, selectedSight } = useSightMap();
+
   const Ref = useRef<any>(null);
   const router = useRouter();
-  const mapRef = useRef<MapRef>(null);
   const animatedPosition = useSharedValue(0);
 
-  const [inputSpotName, setInputSpotName] = useState<string>("");
+  const [isNameSelected, setIsNameSelected] = useState<boolean>(true); // 이름 등록할 때 지도 움직임 false
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 버튼 중복 클릭 방지
 
-  const [centerCoordinate, setCenterCoordinate] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
+  useEffect(() => {
+    if (!isLogined) {
+      Alert.alert("로그아웃", "로그인이 필요합니다.", [
+        {
+          text: "확인",
+          onPress: () => router.push("/myPage/login"),
+        },
+      ]);
+    }
+  }, [isLogined]);
 
-  const handleAdd = () => {
-    if (!centerCoordinate) {
-      Alert.alert("안넘어가지롱");
+  useEffect(() => {
+    resetSearchStory();
+    resetNewSpotName();
+    resetStoryInfo();
+    resetSavedStorySpot();
+    resetStorySpotInfo();
+  }, []);
+
+  //등록 페이지 들어오기 전 지도 화면 기반 핀 이동
+  useEffect(() => {
+    if (location) {
+      moveToCustomPinLocation(mapRef, location.latitude, location.longitude);
+      return;
+    }
+
+    if (mainStoryMapRequest) {
+      const minLatitude = Number(mainStoryMapRequest.minLatitude);
+      const maxLatitude = Number(mainStoryMapRequest.maxLatitude);
+      const minLongitude = Number(mainStoryMapRequest.minLongitude);
+      const maxLongitude = Number(mainStoryMapRequest.maxLongitude);
+
+      const mapLat = (minLatitude + maxLatitude) / 2;
+      const mapLng = (minLongitude + maxLongitude) / 2;
+
+      moveToCustomPinLocation(mapRef, mapLat, mapLng);
+    }
+  }, [location, mainStoryMapRequest]);
+
+  //지도 이동 시 위치저장
+  const handleRegionChange = useCallback(
+    (bounds: {
+      minLongitude: number;
+      minLatitude: number;
+      maxLongitude: number;
+      maxLatitude: number;
+    }) => {
+      getCustomPinLoction(bounds);
+    },
+    []
+  );
+
+  const handleLocationAdd = () => {
+    if (!storyLocation) {
+      Alert.alert("위치정보를 찾을 수 없습니다.");
     } else {
-      setNewSpotName(inputSpotName);
-      router.push("/story/spotNameSelected");
+      setIsNameSelected(false);
     }
   };
 
-  const handleRegionChange = async (bounds: {
-    minLongitude: number;
-    minLatitude: number;
-    maxLongitude: number;
-    maxLatitude: number;
-  }) => {
-    try {
-      const centerLat = (bounds.minLatitude + bounds.maxLatitude) / 2;
-      const centerLng = (bounds.minLongitude + bounds.maxLongitude) / 2;
+  const handleAdd = () => {
+    if (buttonDisabled) return;
+    setButtonDisabled(true);
+    setTimeout(() => setButtonDisabled(false), 500);
 
-      setCenterCoordinate({
-        latitude: centerLat,
-        longitude: centerLng,
-      });
-      setStoryLocation(centerLat, centerLng);
+    router.push("/story/storyAdd");
+  };
 
-      const searchTitleInfo: GetSearchTitleRequest = {
-        keyword: inputSpotName,
-        longitude: centerLng.toString(),
-        latitude: centerLat.toString(),
-        minLongitude: bounds.minLongitude.toString(),
-        minLatitude: bounds.minLatitude.toString(),
-        maxLongitude: bounds.maxLongitude.toString(),
-        maxLatitude: bounds.maxLatitude.toString(),
-        limit: "10",
-      };
-      const result = await getSearchTitle(searchTitleInfo);
-    } catch (error) {
-      throw error;
-    }
+  const handleCloseButton = () => {
+    router.replace("/story");
   };
 
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
         <MapWrapper>
-          <Map
+          <StorySpotMap
             ref={mapRef}
             animatedPosition={animatedPosition}
             onRegionChangeComplete={handleRegionChange}
+            storyMarkers={spotLocationInMap}
+            onStoryMarkerPress={handleStoryMarkerPress}
+            selectedStoryMarkerId={selectedMarker}
+            sightMarkers={sights}
+            onSightMarkerPress={handleSightMarkerPress}
+            selectedSightMarkerId={selectedSight?.id}
+            onMapPress={handleMapPress}
+            scrollEnabled={isNameSelected}
+            zoomEnabled={isNameSelected}
+            rotateEnabled={isNameSelected}
+            pitchEnabled={isNameSelected}
           />
           <CenterPin>
             <MapPin width={45} height={45} />
           </CenterPin>
+
+          <Header>
+            <BackButton buttonStyle="CIRCLE" />
+            <SpotName>{selectedSpotTitle}</SpotName>
+            <CloseButton buttonStyle="CIRCLE" onPress={handleCloseButton} />
+          </Header>
         </MapWrapper>
 
-        <Header>
-          <BackButton buttonStyle="CIRCLE" />
-          <Input
-            value={inputSpotName}
-            width={200}
-            radius={theme.borderRadius.xl}
-            fontSize={theme.typography.fontSize.sm}
-            editable={false}
-          />
-          <CloseButton buttonStyle="CIRCLE" onPress={"./"} />
-        </Header>
-
-        <CustomBottomSheet bottomSheetRef={Ref} snapPoints={["45%", "85%"]}>
-          <SpotLocationAdd onSpotNameChange={setInputSpotName} />
+        <CustomBottomSheet
+          animatedPosition={animatedPosition}
+          bottomSheetRef={Ref}
+          keyboardBehavior="interactive"
+          snapPoints={["25%", "50%", "85%"]}
+          initialIndex={1}
+        >
+          {isNameSelected ? <SpotLocationAdd /> : <SpotNameAdd />}
         </CustomBottomSheet>
+
         <ButtonWrapper>
-          <Button
-            text="이 위치에서 이야기 등록하기"
-            onPress={handleAdd}
-            width="90%"
-            fontSize={theme.typography.fontSize.sm}
-          />
+          {isNameSelected ? (
+            <Button
+              text="이 위치에서 이야기 등록하기"
+              onPress={handleLocationAdd}
+              width="90%"
+              fontSize={theme.typography.fontSize.sm}
+            />
+          ) : (
+            <Button
+              text="스팟 등록하기"
+              onPress={handleAdd}
+              width="90%"
+              fontSize={theme.typography.fontSize.sm}
+            />
+          )}
         </ButtonWrapper>
       </GestureHandlerRootView>
     </Container>
@@ -127,6 +203,16 @@ const Container = styled.View`
 
 const MapWrapper = styled.View`
   flex: 1;
+`;
+
+const SpotName = styled.TextInput`
+  font-family: ${theme.typography.fontFamily.medium};
+  font-size: ${theme.typography.fontSize.md}px;
+  background-color: ${theme.colors.white};
+  border-radius: 20px;
+  text-align: center;
+  height: 40px;
+  width: 200px;
 `;
 
 const styles = StyleSheet.create({
@@ -162,13 +248,9 @@ const ButtonWrapper = styled.View`
 `;
 const CenterPin = styled.View`
   position: absolute;
-  top: 35%;
-  left: 50%;
+  top: 30%;
+  left: 48%;
   z-index: 5;
   margin-left: -15px;
   margin-top: -30px;
-`;
-
-const PinIcon = styled.Text`
-  font-size: 30px;
 `;

@@ -1,50 +1,88 @@
-import { useState } from "react";
-
+import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
+
+import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 
 import { theme } from "@/styles/theme";
 
-import { useStoryStore } from "@/store/useStoryStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
-import Button from "../common/Button";
 import Input from "../common/Input";
 import LocationLabel from "../common/LocationLabel";
 
-interface SpotNameAddProps {
-  onSpotNameChange: (name: string) => void;
-}
+const SpotLocationAdd = () => {
+  const { setSelectedSpot, moveToCustomPinLocation } = useCustomPinNavigation();
+  const { searchedStoryInfo } = useStoryStore();
+  const { selectedSpotId, setStoryLocation } = useStoryAddStore();
 
-const SpotLocationAdd = ({ onSpotNameChange }: SpotNameAddProps) => {
-  const [newSpotname, setNSpotName] = useState<string>();
-  const { searchTitleInfo } = useStoryStore();
+  const { mapRef, setInputSpotName, inputSpotName, handleSearch } =
+    useStorySpotMap();
 
   const handleSpotNamePass = (text: string) => {
-    setNSpotName(text);
-    onSpotNameChange(text);
+    setInputSpotName(text);
+  };
+
+  const handleSearchedSpot = (
+    spotId: number,
+    spotTitle: string | undefined,
+    latitude: number,
+    logitude: number
+  ) => {
+    if (selectedSpotId === spotId) {
+      setSelectedSpot(undefined, undefined);
+    } else {
+      setSelectedSpot(spotId, spotTitle);
+      setStoryLocation(latitude, logitude);
+      moveToCustomPinLocation(mapRef, latitude, logitude);
+    }
   };
 
   return (
     <Container>
       <Content>
         <InputWrapper>
-          <Input
-            value={newSpotname}
+          <StyledInput
+            value={inputSpotName}
             onChangeText={handleSpotNamePass}
-            radius={10}
             placeholder="검색어를 입력하세요."
-            backgroundColor={theme.colors.grey.neutral100}
-            fontSize={theme.typography.fontSize.sm}
+            onSubmitEditing={handleSearch}
           />
+          <SearchButtonWrapper onPress={handleSearch}>
+            <Ionicons
+              name="search"
+              size={18}
+              color={theme.colors.grey.neutral600}
+            />
+          </SearchButtonWrapper>
         </InputWrapper>
-        <SearchViewWrapper
-          contentContainerStyle={{
-            gap: 12,
-          }}
-        >
-          {searchTitleInfo?.map((item) => (
-            <LocationLabel key={item.storySpotId} locationTitle={item.title} />
-          ))}
-        </SearchViewWrapper>
+
+        <SearchListViewWrapper>
+          <SearchList>
+            {searchedStoryInfo && searchedStoryInfo.length > 0 ? (
+              searchedStoryInfo?.map((item) => (
+                <LocationLabel
+                  key={item.storySpotId}
+                  locationTitle={item.title}
+                  latitude={item.latitude}
+                  logitude={item.longitude}
+                  isSelected={selectedSpotId === item.storySpotId}
+                  onPress={() =>
+                    handleSearchedSpot(
+                      item.storySpotId,
+                      item?.title,
+                      item.latitude,
+                      item.longitude
+                    )
+                  }
+                />
+              ))
+            ) : (
+              <NoResultText>검색 결과가 없습니다..</NoResultText>
+            )}
+          </SearchList>
+        </SearchListViewWrapper>
       </Content>
     </Container>
   );
@@ -59,11 +97,40 @@ const Content = styled.View`
   flex: 1;
 `;
 
-const InputWrapper = styled.View``;
+const InputWrapper = styled.View`
+  position: relative;
+`;
 
-const SearchViewWrapper = styled.ScrollView`
-  padding: 25px;
-  flex: 1;
+const SearchButtonWrapper = styled.Pressable`
+  position: absolute;
+  right: 30px;
+  top: 0;
+  bottom: 0;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SearchListViewWrapper = styled.ScrollView`
+  padding: 20px;
+  padding-bottom: 80px;
+`;
+
+const SearchList = styled.View`
+  gap: 15px;
+`;
+const NoResultText = styled.Text`
+  padding: 12px;
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${theme.colors.text.textSecondary};
+`;
+
+const StyledInput = styled(Input)`
+  padding-right: 45px;
+  border-radius: 10px;
+  background-color: ${theme.colors.grey.neutral100};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 export default SpotLocationAdd;

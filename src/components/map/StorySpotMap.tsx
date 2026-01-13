@@ -27,13 +27,18 @@ const LOCATION_BUTTON_MARGIN = 16;
 
 interface StorySpotMapProps {
   animatedPosition?: SharedValue<number>;
-  markers?: MapSpotInfoItem[];
-  selectedMarkerId?: number | null;
-  onMarkerPress?: (sight: MapSpotInfoItem) => void;
+  storyMarkers?: MapSpotInfoItem[];
+  sightMarkers?: SightInfo[];
+  selectedStoryMarkerId?: number | null;
+  selectedSightMarkerId?: string | null;
+  onStoryMarkerPress?: (spot: MapSpotInfoItem) => void;
+  onSightMarkerPress?: (sight: SightInfo) => void;
   scrollEnabled?: boolean;
   zoomEnabled?: boolean;
   rotateEnabled?: boolean;
   pitchEnabled?: boolean;
+  onMapPress?: () => void;
+
   onRegionChangeComplete?: (bounds: {
     minLongitude: number;
     minLatitude: number;
@@ -48,16 +53,20 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
   (
     {
       animatedPosition,
-      markers,
-      selectedMarkerId,
-      onMarkerPress,
+      storyMarkers,
+      sightMarkers,
+      selectedStoryMarkerId: selectedSpotMarkerId,
+      selectedSightMarkerId,
+      onStoryMarkerPress,
+      onSightMarkerPress,
       onRegionChangeComplete,
+      onMapPress,
       scrollEnabled = true,
       zoomEnabled = true,
       rotateEnabled = true,
       pitchEnabled = true,
     },
-    ref,
+    ref
   ) => {
     const mapRef = useRef<MapView>(null);
     const { location, isLoading, getCurrentLocation } = useLocation();
@@ -83,7 +92,13 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
 
     const moveToCurrentLocation = useCallback(async () => {
       const coords = await getCurrentLocation();
-      mapRef.current?.animateToRegion(coords, 300);
+      mapRef.current?.animateToRegion(
+        {
+          ...coords,
+          latitude: coords.latitude - 0.003,
+        },
+        300
+      );
     }, [getCurrentLocation]);
 
     const handleRegionChangeComplete = useCallback(async () => {
@@ -122,7 +137,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           style={styles.map}
           provider={PROVIDER_DEFAULT}
           initialRegion={{
-            latitude: location.latitude,
+            latitude: location.latitude - 0.003,
             longitude: location.longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
@@ -135,20 +150,43 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           rotateEnabled={rotateEnabled}
           pitchEnabled={pitchEnabled}
           onRegionChangeComplete={handleRegionChangeComplete}
+          onPress={(e) => {
+            if (onMapPress) onMapPress();
+          }}
         >
-          {markers?.map((sight) => (
+          {storyMarkers?.map((story) => (
             <Marker
-              key={sight.storySpotId}
+              key={story.storySpotId}
+              coordinate={{
+                latitude: story?.latitude,
+                longitude: story?.longitude,
+              }}
+              pinColor={
+                selectedSpotMarkerId === story.storySpotId
+                  ? theme.colors.main.primary
+                  : theme.colors.alarm.error
+              }
+              onPress={(e) => {
+                e.stopPropagation?.();
+                onStoryMarkerPress?.(story);
+              }}
+              stopPropagation={true}
+            />
+          ))}
+          {sightMarkers?.map((sight) => (
+            <Marker
+              key={sight.id}
               coordinate={{
                 latitude: sight.latitude,
                 longitude: sight.longitude,
               }}
+              title={sight.title}
               pinColor={
-                selectedMarkerId === sight.storySpotId
+                selectedSightMarkerId === sight.id
                   ? theme.colors.main.primary
                   : "#FF6B6B"
               }
-              onPress={() => onMarkerPress?.(sight)}
+              onPress={(e) => onSightMarkerPress?.(sight)}
             />
           ))}
         </MapView>
@@ -165,7 +203,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
         </AnimatedTouchable>
       </>
     );
-  },
+  }
 );
 
 StorySpotMap.displayName = "StorySpotMap";
@@ -190,4 +228,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StorySpotMap;
+export default React.memo(StorySpotMap);
