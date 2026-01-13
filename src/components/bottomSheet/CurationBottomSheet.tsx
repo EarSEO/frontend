@@ -5,6 +5,10 @@ import styled from "styled-components/native";
 
 import { CurationItem } from "@/types/sight";
 
+import { theme } from "@/styles/theme";
+
+import CourseCard from "../common/CourseCard";
+
 type CurationBottomSheetProps = {
   curations: CurationItem[];
   isLoading: boolean;
@@ -25,81 +29,51 @@ const CurationBottomSheet: React.FC<CurationBottomSheetProps> = ({
 
   return (
     <Container>
-      <Title>이런 곳은 어떠세요?</Title>
-      <Subtitle>서울을 더 깊이 즐길 수 있는 큐레이션 추천</Subtitle>
+      <HeaderContainer>
+        <Title>이런 곳은 어떠세요?</Title>
+        <Subtitle>서울을 더 깊이 즐길 수 있는 큐레이션 추천</Subtitle>
+      </HeaderContainer>
 
-      {curations.map((c) => (
-        <Card key={c.curationId} activeOpacity={0.9}>
-          <CardImage source={{ uri: c.curationImgUrl }}>
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.7)"]}
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: "60%",
-              }}
+      <CuratonContainer>
+        {curations.map((c) => (
+          <Card key={c.curationId}>
+            <CourseCard
+              image={c.curationImgUrl}
+              courseTitle={c.curationTitle}
+              courseSubTitle={c.description}
             />
-            <CardTexts>
-              <CardTitle>{c.curationTitle}</CardTitle>
-              <CardDescription numberOfLines={2}>
-                {c.description}
-              </CardDescription>
-            </CardTexts>
-          </CardImage>
-        </Card>
-      ))}
+          </Card>
+        ))}
+      </CuratonContainer>
     </Container>
   );
 };
 
 export default CurationBottomSheet;
 
-const Container = styled.ScrollView`
-  padding: 20px 16px 32px;
+const Container = styled.View`
+  gap: 10px;
+`;
+
+const HeaderContainer = styled.View`
+  gap: 5px;
+  margin: 0 20px;
 `;
 
 const Title = styled.Text`
-  font-size: 20px;
-  font-weight: 700;
-  color: #111;
-  margin-bottom: 4px;
+  font-family: ${({ theme }) => theme.typography.fontFamily.bold};
+  font-size: ${({ theme }) => theme.typography.fontSize.xxl}px;
+  color: ${({ theme }) => theme.colors.text.textPrimary};
 `;
 
 const Subtitle = styled.Text`
-  font-size: 13px;
-  color: #777;
-  margin-bottom: 16px;
+  font-family: ${({ theme }) => theme.typography.fontFamily.regular};
+  font-size: ${({ theme }) => theme.typography.fontSize.md}px;
+  color: ${({ theme }) => theme.colors.text.textSecondary};
 `;
 
-const Card = styled.TouchableOpacity`
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  height: 140px;
-`;
+const CuratonContainer = styled.ScrollView``;
 
-const CardImage = styled.ImageBackground`
-  width: 100%;
-  height: 100%;
-` as any;
-
-const CardTexts = styled.View`
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 16px;
-`;
-
-const CardTitle = styled.Text`
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
-`;
-
-const CardDescription = styled.Text`
-  font-size: 12px;
-  color: #eee;
+const Card = styled.Pressable`
+  align-items: center;
 `;
