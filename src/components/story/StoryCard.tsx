@@ -57,17 +57,14 @@ const StoryCard: React.FC<StoryCardProps> = ({
 
   const handleEdit = () => {
     setIsMenuVisible(false);
-    console.log("수정하기");
   };
 
   const handleDelete = () => {
     setIsMenuVisible(false);
-    console.log("삭제하기");
   };
 
   const handleComplaint = () => {
     setIsMenuVisible(true);
-    console.log("신고하기");
   };
 
   const getStoryConceptDisplay = (): string => {
