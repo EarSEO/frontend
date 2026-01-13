@@ -49,7 +49,7 @@ export const useAppleLogin = () => {
                         params: {
                             email: response.email,
                             provider: response.provider,
-                            providerId: response.providerId,
+                            tempToken: response.tempToken,
                             nickname: response.nickname || "",
                         },
                     });

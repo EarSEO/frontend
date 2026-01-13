@@ -30,7 +30,7 @@ export interface SignUpRequest {
 export interface SocialSignUpRequest {
   email: string;
   provider: Provider;
-  providerId: string;
+  tempToken?: string;
   nickname: string;
   gender?: Gender;
   birthdate?: string;
@@ -62,7 +62,7 @@ export interface SocialLoginResponse {
   isNewMember: boolean;
   email: string;
   provider?: string;
-  providerId?: string;
+  tempToken?: string;
   accessToken?: string;
   refreshToken?: string;
   memberId?: number;
