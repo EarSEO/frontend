@@ -9,7 +9,7 @@ type buttonStyleType = "NONE" | "CIRCLE";
 interface CloseButtonProps {
   buttonStyle: buttonStyleType;
   disabled?: boolean;
-  onPress: string;
+  onPress: () => void;
 }
 
 /**
@@ -27,23 +27,27 @@ const CloseButton: React.FC<CloseButtonProps> = ({
   onPress,
 }) => {
   const router = useRouter();
-  const handleClose = () => {
-    router.dismissAll();
-    router.navigate(onPress);
+
+  const handleClosePress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      router.dismissAll();
+    }
   };
 
   return (
-    <StyledBackButton onPress={handleClose} disabled={disabled}>
+    <StyledCloseButton onPress={handleClosePress} disabled={disabled}>
       {buttonStyle === "NONE" ? (
         <Ionicons name="close-sharp" size={30} />
       ) : (
         <CloseButtonCircle width={50} height={50} />
       )}
-    </StyledBackButton>
+    </StyledCloseButton>
   );
 };
 
-const StyledBackButton = styled.Pressable`
+const StyledCloseButton = styled.Pressable`
   opacity: ${(props) => (props.disabled ? 0.3 : 1)};
   margin: 10px;
 `;

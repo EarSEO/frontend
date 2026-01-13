@@ -9,7 +9,7 @@ type buttonStyleType = "NONE" | "CIRCLE";
 interface BackButtonProps {
   buttonStyle: buttonStyleType;
   disabled?: boolean;
-  onPress?: string;
+  onPress?: () => void;
 }
 
 /**
@@ -25,8 +25,16 @@ const BackButton: React.FC<BackButtonProps> = ({
 }) => {
   const router = useRouter();
 
+  const handleBackPress = () => {
+    if (onPress) {
+      onPress();
+    } else {
+      router.back();
+    }
+  };
+
   return (
-    <StyledBackButton onPress={() => router.back()} disabled={disabled}>
+    <StyledBackButton onPress={handleBackPress} disabled={disabled}>
       {buttonStyle === "NONE" ? (
         <Ionicons name="chevron-back-outline" size={30} />
       ) : (
