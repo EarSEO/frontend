@@ -9,6 +9,8 @@ import {
 
 import API_ENDPOINTS from "@/constants/endpoints";
 
+import appleLoginApi from "@/api/auth/appleLoginApi";
+import socialSignupApi from "@/api/auth/socialSignupApi";
 import api from "@/api/axios";
 import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from "@/store/secureStoreKey";
 
@@ -36,6 +38,7 @@ interface AuthState {
     authCode: string,
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
+  appleLogin: (identityToken: string, fullName?: string) => Promise<SocialLoginResponse>;
   logout: () => Promise<void>;
   loadUser: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -69,7 +72,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         nickname,
         role,
         updatedAt: new Date(),
-        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+        profileUrl: "",
       };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -110,7 +113,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
 
       const response = await api.post<SocialLoginResponse>(
-        `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN}`,
+        `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE}`,
         { authCode },
       );
 
@@ -135,7 +138,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           nickname: data.nickname,
           role: data.role,
           updatedAt: new Date(),
-          profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+          profileUrl: "",
         };
         await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -156,12 +159,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ isLoading: true });
 
-      const response = await api.post<LoginResponse>(
-        `${API_ENDPOINTS.AUTH.SOCIAL_SIGNUP}`,
-        userData,
-      );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
-        response.data;
+        await socialSignupApi(userData);
 
       await SecureStore.setItemAsync(ACCESS_TOKEN, accessToken);
       await SecureStore.setItemAsync(REFRESH_TOKEN, refreshToken);
@@ -172,7 +171,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         nickname,
         role,
         updatedAt: new Date(),
-        profileUrl: "https://avatars.githubusercontent.com/u/94902886?v=4",
+        profileUrl: "",
       };
       await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
@@ -183,6 +182,47 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     } catch (error) {
       set({ user: null, isLogined: false, isLoading: false });
+      throw error;
+    }
+  },
+
+  appleLogin: async (identityToken: string, fullName?: string): Promise<SocialLoginResponse> => {
+    try {
+      set({ isLoading: true });
+      const data = await appleLoginApi(identityToken, fullName);
+
+      if (data.isNewMember) {
+        set({ isLoading: false });
+        return data;
+      }
+
+      // 기존 회원이면 토큰 저장 및 로그인 처리
+      if (data.accessToken && data.refreshToken && data.memberId) {
+        await SecureStore.setItemAsync(ACCESS_TOKEN, data.accessToken);
+        await SecureStore.setItemAsync(REFRESH_TOKEN, data.refreshToken);
+
+        const user: User = {
+          memberId: data.memberId,
+          email: data.email,
+          nickname: data.nickname || "",
+          role: data.role!,
+          updatedAt: new Date(),
+          profileUrl: "",
+        };
+        await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
+
+        set({
+          user,
+          isLogined: true,
+          isLoading: false,
+        });
+
+        await get().fetchProfile();
+      }
+
+      return data;
+    } catch (error) {
+      set({ isLoading: false });
       throw error;
     }
   },

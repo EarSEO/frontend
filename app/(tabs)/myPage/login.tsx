@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 
-import { Alert, TouchableOpacity } from "react-native";
+import { Alert, Platform,TouchableOpacity  } from "react-native";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
+
+import { useAppleLogin } from "@/hooks/useAppleLogin";
 
 import { theme } from "@/styles/theme";
 import AppleLogo from "@/assets/icons/apple-logo.svg";
@@ -20,6 +22,8 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuthStore();
+  const { handleAppleLogin, isLoading: isAppleLoading, error: appleError } = useAppleLogin();
+  const isIOS = Platform.OS === "ios";
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -92,13 +96,23 @@ export default function Login() {
         <SocialButton onPress={() => console.log("Google login")}>
           <GoogleLogo width={40} height={40} />
         </SocialButton>
-        <SocialButton onPress={() => console.log("Apple login")}>
-          <AppleLogo width={40} height={40} />
-        </SocialButton>
+        {isIOS && (
+          <SocialButton onPress={handleAppleLogin} disabled={isAppleLoading}>
+            <AppleLogo width={40} height={40} />
+          </SocialButton>
+        )}
       </SocialLoginArea>
+      {appleError && <ErrorText>{appleError}</ErrorText>}
     </Container>
   );
 }
+
+const ErrorText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xs}px;
+  color: ${theme.colors.alarm.error};
+  margin-top: 10px;
+`;
 
 const Container = styled.View`
   flex: 1;

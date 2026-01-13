@@ -30,6 +30,7 @@ export interface SignUpRequest {
 export interface SocialSignUpRequest {
   email: string;
   provider: Provider;
+  tempToken?: string;
   nickname: string;
   gender?: Gender;
   birthdate?: string;
@@ -45,6 +46,11 @@ export interface LoginResponse {
   role: Role;
 }
 
+export interface AppleLoginRequest {
+  identityToken: string;
+  fullName?: string;
+}
+
 export interface SignUpResponse {
   memberId: number;
   email: string;
@@ -55,7 +61,8 @@ export interface SignUpResponse {
 export interface SocialLoginResponse {
   isNewMember: boolean;
   email: string;
-
+  provider?: string;
+  tempToken?: string;
   accessToken?: string;
   refreshToken?: string;
   memberId?: number;
