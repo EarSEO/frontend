@@ -64,12 +64,12 @@ export const useCustomPinNavigation = () => {
   );
 
   //마커 선택&검색 정보 선택 시 정보 저장
-  const setSelectedSpot = (
-    id: number | undefined,
-    title: string | undefined
-  ) => {
-    setSavedStorySpot(id, title);
-  };
+  const setSelectedSpot = useCallback(
+    (id: number | undefined, title: string | undefined) => {
+      setSavedStorySpot(id, title);
+    },
+    [setSavedStorySpot]
+  );
 
   return { moveToCustomPinLocation, getCustomPinLoction, setSelectedSpot };
 };
