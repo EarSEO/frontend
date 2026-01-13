@@ -10,7 +10,7 @@ import {
   MapSpotInfoItem,
 } from "@/types/storySpot";
 
-import { SEOUL_GEOM } from "@/constants/geometry";
+import { KOREA_GEOM } from "@/constants/geometry";
 
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
@@ -114,10 +114,10 @@ export const useStorySpotMap = () => {
         keyword: inputSpotName,
         longitude: storyLocation.longitude,
         latitude: storyLocation.latitude,
-        minLongitude: SEOUL_GEOM.LOGITUDE.MIN,
-        minLatitude: SEOUL_GEOM.LATITUDE.MIN,
-        maxLongitude: SEOUL_GEOM.LOGITUDE.MAX,
-        maxLatitude: SEOUL_GEOM.LATITUDE.MAX,
+        minLongitude: KOREA_GEOM.LOGITUDE.MIN,
+        minLatitude: KOREA_GEOM.LATITUDE.MIN,
+        maxLongitude: KOREA_GEOM.LOGITUDE.MAX,
+        maxLatitude: KOREA_GEOM.LATITUDE.MAX,
         limit: "10",
       };
       await setSearchStory(searchParams);
