@@ -95,17 +95,21 @@ export default function StoryAdd() {
         locale: "KO",
       };
       await getcreateStory(createRequestData, selectedImages);
-      router.push("/story");
+      router.replace("/story");
     } catch (error) {
       throw error;
     }
+  };
+
+  const handleCloseButton = () => {
+    router.replace("/story");
   };
 
   return (
     <Container>
       <ScrollContainer>
         <Header>
-          <CloseButton buttonStyle="NONE" onPress={"/story"} />
+          <CloseButton buttonStyle="NONE" onPress={handleCloseButton} />
         </Header>
 
         <StoryAddContainer>

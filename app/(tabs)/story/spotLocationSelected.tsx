@@ -130,6 +130,10 @@ export default function SpotLocationSelected() {
     router.push("/story/storyAdd");
   };
 
+  const handleCloseButton = () => {
+    router.replace("/story");
+  };
+
   return (
     <Container>
       <GestureHandlerRootView style={styles.container}>
@@ -157,7 +161,7 @@ export default function SpotLocationSelected() {
           <Header>
             <BackButton buttonStyle="CIRCLE" />
             <SpotName>{selectedSpotTitle}</SpotName>
-            <CloseButton buttonStyle="CIRCLE" onPress={"./"} />
+            <CloseButton buttonStyle="CIRCLE" onPress={handleCloseButton} />
           </Header>
         </MapWrapper>
 
