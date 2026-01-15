@@ -4,6 +4,8 @@ import styled from "styled-components/native";
 import { theme } from "@/styles/theme";
 import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
+import AddressLabel from "./AddressLabel";
+
 export type iconStyle = null | "EDIT" | "CHECK" | "ADD" | "DETAIL";
 
 interface SightCardProps {
@@ -12,6 +14,8 @@ interface SightCardProps {
   sightTheme: string;
   iconStyle?: iconStyle;
   iconColor?: string;
+  distance?: number;
+  address?: string;
   onCardPress?: () => void;
   onIconPress?: () => void;
   children?: React.ReactNode;
@@ -32,6 +36,8 @@ const SightCard: React.FC<SightCardProps> = ({
   sightTheme,
   iconStyle,
   iconColor,
+  distance,
+  address,
   onCardPress,
   onIconPress,
   children = null,
@@ -55,6 +61,9 @@ const SightCard: React.FC<SightCardProps> = ({
       <ContentWrapper>
         <SightName>{sightName}</SightName>
         <SightTheme>{sightTheme}</SightTheme>
+        {distance && address ? (
+          <AddressLabel distance={distance} address={address} />
+        ) : null}
         {children}
       </ContentWrapper>
       <IconWrapper onPress={onIconPress}>{getIcon()}</IconWrapper>
