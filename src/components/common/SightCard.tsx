@@ -59,7 +59,9 @@ const SightCard: React.FC<SightCardProps> = ({
     <SightCardContainer onPress={onCardPress}>
       <SightImage source={{ uri: image ?? DEFAULT_IMAGE_URL }} />
       <ContentWrapper>
-        <SightName>{sightName}</SightName>
+        <SightName numberOfLines={1} ellipsizeMode="tail">
+          {sightName}
+        </SightName>
         <SightTheme>{sightTheme}</SightTheme>
         {distance && address ? (
           <AddressLabel distance={distance} address={address} />
@@ -99,6 +101,9 @@ const ContentWrapper = styled.View`
 const SightName = styled.Text`
   font-size: ${theme.typography.fontSize.md};
   color: ${theme.colors.text.textPrimary};
+  width: 180px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const SightTheme = styled.Text`

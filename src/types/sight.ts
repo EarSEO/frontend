@@ -81,3 +81,24 @@ export interface CurationItem {
 export interface CurationListResponse {
   curationList: CurationItem[];
 }
+
+export interface CurationSightListParam {
+  curationId: number;
+  longitude: number;
+  latitude: number;
+}
+
+export interface CurationSightListResponse {
+  curationTitle: string;
+  description: string;
+  curationSightList: CurationSightList[];
+}
+
+export interface CurationSightList {
+  sightId: string;
+  title: string;
+  theme: string;
+  distance: number;
+  address: string;
+  imgUrl: string;
+}

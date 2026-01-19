@@ -1,23 +1,29 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
-import { LinearGradient } from "expo-linear-gradient";
 import styled from "styled-components/native";
 
 import { CurationItem } from "@/types/sight";
 
-import { theme } from "@/styles/theme";
-
 import CourseCard from "../common/CourseCard";
 
-type CurationBottomSheetProps = {
+type CurationListProps = {
   curations: CurationItem[];
   isLoading: boolean;
+  onCurationSelect: (id: number) => void;
 };
 
-const CurationBottomSheet: React.FC<CurationBottomSheetProps> = ({
+const CurationList: React.FC<CurationListProps> = ({
   curations,
   isLoading,
+  onCurationSelect,
 }) => {
+  const handleCurationPress = useCallback(
+    (curationId: number) => {
+      onCurationSelect(curationId);
+    },
+    [onCurationSelect]
+  );
+
   if (isLoading) {
     return (
       <Container>
@@ -41,6 +47,7 @@ const CurationBottomSheet: React.FC<CurationBottomSheetProps> = ({
               image={c.curationImgUrl}
               courseTitle={c.curationTitle}
               courseSubTitle={c.description}
+              onPress={() => handleCurationPress(c.curationId)}
             />
           </Card>
         ))}
@@ -49,7 +56,7 @@ const CurationBottomSheet: React.FC<CurationBottomSheetProps> = ({
   );
 };
 
-export default CurationBottomSheet;
+export default CurationList;
 
 const Container = styled.View`
   gap: 10px;
