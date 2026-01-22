@@ -1,3 +1,5 @@
+import { Point } from "./geom";
+
 // 관광지 기본 정보 (목록 조회용)
 export interface SightInfo {
   id: string;
@@ -100,5 +102,7 @@ export interface CurationSightList {
   theme: string;
   distance: number;
   address: string;
-  imgUrl: string;
+  imageUrl: string;
+  point: Point;
+  geoHash: string;
 }

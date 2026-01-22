@@ -57,6 +57,7 @@ export default function Index() {
     curationSightList,
     selectedCurationTitle,
     selectedCurationDescription,
+    handleAddSightListToMy,
   } = useCurationDetail();
 
   useEffect(() => {
@@ -229,12 +230,13 @@ export default function Index() {
             )}
           </CustomBottomSheet>
 
-          {curationSightList ? (
+          {curationSightList && !selectedSight ? (
             <ButtonWrapper>
               <Button
                 text="이 여행으로 가보자고"
                 fontSize={theme.typography.fontSize.sm}
                 width="90%"
+                onPress={handleAddSightListToMy}
               />
             </ButtonWrapper>
           ) : null}

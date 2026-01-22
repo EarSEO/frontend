@@ -1,16 +1,22 @@
 import { useCallback, useState } from "react";
 
+import { useRouter } from "expo-router";
+
 import { CurationItem, CurationSightList } from "@/types/sight";
 
 import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
+import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import { useLocation } from "../useLocation";
 
 export const useCurationDetail = () => {
   const { location } = useLocation();
+  const { insertRouteCartItem } = useRouteCartStore();
+  const router = useRouter();
 
   const [curations, setCurations] = useState<CurationItem[]>([]);
   const [isCurationLoading, setIsCurationLoading] = useState(false);
+  const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
 
   const [curationSightList, setCurationSightList] =
     useState<CurationSightList[]>();
@@ -55,6 +61,40 @@ export const useCurationDetail = () => {
     [curationSightList, location]
   );
 
+  //카드에 있는지 확인
+  const isInCart = useCallback(
+    (sightId: string) => {
+      return routeCartItems.some((item) => item.sightId === sightId);
+    },
+    [routeCartItems]
+  );
+
+  //이 여행으로 대치하고 여행 시작하기
+  const handleAddSightListToMy = useCallback(() => {
+    if (routeCartItems) {
+      alert("현재 카트에 저장된 경로가 있습니다.");
+    } else {
+      curationSightList?.forEach((sight) => {
+        const AddSightInfo = {
+          sightId: sight.sightId,
+          title: sight.title,
+          theme: sight.theme,
+          address: sight.address,
+          point: {
+            longitude: sight.point.longitude,
+            latitude: sight.point.latitude,
+          },
+          imageUrl: sight.imageUrl,
+        };
+        if (!isInCart(sight.sightId)) {
+          insertRouteCartItem(AddSightInfo);
+          router.replace("/(tabs)/myRoute");
+          setCurationSightList(undefined);
+        }
+      });
+    }
+  }, [curationSightList, insertRouteCartItem, isInCart]);
+
   return {
     curations,
     isCurationLoading,
@@ -63,5 +103,7 @@ export const useCurationDetail = () => {
     curationSightList,
     selectedCurationTitle,
     selectedCurationDescription,
+    handleAddSightListToMy,
+    isInCart,
   };
 };

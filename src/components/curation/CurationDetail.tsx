@@ -2,10 +2,17 @@ import { useCallback } from "react";
 
 import styled from "styled-components/native";
 
+import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
 import { useLocation } from "@/hooks/useLocation";
 
+import { Point } from "@/types/geom";
 import { CurationSightList, SightInfo } from "@/types/sight";
 
+import { theme } from "@/styles/theme";
+
+import { useRouteCartStore } from "@/store/useRouteCartStore";
+
+import HeaderButton from "../common/HeaderButton";
 import SightCard from "../common/SightCard";
 
 type CurationDetailProps = {
@@ -24,19 +31,55 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   selectedCurationDescription,
   handleCardPress,
 }) => {
+  const { isInCart } = useCurationDetail();
+  const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const { location } = useLocation();
+
   //나의 경로에 sight 추가하는 핸들러
-  const handleAddSightToMy = () => {};
+  const handleAddSightToMy = useCallback(
+    (
+      sightId: string,
+      sightTitle: string,
+      sightTheme: string,
+      sightAddress: string,
+      sightImage: string,
+      sightLocation: Point
+    ) => {
+      const AddCartSight = {
+        sightId: sightId,
+        title: sightTitle,
+        theme: sightTheme,
+        address: sightAddress,
+        point: {
+          longitude: sightLocation.longitude,
+          latitude: sightLocation.latitude,
+        },
+        imageUrl: sightImage,
+      };
+
+      if (isInCart(sightId)) {
+        removeRouteCartItem(sightId);
+      } else {
+        insertRouteCartItem(AddCartSight);
+      }
+    },
+    [insertRouteCartItem, location, isInCart]
+  );
 
   //sight 클릭 시 관광지 상세로 이동하는 핸들러
   const handleMoveToSightDetail = useCallback(
-    (sightId: string, sightTitle: string) => {
+    (
+      sightId: string,
+      sightTitle: string,
+      sightGeohash: string,
+      sightLocation: Point
+    ) => {
       const sight = {
         id: sightId,
         title: sightTitle,
-        longitude: location.longitude,
-        latitude: location.latitude,
-        geoHash: "ㅇ게뭐야",
+        longitude: sightLocation.longitude,
+        latitude: sightLocation.latitude,
+        geoHash: sightGeohash,
       };
       handleCardPress?.(sight, {
         longitude: location.longitude,
@@ -62,9 +105,29 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
             distance={sight.distance}
             address={sight.address}
             iconStyle={"ADD"}
-            onIconPress={handleAddSightToMy}
+            image={sight.imageUrl}
+            iconColor={
+              isInCart(sight.sightId)
+                ? theme.colors.main.primary
+                : theme.colors.black
+            }
+            onIconPress={() =>
+              handleAddSightToMy(
+                sight.sightId,
+                sight.title,
+                sight.theme,
+                sight.address,
+                sight.imageUrl,
+                sight.point
+              )
+            }
             onCardPress={() =>
-              handleMoveToSightDetail(sight.sightId, sight.title)
+              handleMoveToSightDetail(
+                sight.sightId,
+                sight.title,
+                sight.geoHash,
+                sight.point
+              )
             }
           />
         ))}
