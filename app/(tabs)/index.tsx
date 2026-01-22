@@ -12,12 +12,12 @@ import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import Map from "@/components/map/Map";
 import SightDetailCard from "@/components/sight/SightDetailCard";
 
-import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
+import {useLocationStore} from "@/store/useLocationStore";
 import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 
 export default function Index() {
@@ -25,7 +25,7 @@ export default function Index() {
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef | null>(null);
 
-  const { location } = useLocation();
+  const location = useLocationStore(state => state.location);
   const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
     useRouteCartStore();
 

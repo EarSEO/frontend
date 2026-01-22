@@ -22,6 +22,8 @@ import { MapSpotInfoItem } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
 
+import {useLocationStore} from "@/store/useLocationStore";
+
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
 
@@ -69,7 +71,8 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
     ref
   ) => {
     const mapRef = useRef<MapView>(null);
-    const { location, isLoading, getCurrentLocation } = useLocation();
+    const { isLoading, getCurrentLocation } = useLocation();
+    const location = useLocationStore(state => state.location);
 
     useImperativeHandle(ref, () => ({
       getBoundaries: async () => {

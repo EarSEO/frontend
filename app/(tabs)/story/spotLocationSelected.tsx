@@ -26,6 +26,7 @@ import MapPin from "@/assets/icons/map/MapPin.svg";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import {useLocationStore} from "@/store/useLocationStore";
 
 export default function SpotLocationSelected() {
   const { spotLocationInMap, mainStoryMapRequest } = useStoryStore();
@@ -52,7 +53,7 @@ export default function SpotLocationSelected() {
   } = useStoryAddStore();
 
   const { isLogined } = useAuthStore();
-  const { location } = useLocation();
+  const location = useLocationStore(state => state.location);
   const { sights, selectedSight } = useSightMap();
 
   const Ref = useRef<any>(null);

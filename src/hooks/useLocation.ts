@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 
+import {Region} from "react-native-maps";
+
 import * as Location from "expo-location";
+
+import {useLocationStore} from "@/store/useLocationStore";
 
 const SEOUL_CITY_HALL = {
   latitude: 37.5666805,
@@ -10,21 +14,12 @@ const SEOUL_CITY_HALL = {
 };
 
 export interface CurrentLocation {
-  location: {
-    latitude: number;
-    longitude: number;
-  };
   isLoading: boolean;
-  getCurrentLocation: () => Promise<{
-    latitude: number;
-    longitude: number;
-    latitudeDelta: number;
-    longitudeDelta: number;
-  }>;
+  getCurrentLocation: () => Promise<Region>;
 }
 
 export const useLocation = (): CurrentLocation => {
-  const [location, setLocation] = useState(SEOUL_CITY_HALL);
+  const {setLocation} = useLocationStore();
   const [isLoading, setIsLoading] = useState(true);
 
   const getCurrentLocation = useCallback(async () => {
@@ -36,15 +31,17 @@ export const useLocation = (): CurrentLocation => {
       }
 
       const current = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
+        accuracy: Location.Accuracy.BestForNavigation,
       });
 
-      return {
+      const currentRegion = {
         latitude: current.coords.latitude,
         longitude: current.coords.longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
-      };
+      } as Region;
+      setLocation(currentRegion);
+      return currentRegion;
     } catch (error) {
       return SEOUL_CITY_HALL;
     }
@@ -60,7 +57,6 @@ export const useLocation = (): CurrentLocation => {
   }, [getCurrentLocation]);
 
   return {
-    location,
     isLoading,
     getCurrentLocation,
   };

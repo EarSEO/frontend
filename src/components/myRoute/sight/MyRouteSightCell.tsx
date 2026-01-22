@@ -6,14 +6,13 @@ import { Feather } from "@expo/vector-icons";
 import { getDistance } from "geolib";
 import { MapPinPlusIcon } from "lucide-react-native";
 
-import { useLocation } from "@/hooks/useLocation";
-
 import { theme } from "@/styles/theme";
 
 import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
 import { RouteCartItem } from "@/store/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
 import View = Animated.View;
+import {useLocationStore} from "@/store/useLocationStore";
 
 interface MyRouteSightCellProps {
   routeCartItem: RouteCartItem;
@@ -22,7 +21,7 @@ interface MyRouteSightCellProps {
 const MyRouteSightCell: React.FC<MyRouteSightCellProps> = ({
   routeCartItem,
 }) => {
-  const { location } = useLocation();
+  const location = useLocationStore(state => state.location);
   const distance = getDistance(
     { latitude: location.latitude, longitude: location.longitude },
     {

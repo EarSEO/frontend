@@ -15,7 +15,6 @@ import OnTourButton from "@/components/myRoute/button/OnTourButton";
 import PreTourButton from "@/components/myRoute/button/PreTourButton";
 import MyRouteSightList from "@/components/myRoute/sight/MyRouteSightList";
 
-import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
 import { MapRef } from "@/types/map";
@@ -32,7 +31,6 @@ export default function MyRoute() {
   const bottomSheetRef = useRef<any>(null);
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef>(null);
-  const { location } = useLocation();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const isOnTour = useMyRouteBottomSheetStore((state) => state.isOnTour);
   const isPreTour = useMyRouteBottomSheetStore((state) => state.isPreTour);
