@@ -8,7 +8,7 @@ export default function Notice() {
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   font-family: ${({ theme }) => theme.typography.fontFamily.regular};
   flex: 1;
   justify-content: "center";

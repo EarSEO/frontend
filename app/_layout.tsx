@@ -92,15 +92,13 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider theme={theme}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: "white" },
-              }}
-            />
-          </SafeAreaView>
+        <GestureHandlerRootView>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: "white" },
+            }}
+          />
         </GestureHandlerRootView>
       </ThemeProvider>
     </SafeAreaProvider>

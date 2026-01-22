@@ -17,7 +17,6 @@ import SpotNameAdd from "@/components/storyAdd/SpotNameAdd";
 
 import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
-import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
 import { theme } from "@/styles/theme";
@@ -222,7 +221,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const Header = styled.View`
+const Header = styled.SafeAreaView`
   position: absolute;
   top: 5px;
   left: 0;

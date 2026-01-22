@@ -67,8 +67,8 @@ export default function EditProfile() {
                 />
               ) : (
                 <ProfileImage />
-                
-              )} 
+
+              )}
             </ProfileImageTouchable>
           </ProfileImageWrapper>
           {profileImageError && <ErrorText>{profileImageError}</ErrorText>}
@@ -223,7 +223,7 @@ export default function EditProfile() {
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
 `;

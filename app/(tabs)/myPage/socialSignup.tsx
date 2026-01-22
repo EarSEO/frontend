@@ -15,9 +15,9 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SocialSignUp() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ 
-    email: string; 
-    provider: string; 
+  const params = useLocalSearchParams<{
+    email: string;
+    provider: string;
     tempToken: string;
   }>();
   const { socialSignup } = useAuthStore();
@@ -77,7 +77,7 @@ export default function SocialSignUp() {
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
 `;

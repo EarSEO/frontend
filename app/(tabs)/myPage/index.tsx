@@ -141,7 +141,7 @@ function LoggedInView({
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
 `;

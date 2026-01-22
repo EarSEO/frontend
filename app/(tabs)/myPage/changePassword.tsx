@@ -159,7 +159,7 @@ const ApiErrorText = styled.Text`
   margin-top: 15px;
   text-align: center;
 `;
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
 `;

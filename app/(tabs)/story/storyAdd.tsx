@@ -187,7 +187,7 @@ export default function StoryAdd() {
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   gap: 10px;
   background-color: ${theme.colors.background.background300};
