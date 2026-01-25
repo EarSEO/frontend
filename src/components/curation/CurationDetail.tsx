@@ -127,11 +127,11 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
           <SightCard
             key={sight.sightId}
             sightName={sight.title}
-            sightTheme={sight.theme}
+            sightTheme={sight.subTheme}
             distance={sight.distance}
             address={sight.address}
             iconStyle={"ADD"}
-            image={sight.imageUrl}
+            image={sight.imgUrl}
             iconColor={
               isInCart(sight.sightId)
                 ? theme.colors.main.primary
@@ -141,9 +141,9 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
               handleAddSightToMy(
                 sight.sightId,
                 sight.title,
-                sight.theme,
+                sight.subTheme,
                 sight.address,
-                sight.imageUrl,
+                sight.imgUrl,
                 sight.point
               )
             }

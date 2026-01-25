@@ -55,9 +55,11 @@ const SightCard: React.FC<SightCardProps> = ({
         return <ChevronRight {...iconProps} />;
     }
   };
+  const toHttps = (url?: string) =>
+    url?.startsWith("http://") ? url.replace("http://", "https://") : url;
   return (
     <SightCardContainer onPress={onCardPress}>
-      <SightImage source={{ uri: image ?? DEFAULT_IMAGE_URL }} />
+      <SightImage source={{ uri: toHttps(image) ?? DEFAULT_IMAGE_URL }} />
       <ContentWrapper>
         <SightName numberOfLines={1} ellipsizeMode="tail">
           {sightName}

@@ -99,10 +99,10 @@ export interface CurationSightListResponse {
 export interface CurationSightList {
   sightId: string;
   title: string;
-  theme: string;
+  subTheme: string;
   distance: number;
   address: string;
-  imageUrl: string;
+  imgUrl: string;
   point: Point;
   geoHash: string;
 }

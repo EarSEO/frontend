@@ -52,8 +52,6 @@ export const useCurationDetail = () => {
         setCurationSightList(res?.curationSightList);
         setSelectedCurationTitle(res?.curationTitle);
         setSelectedCurationDescription(res?.description);
-
-        console.log(curationSightList);
       } catch (error) {
         throw error;
       }
@@ -78,13 +76,13 @@ export const useCurationDetail = () => {
         const AddSightInfo = {
           sightId: sight.sightId,
           title: sight.title,
-          theme: sight.theme,
+          theme: sight.subTheme,
           address: sight.address,
           point: {
             longitude: sight.point.longitude,
             latitude: sight.point.latitude,
           },
-          imageUrl: sight.imageUrl,
+          imageUrl: sight.imgUrl,
         };
         if (!isInCart(sight.sightId)) {
           insertRouteCartItem(AddSightInfo);

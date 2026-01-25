@@ -237,7 +237,7 @@ export default function Index() {
           {curationSightList && !selectedSight ? (
             <ButtonWrapper>
               <Button
-                text="이 여행으로 가보자고"
+                text="이 경로로 여행을 떠나보세요."
                 fontSize={theme.typography.fontSize.sm}
                 width="90%"
                 onPress={handleAddSightListToMy}
