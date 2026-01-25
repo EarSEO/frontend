@@ -71,7 +71,7 @@ export const useCurationDetail = () => {
 
   //이 여행으로 대치하고 여행 시작하기
   const handleAddSightListToMy = useCallback(() => {
-    if (routeCartItems) {
+    if (routeCartItems.length > 0) {
       alert("현재 카트에 저장된 경로가 있습니다.");
     } else {
       curationSightList?.forEach((sight) => {
@@ -105,5 +105,6 @@ export const useCurationDetail = () => {
     selectedCurationDescription,
     handleAddSightListToMy,
     isInCart,
+    setCurationSightList,
   };
 };

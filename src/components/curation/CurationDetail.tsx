@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import styled from "styled-components/native";
 
@@ -10,6 +10,7 @@ import { CurationSightList, SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
+import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import HeaderButton from "../common/HeaderButton";
@@ -23,6 +24,8 @@ type CurationDetailProps = {
     sight: SightInfo,
     currentLocation: { longitude: number; latitude: number }
   ) => void;
+  handleHeaderBackPress: () => void;
+  handleHeaderClosePress?: () => void;
 };
 
 const CurationDetail: React.FC<CurationDetailProps> = ({
@@ -30,10 +33,29 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   selectedCurationTitle,
   selectedCurationDescription,
   handleCardPress,
+  handleHeaderBackPress,
+  handleHeaderClosePress,
 }) => {
+  const {
+    setButtonStyle,
+    setShowBackButton,
+    setShowCloseButton,
+    setOnBackPress,
+    setOnClosePress,
+  } = useHeaderButtonStore();
   const { isInCart } = useCurationDetail();
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const { location } = useLocation();
+
+  //헤더 렌더링
+  useEffect(() => {
+    setButtonStyle("NONE");
+    setShowBackButton(true);
+    setShowCloseButton(true);
+    setOnBackPress(() => {
+      handleHeaderBackPress();
+    });
+  }, [setShowBackButton, setShowCloseButton, handleHeaderBackPress]);
 
   //나의 경로에 sight 추가하는 핸들러
   const handleAddSightToMy = useCallback(
@@ -91,6 +113,10 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
 
   return (
     <Container>
+      <HeaderContainer>
+        <HeaderButton />
+      </HeaderContainer>
+
       <TitleContainer>
         <CurationTitle>{selectedCurationTitle}</CurationTitle>
         <CurationDescription>{selectedCurationDescription}</CurationDescription>
@@ -140,6 +166,10 @@ export default CurationDetail;
 
 const Container = styled.View`
   gap: 16px;
+`;
+
+const HeaderContainer = styled.View`
+  margin-bottom: 60px;
 `;
 
 const TitleContainer = styled.View`
