@@ -114,7 +114,7 @@ export default function StoryAdd() {
 
         <StoryAddContainer>
           <TitleWrapper>
-            <Title>Add Stroy</Title>
+            <Title>Add Story</Title>
           </TitleWrapper>
 
           <MapButtonWrapper onPress={handleMapButton}>
