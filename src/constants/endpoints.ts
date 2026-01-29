@@ -34,7 +34,10 @@ export const API_ENDPOINTS = {
     CIRCLE: "/api/sight/map/circle",
     DETAIL: "/api/sight/detail",
     SEARCH: "/api/sight/search",
-    CURATION: "/api/sight/curation",
+    CURATION: {
+      CURATION: "/api/sight/curation",
+      SIGHT_LIST: (curationId: number) => `/api/sight/curation/${curationId}`,
+    },
   },
 
   ROUTE: {

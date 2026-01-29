@@ -4,6 +4,8 @@ import styled from "styled-components/native";
 import { theme } from "@/styles/theme";
 import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
+import AddressLabel from "./AddressLabel";
+
 export type iconStyle = null | "EDIT" | "CHECK" | "ADD" | "DETAIL";
 
 interface SightCardProps {
@@ -12,6 +14,8 @@ interface SightCardProps {
   sightTheme: string;
   iconStyle?: iconStyle;
   iconColor?: string;
+  distance?: number;
+  address?: string;
   onCardPress?: () => void;
   onIconPress?: () => void;
   children?: React.ReactNode;
@@ -32,6 +36,8 @@ const SightCard: React.FC<SightCardProps> = ({
   sightTheme,
   iconStyle,
   iconColor,
+  distance,
+  address,
   onCardPress,
   onIconPress,
   children = null,
@@ -49,12 +55,19 @@ const SightCard: React.FC<SightCardProps> = ({
         return <ChevronRight {...iconProps} />;
     }
   };
+  const toHttps = (url?: string) =>
+    url?.startsWith("http://") ? url.replace("http://", "https://") : url;
   return (
     <SightCardContainer onPress={onCardPress}>
-      <SightImage source={{ uri: image ?? DEFAULT_IMAGE_URL }} />
+      <SightImage source={{ uri: toHttps(image) ?? DEFAULT_IMAGE_URL }} />
       <ContentWrapper>
-        <SightName>{sightName}</SightName>
+        <SightName numberOfLines={1} ellipsizeMode="tail">
+          {sightName}
+        </SightName>
         <SightTheme>{sightTheme}</SightTheme>
+        {distance && address ? (
+          <AddressLabel distance={distance} address={address} />
+        ) : null}
         {children}
       </ContentWrapper>
       <IconWrapper onPress={onIconPress}>{getIcon()}</IconWrapper>
@@ -90,6 +103,9 @@ const ContentWrapper = styled.View`
 const SightName = styled.Text`
   font-size: ${theme.typography.fontSize.md};
   color: ${theme.colors.text.textPrimary};
+  width: 180px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const SightTheme = styled.Text`

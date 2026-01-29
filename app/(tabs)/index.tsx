@@ -7,17 +7,24 @@ import { useSharedValue } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 
-import CurationBottomSheet from "@/components/bottomSheet/CurationBottomSheet";
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
+import Button from "@/components/common/Button";
+import HeaderButton from "@/components/common/HeaderButton";
+import CurationDetail from "@/components/curation/CurationDetail";
+import CurationList from "@/components/curation/CurationList";
 import Map from "@/components/map/Map";
 import SightDetailCard from "@/components/sight/SightDetailCard";
 
+import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
 import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
+import { theme } from "@/styles/theme";
+
+import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 
 export default function Index() {
@@ -42,10 +49,19 @@ export default function Index() {
     deselectSight,
     searchSightsInBounds,
     searchResults,
+  } = useSightMap();
+
+  const {
     curations,
     isCurationLoading,
     fetchCurations,
-  } = useSightMap();
+    fetchCurationDetail,
+    curationSightList,
+    selectedCurationTitle,
+    selectedCurationDescription,
+    handleAddSightListToMy,
+    setCurationSightList,
+  } = useCurationDetail();
 
   useEffect(() => {
     fetchCurations();
@@ -72,7 +88,7 @@ export default function Index() {
         longitude: location.longitude,
         latitude: location.latitude,
       },
-      bounds,
+      bounds
     );
 
     setShowResults(true);
@@ -98,7 +114,7 @@ export default function Index() {
   };
 
   const isInCart = routeCartItems.some(
-    (item) => item.sightId === selectedSight?.id,
+    (item) => item.sightId === selectedSight?.id
   );
 
   const handleToggleRoute = () => {
@@ -199,13 +215,35 @@ export default function Index() {
                 onToggleRoute={handleToggleRoute}
                 onClose={deselectSight}
               />
+            ) : curationSightList !== undefined ? (
+              <>
+                <CurationDetail
+                  curationSightList={curationSightList}
+                  selectedCurationTitle={selectedCurationTitle}
+                  selectedCurationDescription={selectedCurationDescription}
+                  handleCardPress={fetchSightDetail}
+                  handleHeaderBackPress={() => setCurationSightList(undefined)}
+                />
+              </>
             ) : (
-              <CurationBottomSheet
+              <CurationList
                 curations={curations}
                 isLoading={isCurationLoading}
+                onCurationSelect={fetchCurationDetail}
               />
             )}
           </CustomBottomSheet>
+
+          {curationSightList && !selectedSight ? (
+            <ButtonWrapper>
+              <Button
+                text="이 경로로 여행을 떠나보세요."
+                fontSize={theme.typography.fontSize.sm}
+                width="90%"
+                onPress={handleAddSightListToMy}
+              />
+            </ButtonWrapper>
+          ) : null}
         </OverlayWrapper>
       </GestureHandlerRootView>
     </Container>
@@ -277,4 +315,16 @@ const ResultItem = styled.TouchableOpacity`
 const ResultTitle = styled.Text`
   font-size: 15px;
   color: #333;
+`;
+
+const ButtonWrapper = styled.View`
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  z-index: 999;
+
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
 `;

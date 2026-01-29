@@ -50,22 +50,20 @@ const BackgroundImage = styled(ImageBackground)`
 
 const ContentWrapper = styled.View`
   color: ${theme.colors.text.textPrimary};
-  gap: 5px;
-  padding: 20px;
+  gap: 3px;
+  padding: 16px 20px;
 `;
 
 const Title = styled.Text`
-  font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.lg};
+  font-size: ${theme.typography.fontSize.md};
   font-family: ${theme.typography.fontFamily.semiBold};
-  color: ${theme.colors.text.textPrimary};
+  color: ${theme.colors.text.textWhite};
 `;
 
 const SubTitle = styled.Text`
-  font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.xs};
   font-family: ${theme.typography.fontFamily.medium};
-  color: ${theme.colors.text.textPrimary};
+  color: ${theme.colors.text.textWhite};
 `;
 
 export default CourseCard;
