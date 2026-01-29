@@ -5,6 +5,8 @@ import { View } from "react-native";
 import { ChevronRight, MoreHorizontal } from "lucide-react-native";
 import styled from "styled-components/native";
 
+import { useMyStory } from "@/hooks/story/useMyStory";
+
 import { theme } from "@/styles/theme";
 import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
@@ -14,6 +16,7 @@ import Heart from "./Heart";
 import MoreMenuButton from "./MoreMenuButton";
 
 interface StoryCardProps {
+  storyId: number;
   profileUrl?: string;
   userNickName?: string;
   stroySpotName?: string;
@@ -21,11 +24,13 @@ interface StoryCardProps {
   content?: string;
   createdAt?: string;
   likeCount?: number;
+  isLiked?: boolean;
   imageUrls?: string[];
   authorId?: number;
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({
+  storyId,
   profileUrl,
   userNickName,
   stroySpotName,
@@ -33,6 +38,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
   content,
   createdAt,
   likeCount,
+  isLiked,
   imageUrls,
   authorId,
 }) => {
@@ -41,6 +47,8 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const toggleLike = useMyStory((s) => s.toggleLike);
+  const isLoading = useMyStory((s) => s.isLoading);
 
   const moreButtonRef = useRef<View>(null);
 
@@ -89,7 +97,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
       <StyledContainer>
         <ImageContainer>
           <ProfileImage
-            source={{ uri: profileUrl ?? DEFAULT_IMAGE_URL }}
+            source={{ uri: profileUrl || DEFAULT_IMAGE_URL }}
           ></ProfileImage>
         </ImageContainer>
         <TextContainer>
@@ -165,7 +173,13 @@ const StoryCard: React.FC<StoryCardProps> = ({
           </ContentWrapper>
           <PostInfoWrapper>
             <HeartIconSection>
-              <Heart heartCount={likeCount} />
+              <Heart 
+                storyId={storyId}
+                likeCount={likeCount ?? 0}
+                isLiked={!!isLiked}
+                onToggle={toggleLike}
+                disabled={isLoading} 
+              />
             </HeartIconSection>
             <CreatedAtSection>{createdAt}</CreatedAtSection>
           </PostInfoWrapper>

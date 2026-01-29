@@ -11,17 +11,10 @@ export const getcreateStory = async (
   images?: string[]
 ) => {
   try {
-    const createTextRes = await api.post<BaseResponse<CreateStoryResponse>>(
-      `${API_ENDPOINTS.STORY.CREATE}`,
-      param
-    );
-
-    const storyData = createTextRes.data.data;
-    const storyId = storyData.storyId;
+    const formData = new FormData();
+    formData.append("body", JSON.stringify(param));
 
     if (images && images.length > 0) {
-      const formData = new FormData();
-
       images.forEach((imageUri, index) => {
         formData.append("images", {
           uri: imageUri,
@@ -29,18 +22,19 @@ export const getcreateStory = async (
           name: `image_${index}.jpg`,
         } as any);
       });
-
-      await api.post<BaseResponse<void>>(
-        `/api/user/story/image/${storyId}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
     }
-    return createTextRes.data;
+
+    const response = await api.post<BaseResponse<CreateStoryResponse>>(
+      `${API_ENDPOINTS.STORY.CREATE}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
   } catch (error) {
     throw error;
   }

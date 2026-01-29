@@ -69,10 +69,10 @@ export interface GetStoryRequest {
       page?: number;
       size?: number;
       sort?:
-        | "createdAt,desc"
-        | "createdAt,asc"
-        | "likeCount,desc"
-        | "likeCount,asc";
+      | "createdAt,desc"
+      | "createdAt,asc"
+      | "likeCount,desc"
+      | "likeCount,asc";
     };
   };
 }

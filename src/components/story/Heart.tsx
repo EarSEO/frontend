@@ -1,29 +1,23 @@
-import { useState } from "react";
-
 import { Octicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
-interface HearProps {
-  heartCount?: number;
+interface HeartProps {
+  storyId: number;
+  likeCount: number;
+  isLiked: boolean;
+  onToggle: (storyId: number) => void;
+  disabled?: boolean;
 }
 
-const Heart: React.FC<HearProps> = ({ heartCount }) => {
-  const [isHeart, setIsHeart] = useState(false);
-
-  const handleIcon = () => {
-    if (!isHeart) {
-      setIsHeart(true);
-    } else {
-      setIsHeart(false);
-    }
-  };
-
+const Heart: React.FC<HeartProps> = ({ storyId, likeCount, isLiked, onToggle, disabled }) => {
   return (
-    <StyledHeart onPress={handleIcon}>
-      <HeartIcon onPress={handleIcon}>
-        {isHeart ? (
+    <StyledHeart onPress={() => {
+      onToggle(storyId)}
+      } disabled={disabled}>
+      <HeartIcon>
+        {isLiked ? (
           <Octicons
             name="heart-fill"
             size={20}
@@ -37,7 +31,7 @@ const Heart: React.FC<HearProps> = ({ heartCount }) => {
           />
         )}
       </HeartIcon>
-      <HeartCount>{heartCount}</HeartCount>
+      <HeartCount>{likeCount}</HeartCount>
     </StyledHeart>
   );
 };
@@ -48,11 +42,11 @@ const StyledHeart = styled.Pressable`
   gap: 5px;
 `;
 
-const HeartIcon = styled.Pressable``;
+const HeartIcon = styled.View``;
 
 const HeartCount = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
-  font-size: ${theme.typography.fontSize.sm};
+  font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textSecondary};
 `;
 

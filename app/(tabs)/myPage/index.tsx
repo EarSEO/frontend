@@ -103,7 +103,7 @@ function LoggedInView({
       </ProfileSection>
 
       <TabArea>
-        <TabButton onPress={() => console.log("내 이야기")}>
+        <TabButton onPress={() => router.push("/myPage/myStory")}>
           <MyStoryIcon width={24} height={24} color={theme.colors.white} />
           <TabLabel>내 이야기</TabLabel>
         </TabButton>
@@ -241,6 +241,7 @@ const MenuItemText = styled.Text`
 const LogoutButton = styled.TouchableOpacity`
   padding: 20px;
   align-items: center;
+  align-self: center;
 `;
 
 const LogoutText = styled.Text`
