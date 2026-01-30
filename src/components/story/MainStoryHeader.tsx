@@ -25,7 +25,7 @@ const MainStoryHeader = () => {
         {storyListInMap?.map((mapStory, index) => (
           <StoryCard
             key={`${mapStory.createdAt}-${index}`}
-            authorId={mapStory.storyAuthor?.storyAuthorId}
+            storyId={mapStory.storyAuthor?.storyAuthorId}
             userNickName={mapStory.storyAuthor?.nickname}
             stroySpotName={mapStory.title}
             storyConcept={mapStory.storyConcept}

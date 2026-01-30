@@ -91,7 +91,7 @@ export const useStorySpotMap = () => {
 
     setStoryInfo(storyRequest);
     moveToCustomPinLocation(mapRef, story.latitude, story.longitude);
-    setSelectedMarkerId(storySpotBriefInfo?.spotId);
+    setSelectedMarkerId(storyRequest?.storySpotId);
   }, []);
 
   //sight 마커선택 시

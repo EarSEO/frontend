@@ -32,7 +32,7 @@ export interface SpotTitleListResponse {
 }
 
 export interface StoryAuthorResponse {
-  storyAuthorId?: number;
+  storyAuthorId: number;
   nickname?: string;
   profileUrl?: string;
 }
@@ -69,10 +69,10 @@ export interface GetStoryRequest {
       page?: number;
       size?: number;
       sort?:
-      | "createdAt,desc"
-      | "createdAt,asc"
-      | "likeCount,desc"
-      | "likeCount,asc";
+        | "createdAt,desc"
+        | "createdAt,asc"
+        | "likeCount,desc"
+        | "likeCount,asc";
     };
   };
 }
