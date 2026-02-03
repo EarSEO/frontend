@@ -4,6 +4,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useFonts } from "expo-font";
+import {LocationSubscription} from "expo-location";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as TaskManager from "expo-task-manager";
@@ -65,8 +66,24 @@ export default function RootLayout() {
     });
   }, []);
 
-  // 클라이언트 위치 초기화
-  const {getCurrentLocation} = useLocation();
+  // 클라이언트 위치 초기화 및 구독
+  const {isPositionLoading, watchPositionAsync} = useLocation();
+  useEffect(() => {
+    let subscription: LocationSubscription | undefined;
+
+    (async () => {
+      subscription = await watchPositionAsync().finally(() => {
+        // 클라이언트 위치 초기화 & 맵 로딩 완료 후 스플래시 스크린 제거
+        setTimeout(() => {
+          SplashScreen.hideAsync();
+        }, 500);
+      })
+    })();
+
+    return () => {
+      subscription?.remove();
+    }
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -77,16 +94,16 @@ export default function RootLayout() {
     }
   }, [fontsLoaded]);
 
-  if (!fontsLoaded) {
-    return null;
-  }
-  else {
-    getCurrentLocation().finally(() => {
-      // 클라이언트 위치 초기화 & 맵 로딩 완료 후 스플래시 스크린 제거
+  useEffect(() => {
+    if(!isPositionLoading && fontsLoaded) {
       setTimeout(() => {
         SplashScreen.hideAsync();
       }, 500);
-    })
+    }
+  }, [isPositionLoading, fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
   }
 
   return (

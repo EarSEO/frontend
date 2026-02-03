@@ -48,7 +48,6 @@ const RouteMap = forwardRef<MapRef, RouteMapProps>(function RouteMapComponent(
   ref,
 ) {
   const mapRef = useRef<MapView>(null);
-  const { isLoading, getCurrentLocation } = useLocation();
   const location = useLocationStore(state => state.location);
 
   useImperativeHandle(ref, () => ({
@@ -71,9 +70,8 @@ const RouteMap = forwardRef<MapRef, RouteMapProps>(function RouteMapComponent(
   }));
 
   const moveToCurrentLocation = useCallback(async () => {
-    const coords = await getCurrentLocation();
-    mapRef.current?.animateToRegion(coords, 300);
-  }, [getCurrentLocation]);
+    mapRef.current?.animateToRegion({...location, latitudeDelta: 0.01, longitudeDelta: 0.01}, 300);
+  }, [location]);
 
   const buttonAnimatedStyle = useAnimatedStyle(() => {
     if (!animatedPosition) {
@@ -84,10 +82,6 @@ const RouteMap = forwardRef<MapRef, RouteMapProps>(function RouteMapComponent(
       animatedPosition.value - (LOCATION_BUTTON_SIZE + LOCATION_BUTTON_MARGIN);
     return { top: 0, transform: [{ translateY }] };
   });
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <>

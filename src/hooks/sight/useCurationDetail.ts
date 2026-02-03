@@ -5,12 +5,13 @@ import { useRouter } from "expo-router";
 import { CurationItem, CurationSightList } from "@/types/sight";
 
 import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
+import {useLocationStore} from "@/store/useLocationStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import { useLocation } from "../useLocation";
 
 export const useCurationDetail = () => {
-  const { getCurrentLocation } = useLocation();
+  const location = useLocationStore(state => state.location);
   const { insertRouteCartItem } = useRouteCartStore();
   const router = useRouter();
 

@@ -11,11 +11,11 @@ import { CurationSightList, SightInfo } from "@/types/sight";
 import { theme } from "@/styles/theme";
 
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
+import {useLocationStore} from "@/store/useLocationStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import HeaderButton from "../common/HeaderButton";
 import SightCard from "../common/SightCard";
-import {useLocationStore} from "@/store/useLocationStore";
 
 type CurationDetailProps = {
   curationSightList: CurationSightList[];
@@ -46,7 +46,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   } = useHeaderButtonStore();
   const { isInCart } = useCurationDetail();
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
-  const { getCurrentLocation } = useLocation();
+  const location = useLocationStore(state => state.location);
 
   //헤더 렌더링
   useEffect(() => {

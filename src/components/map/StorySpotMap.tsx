@@ -71,7 +71,6 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
     ref
   ) => {
     const mapRef = useRef<MapView>(null);
-    const { isLoading, getCurrentLocation } = useLocation();
     const location = useLocationStore(state => state.location);
 
     useImperativeHandle(ref, () => ({
@@ -94,15 +93,16 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
     }));
 
     const moveToCurrentLocation = useCallback(async () => {
-      const coords = await getCurrentLocation();
       mapRef.current?.animateToRegion(
         {
-          ...coords,
-          latitude: coords.latitude - 0.003,
+          ...location,
+          latitude: location.latitude - 0.003,
+          longitudeDelta: 0.01,
+          latitudeDelta: 0.01,
         },
         300
       );
-    }, [getCurrentLocation]);
+    }, [location]);
 
     const handleRegionChangeComplete = useCallback(async () => {
       if (!mapRef.current || !onRegionChangeComplete) return;
@@ -128,10 +128,6 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
         (LOCATION_BUTTON_SIZE + LOCATION_BUTTON_MARGIN);
       return { top: 0, transform: [{ translateY }] };
     });
-
-    if (isLoading) {
-      return null;
-    }
 
     return (
       <>

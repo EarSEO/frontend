@@ -20,9 +20,9 @@ import { useSightMap } from "@/hooks/useSightMap";
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
-import {useLocationStore} from "@/store/useLocationStore";
 import { theme } from "@/styles/theme";
 
+import { useLocationStore } from "@/store/useLocationStore";
 import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 
 export default function Index() {

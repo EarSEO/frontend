@@ -61,7 +61,6 @@ const Map = forwardRef<MapRef, MapProps>(
     ref,
   ) => {
     const mapRef = useRef<MapView>(null);
-    const { isLoading, getCurrentLocation } = useLocation();
     const location = useLocationStore(state => state.location);
 
     useImperativeHandle(ref, () => ({
@@ -84,9 +83,8 @@ const Map = forwardRef<MapRef, MapProps>(
     }));
 
     const moveToCurrentLocation = useCallback(async () => {
-      const coords = await getCurrentLocation();
-      mapRef.current?.animateToRegion(coords, 300);
-    }, [getCurrentLocation]);
+      mapRef.current?.animateToRegion({...location, latitudeDelta: 0.01, longitudeDelta: 0.01}, 300);
+    }, [location]);
 
     const handleRegionChangeComplete = useCallback(async () => {
       if (!mapRef.current || !onRegionChangeComplete) return;
@@ -112,10 +110,6 @@ const Map = forwardRef<MapRef, MapProps>(
         (LOCATION_BUTTON_SIZE + LOCATION_BUTTON_MARGIN);
       return { top: 0, transform: [{ translateY }] };
     });
-
-    if (isLoading) {
-      return null;
-    }
 
     return (
       <>
