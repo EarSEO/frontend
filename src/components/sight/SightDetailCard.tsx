@@ -1,29 +1,17 @@
 import React from "react";
 
-import { GestureResponderEvent } from "react-native";
-
-import {
-  Banknote,
-  Clock,
-  Headphones,
-  Map,
-  ParkingCircle,
-  Phone,
-} from "lucide-react-native";
 import styled from "styled-components/native";
 
 import { SightDetailCardProps } from "@/types/sight";
 
+import { theme } from "@/styles/theme";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import {
-  sightToCustomAudioMetadata,
-  useAudioPlayerStore,
-} from "@/store/useAudioPlayerStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
-import { distanceToString } from "@/util/locationUtil";
-import { normalizeHtmlBreaks } from "@/util/textNormalize";
+
+import AddressLabel from "../common/AddressLabel";
+import SightInfo from "./SightInfo";
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
   selectedSight,
@@ -33,33 +21,8 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 }) => {
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
-  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
-  const setTemporarySightInfo = useAudioPlayerStore(
-    (state) => state.setTemporarySightInfo,
-  );
-
-  const isMyDocentPlaying =
-    sightDetail !== null &&
-    audioMetadata?.id === sightToCustomAudioMetadata(sightDetail).id;
-
-  const onPressDocent = (e: GestureResponderEvent) => {
-    e.stopPropagation();
-    if (!sightDetail?.docentUrl) return;
-    if (isMyDocentPlaying) {
-      setTemporarySightInfo();
-    } else {
-      setTemporarySightInfo(sightDetail);
-    }
-  };
 
   if (!selectedSight) return null;
-
-  const checkData = (data: string | undefined | null) => {
-    const normalized = normalizeHtmlBreaks(data);
-    return normalized && normalized.trim() !== ""
-      ? normalized
-      : "데이터가 존재하지 않습니다";
-  };
 
   const isInCart =
     routeCartItems.filter((routeCartItem) => {
@@ -68,9 +31,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   return (
     <Container>
-      <HeaderRow>
+      <SightHeaderContainer>
         <SightTitle>{selectedSight.title}</SightTitle>
-        <IconButton
+        <RouteAddButton
           onPress={(e) => {
             e.stopPropagation();
             if (isInCart) {
@@ -95,112 +58,32 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
           ) : (
             <BeforeAddRoute width={28} height={28} />
           )}
-        </IconButton>
-      </HeaderRow>
+        </RouteAddButton>
+        <BookMarkAddButton></BookMarkAddButton>
+      </SightHeaderContainer>
 
       {isDetailLoading ? (
         <LoadingText>상세 정보 로딩 중...</LoadingText>
       ) : sightDetail ? (
-        <>
-          <BasicInfoRow>
-            <SightDistance>
-              {distanceToString(sightDetail.distance)}
-            </SightDistance>
+        <SightTopInfoWrapper>
+          <BasicInfoWrapper>
+            <AddressLabel
+              address={sightDetail.address}
+              distance={sightDetail.distance}
+              fontSize={theme.typography.fontSize.sm}
+            />
             <SightTheme>{sightDetail.theme}</SightTheme>
-          </BasicInfoRow>
-          <SightText>{checkData(sightDetail.address)}</SightText>
+          </BasicInfoWrapper>
 
-          <MainImage
+          <SightImage
             source={{
               uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
             }}
             resizeMode="cover"
           />
-          {sightDetail.docentUrl && (
-            <DocentButton onPress={onPressDocent}>
-              <Headphones
-                size={20}
-                color={isMyDocentPlaying ? "#1DB954" : "#333"}
-              />
-              <DocentText>
-                {isMyDocentPlaying ? "일시정지" : "도슨트 듣기"}
-              </DocentText>
-            </DocentButton>
-          )}
-
-          <Section>
-            <SectionTitle>소개</SectionTitle>
-            <DescriptionText>{checkData(sightDetail.outl)}</DescriptionText>
-          </Section>
-
-          <Section>
-            <SectionTitle>방문정보</SectionTitle>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Map size={18} color="#666" />
-                <InfoLabel>주소</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.fullAddress)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Clock size={18} color="#666" />
-                <InfoLabel>운영시간</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.useTime)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Clock size={18} color="#666" />
-                <InfoLabel>휴무일</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.restDate)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Phone size={18} color="#666" />
-                <InfoLabel>전화번호</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.tel)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Banknote size={18} color="#666" />
-                <InfoLabel>입장료</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.useFee)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <ParkingCircle size={18} color="#666" />
-                <InfoLabel>주차 가능</InfoLabel>
-              </InfoLabelArea>
-
-              {sightDetail.parking ? (
-                <Badge
-                  type={sightDetail.parking.includes("불가") ? "bad" : "good"}
-                >
-                  <BadgeText>
-                    {sightDetail.parking.includes("불가") ? "불가" : "가능"}
-                  </BadgeText>
-                </Badge>
-              ) : (
-                <InfoValue>데이터가 존재하지 않습니다</InfoValue>
-              )}
-            </InfoRow>
-          </Section>
-        </>
+        </SightTopInfoWrapper>
       ) : null}
-
-      <CloseButton onPress={onClose}>
-        <CloseButtonText>닫기</CloseButtonText>
-      </CloseButton>
+      <SightInfo isDetailLoading={isDetailLoading} sightDetail={sightDetail} />
     </Container>
   );
 };
@@ -208,18 +91,16 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 export default SightDetailCard;
 
 const Container = styled.View`
-  gap: 8px;
-  padding-horizontal: 10px;
+  gap: 12px;
+  margin-bottom: 20px;
 `;
 
-const HeaderRow = styled.View`
+const SightHeaderContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-`;
-
-const IconButton = styled.TouchableOpacity`
-  padding: 4px;
+  margin-left: 16px;
+  margin-right: 16px;
 `;
 
 const SightTitle = styled.Text`
@@ -229,33 +110,26 @@ const SightTitle = styled.Text`
   flex: 1;
 `;
 
-const BasicInfoRow = styled.View`
+const RouteAddButton = styled.TouchableOpacity`
+  padding: 4px;
+`;
+const BookMarkAddButton = styled.TouchableOpacity``;
+
+const BasicInfoWrapper = styled.View`
   flex-direction: row;
   align-items: center;
   gap: 8px;
 `;
 
-const SightDistance = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
-  color: ${({ theme }) => theme.colors.main.primary};
-`;
-
 const SightTheme = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
   color: ${({ theme }) => theme.colors.text.textTertiary};
 `;
 
-const SectionTitle = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg}px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.text.textPrimary};
-  margin-top: 16px;
-  margin-bottom: 16px;
-`;
-
-const SightText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
+const SightTopInfoWrapper = styled.View`
+  margin-left: 16px;
+  margin-right: 16px;
+  gap: 16px;
 `;
 
 const LoadingText = styled.Text`
@@ -263,85 +137,8 @@ const LoadingText = styled.Text`
   color: ${({ theme }) => theme.colors.text.textTertiary};
 `;
 
-const CloseButton = styled.TouchableOpacity`
-  margin-top: 12px;
-  padding: 12px;
-  background-color: ${({ theme }) => theme.colors.grey.neutral100};
-  border-radius: 8px;
-  align-items: center;
-`;
-
-const CloseButtonText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
-`;
-
-const MainImage = styled.Image`
+const SightImage = styled.Image`
   width: 100%;
   height: 200px;
   border-radius: 8px;
-  margin-bottom: 0;
-`;
-
-const DocentButton = styled.TouchableOpacity`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
-  padding: 12px;
-  border-radius: 24px;
-  margin-bottom: 24px;
-  gap: 8px;
-`;
-
-const DocentText = styled.Text`
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-`;
-
-const InfoRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-`;
-
-const InfoLabelArea = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-`;
-
-const InfoLabel = styled.Text`
-  font-size: 14px;
-  color: #666;
-`;
-
-const InfoValue = styled.Text`
-  font-size: 14px;
-  color: #000;
-  font-weight: 500;
-`;
-
-const Section = styled.View`
-  margin-bottom: 24px;
-`;
-
-const Badge = styled.View<{ type: "good" | "bad" }>`
-  padding: 4px 10px;
-  border-radius: 4px;
-  background-color: ${({ type }) => (type === "good" ? "#66BB6A" : "#EF5350")};
-`;
-
-const BadgeText = styled.Text`
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-`;
-
-const DescriptionText = styled.Text`
-  font-size: 14px;
-  color: #444;
-  line-height: 22px;
 `;
