@@ -15,7 +15,7 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   return (
     <BottomSheet
       ref={bottomSheetRef}
-      snapPoints={snapPoints || ["15%", "45%", "100%"]}
+      snapPoints={snapPoints || ["15%", "45%", "80%", "100%"]}
       index={initialIndex || 1}
       enablePanDownToClose={false}
       enableOverDrag={false}
@@ -30,8 +30,8 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
       }}
       handleStyle={{
         backgroundColor: theme.colors.white,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
         paddingVertical: 12,
       }}
       backgroundStyle={{

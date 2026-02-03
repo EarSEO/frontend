@@ -8,9 +8,8 @@ import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
-import BackButton from "@/components/common/BackButton";
 import Button from "@/components/common/Button";
-import CloseButton from "@/components/common/CloseButton";
+import HeaderButton from "@/components/common/HeaderButton";
 import StorySpotMap from "@/components/map/StorySpotMap";
 import SpotLocationAdd from "@/components/storyAdd/SpotLocationAdd";
 import SpotNameAdd from "@/components/storyAdd/SpotNameAdd";
@@ -25,6 +24,7 @@ import MapPin from "@/assets/icons/map/MapPin.svg";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import {useLocationStore} from "@/store/useLocationStore";
 
 export default function SpotLocationSelected() {
@@ -50,6 +50,14 @@ export default function SpotLocationSelected() {
     selectedSpotTitle,
     resetSavedStorySpot,
   } = useStoryAddStore();
+
+  const {
+    setButtonStyle,
+    setShowBackButton,
+    setShowCloseButton,
+    setOnBackPress,
+    setOnClosePress,
+  } = useHeaderButtonStore();
 
   const { isLogined } = useAuthStore();
   const location = useLocationStore(state => state.location);
@@ -79,7 +87,36 @@ export default function SpotLocationSelected() {
     resetStoryInfo();
     resetSavedStorySpot();
     resetStorySpotInfo();
-  }, []);
+  }, [
+    resetSearchStory,
+    resetNewSpotName,
+    resetStoryInfo,
+    resetSavedStorySpot,
+    resetStorySpotInfo,
+  ]);
+
+  //헤더
+  useEffect(() => {
+    if (isNameSelected) {
+      setButtonStyle("CIRCLE");
+      setShowBackButton(false);
+      setShowCloseButton(true);
+      setOnClosePress(() => {
+        router.replace("/story");
+      });
+    } else {
+      setButtonStyle("CIRCLE");
+      setShowCloseButton(true);
+      setShowBackButton(true);
+      setOnBackPress(() => {
+        setIsNameSelected(true);
+      });
+
+      setOnClosePress(() => {
+        router.replace("/story");
+      });
+    }
+  }, [setButtonStyle, isNameSelected, setShowBackButton, setShowCloseButton]);
 
   //등록 페이지 들어오기 전 지도 화면 기반 핀 이동
   useEffect(() => {
@@ -122,16 +159,12 @@ export default function SpotLocationSelected() {
     }
   };
 
-  const handleAdd = () => {
+  const handleSpotAdd = () => {
     if (buttonDisabled) return;
     setButtonDisabled(true);
     setTimeout(() => setButtonDisabled(false), 500);
 
     router.push("/story/storyAdd");
-  };
-
-  const handleCloseButton = () => {
-    router.replace("/story");
   };
 
   return (
@@ -158,11 +191,7 @@ export default function SpotLocationSelected() {
             <MapPin width={45} height={45} />
           </CenterPin>
 
-          <Header>
-            <BackButton buttonStyle="CIRCLE" />
-            <SpotName>{selectedSpotTitle}</SpotName>
-            <CloseButton buttonStyle="CIRCLE" onPress={handleCloseButton} />
-          </Header>
+          <HeaderButton />
         </MapWrapper>
 
         <CustomBottomSheet
@@ -186,7 +215,7 @@ export default function SpotLocationSelected() {
           ) : (
             <Button
               text="스팟 등록하기"
-              onPress={handleAdd}
+              onPress={handleSpotAdd}
               width="90%"
               fontSize={theme.typography.fontSize.sm}
             />
@@ -220,20 +249,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-const Header = styled.SafeAreaView`
-  position: absolute;
-  top: 5px;
-  left: 0;
-  right: 0;
-  z-index: 10;
-
-  width: 90%;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin: 15px;
-`;
 
 const ButtonWrapper = styled.View`
   position: absolute;

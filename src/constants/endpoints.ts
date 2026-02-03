@@ -23,6 +23,9 @@ export const API_ENDPOINTS = {
     STORY_LIST_IN_MAP: "/api/story/map/rectangle",
     SPOT_LIST_IN_MAP: "/api/story/spot/map/rectangle",
     EDIT: (storyId: number) => `/api/user/story/${storyId}`,
+    MY_STORIES: "/api/user/story/my",
+    TOGGLE_LIKE: (storyId: number) => `/api/user/story/${storyId}/like`,
+    LIKED_STORIES: "/api/user/story/liked",
   },
 
   SIGHT: {
@@ -31,7 +34,10 @@ export const API_ENDPOINTS = {
     CIRCLE: "/api/sight/map/circle",
     DETAIL: "/api/sight/detail",
     SEARCH: "/api/sight/search",
-    CURATION: "/api/sight/curation",
+    CURATION: {
+      CURATION: "/api/sight/curation",
+      SIGHT_LIST: (curationId: number) => `/api/sight/curation/${curationId}`,
+    },
   },
 
   ROUTE: {

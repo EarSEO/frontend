@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Alert } from "react-native";
 
@@ -8,7 +8,7 @@ import { ChevronRight, MapPin, X } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
-import CloseButton from "@/components/common/CloseButton";
+import HeaderButton from "@/components/common/HeaderButton";
 import Input from "@/components/common/Input";
 
 import { CreateStoryRequest } from "@/types/storySpot";
@@ -18,6 +18,7 @@ import { theme } from "@/styles/theme";
 import { getcreateStory } from "@/api/story/getStoryAddApi";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
 
@@ -30,6 +31,12 @@ const CONCEPTS = [
 ] as const;
 
 export default function StoryAdd() {
+  const {
+    setButtonStyle,
+    setShowCloseButton,
+    setShowBackButton,
+    setOnClosePress,
+  } = useHeaderButtonStore();
   const { selectedSpotTitle, newSpotName } = useStoryAddStore();
   const [content, setContent] = useState<string>("");
   const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
@@ -37,6 +44,15 @@ export default function StoryAdd() {
   );
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    setButtonStyle("NONE");
+    setShowCloseButton(true);
+    setShowBackButton(false);
+    setOnClosePress(() => {
+      router.replace("/story");
+    });
+  }, [setShowCloseButton]);
 
   const handleMapButton = () => {
     router.push("/story/spotLocationSelected");
@@ -101,20 +117,16 @@ export default function StoryAdd() {
     }
   };
 
-  const handleCloseButton = () => {
-    router.replace("/story");
-  };
-
   return (
     <Container>
       <ScrollContainer>
         <Header>
-          <CloseButton buttonStyle="NONE" onPress={handleCloseButton} />
+          <HeaderButton />
         </Header>
 
         <StoryAddContainer>
           <TitleWrapper>
-            <Title>Add Stroy</Title>
+            <Title>Add Story</Title>
           </TitleWrapper>
 
           <MapButtonWrapper onPress={handleMapButton}>
@@ -196,8 +208,7 @@ const ScrollContainer = styled.ScrollView`
   flex: 1;
 `;
 const Header = styled.View`
-  padding: 16px;
-  align-items: flex-end;
+  margin-bottom: 60px;
 `;
 
 const StoryAddContainer = styled.View`
