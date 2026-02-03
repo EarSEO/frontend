@@ -13,7 +13,6 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 15,
           paddingTop: 15,
           paddingHorizontal: 10,
           borderTopWidth: 1,
