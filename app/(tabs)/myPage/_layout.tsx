@@ -23,6 +23,8 @@ export default function MyPageLayout() {
       />
 
       <Stack.Screen name="editProfile" options={{ title: "회원정보수정" }} />
+      <Stack.Screen name="pastTrip" options={{ title: "지난 여행" }} />
+      <Stack.Screen name="pastTripDetail" options={{ title: "지난 여행 상세" }} />
     </Stack>
   );
 }
