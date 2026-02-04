@@ -43,6 +43,9 @@ export const API_ENDPOINTS = {
   ROUTE: {
     CREATE_IN_PROGRESS_ROUTE: "/api/user/route/in-progress",
     COMPLETE_ROUTE: (routeId: number) => `/api/user/route/${routeId}/complete`,
+    COMPLETED_LIST: "/api/user/route/completed",
+    COMPLETED_DETAIL: (routeId: number) => `/api/user/route/completed/detail/${routeId}`,
+    COMPLETED_MODIFY: (routeId: number) => `/api/user/route/completed/${routeId}`,
   },
   MEMBER: {
     GET_PROFILE: "/api/user/member/profile",
