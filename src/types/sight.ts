@@ -18,7 +18,8 @@ export interface SightMapInfoList {
 export interface SightDetailInfo {
   id: string;
   theme: string; // 관광지 테마 (문화시설, 자연관광지 등)
-  outl: string; // 관광지 개요/설명
+  subTheme: string;
+  overview: string; // 관광지 개요/설명
   title: string; // 관광지 이름
   fullAddress: string; // 전체 주소
   address: string; // 주소 요약 (구/동 단위)
@@ -32,6 +33,8 @@ export interface SightDetailInfo {
   useFee: string; // 입장료
   distance: number; // 현재 위치로부터 거리 (km 단위, 소수점 1자리)
   docentUrl: string; // 도슨트 오디오 URL
+  isBookmarked: boolean;
+  curationList: CurationItem[];
 }
 
 export interface RectangleBoundsParams {

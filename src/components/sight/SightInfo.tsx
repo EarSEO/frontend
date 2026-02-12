@@ -59,7 +59,11 @@ const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
           <DocentButton onPress={onPressDocent}>
             <Headphones
               size={20}
-              color={isMyDocentPlaying ? "#1DB954" : "#333"}
+              color={
+                isMyDocentPlaying
+                  ? theme.colors.alarm.success
+                  : theme.colors.grey.neutral600
+              }
             />
             <DocentText>
               {isMyDocentPlaying ? "일시정지" : "도슨트 듣기"}
@@ -74,7 +78,7 @@ const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
         <SightDeatilContainer>
           <SightInfoWrapper>
             <SectionTitle>소개</SectionTitle>
-            <DescriptionText>{checkData(sightDetail.outl)}</DescriptionText>
+            <DescriptionText>{checkData(sightDetail.overview)}</DescriptionText>
           </SightInfoWrapper>
           <Divider />
 

@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+import PagerView from "react-native-pager-view";
 
 import styled from "styled-components/native";
 
@@ -8,10 +10,14 @@ import { theme } from "@/styles/theme";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
+import { useStoryStore } from "@/store/story/useStoryStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import AddressLabel from "../common/AddressLabel";
 import SightInfo from "./SightInfo";
+import SightStory from "./SightStory";
+
+type TabType = "sightInfo" | "sightStory";
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
   selectedSight,
@@ -19,8 +25,31 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   isDetailLoading,
   onClose,
 }) => {
+  const pagerRef = useRef<PagerView>(null);
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
+  const { setStorySpotBriefInfo } = useStoryStore();
+
+  const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
+  const handleTabPress = (tab: TabType) => {
+    setActiveTab(tab);
+    pagerRef.current?.setPage(tab === "sightInfo" ? 0 : 1);
+  };
+
+  //sight 조회 시 srotyId 저장
+  useEffect(() => {
+    if (!selectedSight) return;
+    const sightLocation = {
+      longitude: String(selectedSight.longitude),
+      latitude: String(selectedSight.latitude),
+    };
+    setStorySpotBriefInfo(sightLocation);
+  }, [setStorySpotBriefInfo, selectedSight?.latitude, selectedSight?.latitude]);
+
+  const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
+    const position = e.nativeEvent.position;
+    setActiveTab(position === 0 ? "sightInfo" : "sightStory");
+  };
 
   if (!selectedSight) return null;
 
@@ -83,7 +112,32 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
           />
         </SightTopInfoWrapper>
       ) : null}
-      <SightInfo isDetailLoading={isDetailLoading} sightDetail={sightDetail} />
+      <TabContainer>
+        <TabButton
+          active={activeTab === "sightInfo"}
+          onPress={() => handleTabPress("sightInfo")}
+        >
+          <TabText active={activeTab === "sightInfo"}>정보</TabText>
+        </TabButton>
+        <TabButton
+          active={activeTab === "sightStory"}
+          onPress={() => handleTabPress("sightStory")}
+        >
+          <TabText active={activeTab === "sightStory"}>이야기</TabText>
+        </TabButton>
+      </TabContainer>
+      <StyledPagerView ref={pagerRef} onPageSelected={handlePageSelected}>
+        <PageContainer key="1">
+          <SightInfo
+            isDetailLoading={isDetailLoading}
+            sightDetail={sightDetail}
+          />
+        </PageContainer>
+
+        <PageContainer key="2">
+          <SightStory />
+        </PageContainer>
+      </StyledPagerView>
     </Container>
   );
 };
@@ -141,4 +195,39 @@ const SightImage = styled.Image`
   width: 100%;
   height: 200px;
   border-radius: 8px;
+`;
+
+const TabButton = styled.TouchableOpacity<{ active: boolean }>`
+  flex: 1;
+  align-items: center;
+  padding: 12px;
+  border-bottom-width: 2px;
+  border-bottom-color: ${({ active }) =>
+    active ? theme.colors.text.textPrimary : "transparent"};
+`;
+
+const TabContainer = styled.View`
+  flex-direction: row;
+  border-bottom-width: 1px;
+  border-bottom-color: ${theme.colors.grey.neutral200};
+`;
+
+const TabText = styled.Text<{ active: boolean }>`
+  font-family: ${({ active }) =>
+    active
+      ? theme.typography.fontFamily.semiBold
+      : theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${({ active }) =>
+    active ? theme.colors.text.textPrimary : theme.colors.text.textTertiary};
+`;
+
+const StyledPagerView = styled(PagerView)`
+  height: 360px;
+`;
+
+const PageContainer = styled.View`
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
 `;

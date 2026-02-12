@@ -16,6 +16,23 @@ export interface GetMapStoryResponse {
   hasPrevious?: boolean;
 }
 
+export interface StoryItem {
+  storyAuthor?: {
+    storyAuthorId?: number;
+    nickname?: string;
+    profileUrl?: string;
+  };
+
+  title?: string;
+  content?: string;
+  locale?: "KO" | "EN";
+  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+  likeCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  imageUrls?: string[];
+}
+
 export interface GetLocationSpotBriefInfoResponse {
   spotId?: number;
   titles?: string[];
