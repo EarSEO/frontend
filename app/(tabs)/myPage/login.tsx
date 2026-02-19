@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { Alert, Platform,TouchableOpacity  } from "react-native";
+import { Alert, Platform, TouchableOpacity } from "react-native";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
@@ -8,6 +8,7 @@ import styled from "styled-components/native";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 
+import { useBookmark } from "@/hooks/sight/useBookmark";
 import { useAppleLogin } from "@/hooks/useAppleLogin";
 
 import { theme } from "@/styles/theme";
@@ -22,7 +23,12 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { login } = useAuthStore();
-  const { handleAppleLogin, isLoading: isAppleLoading, error: appleError } = useAppleLogin();
+  const { fetchBookmark } = useBookmark();
+  const {
+    handleAppleLogin,
+    isLoading: isAppleLoading,
+    error: appleError,
+  } = useAppleLogin();
   const isIOS = Platform.OS === "ios";
 
   const handleLogin = async () => {
@@ -34,6 +40,7 @@ export default function Login() {
     try {
       setIsLoading(true);
       await login({ email, password });
+      fetchBookmark();
       router.back();
     } catch (error: any) {
       Alert.alert("로그인 실패", "이메일 또는 비밀번호를 확인해주세요.");

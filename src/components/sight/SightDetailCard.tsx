@@ -4,13 +4,19 @@ import PagerView from "react-native-pager-view";
 
 import styled from "styled-components/native";
 
+import { useBookmark } from "@/hooks/sight/useBookmark";
+
 import { SightDetailCardProps } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
+import AfterAddBookmark from "@/assets/icons/afterAddBookmark.svg";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
+import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
 import { useStoryStore } from "@/store/story/useStoryStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import AddressLabel from "../common/AddressLabel";
@@ -26,9 +32,13 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   onClose,
 }) => {
   const pagerRef = useRef<PagerView>(null);
+  const { user } = useAuthStore();
+
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const { setStorySpotBriefInfo } = useStoryStore();
+  const { userBookmarkList } = useBookmarkStore();
+  const { insertBookmark, fetchBookmark, removeBookmark } = useBookmark();
 
   const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
   const handleTabPress = (tab: TabType) => {
@@ -52,6 +62,10 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   };
 
   if (!selectedSight) return null;
+
+  const isBookmark =
+    userBookmarkList?.bookmarks.some((b) => b.sightId === selectedSight.id) ??
+    false;
 
   const isInCart =
     routeCartItems.filter((routeCartItem) => {
@@ -88,7 +102,25 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
             <BeforeAddRoute width={28} height={28} />
           )}
         </RouteAddButton>
-        <BookMarkAddButton></BookMarkAddButton>
+        <BookMarkAddButton
+          onPress={(e) => {
+            e.stopPropagation();
+
+            if (!user) return;
+
+            if (isBookmark) {
+              removeBookmark(selectedSight.id);
+            } else {
+              insertBookmark(selectedSight.id);
+            }
+          }}
+        >
+          {isBookmark ? (
+            <AfterAddBookmark width={28} height={28} />
+          ) : (
+            <BeforeAddBookmark width={28} height={28} />
+          )}
+        </BookMarkAddButton>
       </SightHeaderContainer>
 
       {isDetailLoading ? (
@@ -167,7 +199,9 @@ const SightTitle = styled.Text`
 const RouteAddButton = styled.TouchableOpacity`
   padding: 4px;
 `;
-const BookMarkAddButton = styled.TouchableOpacity``;
+const BookMarkAddButton = styled.TouchableOpacity`
+  padding: 4px;
+`;
 
 const BasicInfoWrapper = styled.View`
   flex-direction: row;
