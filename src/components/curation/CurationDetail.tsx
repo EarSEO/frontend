@@ -34,14 +34,12 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   selectedCurationDescription,
   handleCardPress,
   handleHeaderBackPress,
-  handleHeaderClosePress,
 }) => {
   const {
     setButtonStyle,
     setShowBackButton,
     setShowCloseButton,
     setOnBackPress,
-    setOnClosePress,
   } = useHeaderButtonStore();
   const { isInCart } = useCurationDetail();
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
@@ -51,7 +49,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   useEffect(() => {
     setButtonStyle("NONE");
     setShowBackButton(true);
-    setShowCloseButton(true);
+    setShowCloseButton(false);
     setOnBackPress(() => {
       handleHeaderBackPress();
     });

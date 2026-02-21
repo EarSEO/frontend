@@ -17,9 +17,11 @@ import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
+import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import AddressLabel from "../common/AddressLabel";
+import HeaderButton from "../common/HeaderButton";
 import SightInfo from "./SightInfo";
 import SightStory from "./SightStory";
 
@@ -29,7 +31,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   selectedSight,
   sightDetail,
   isDetailLoading,
-  onClose,
+  handleHeaderBackPress,
 }) => {
   const pagerRef = useRef<PagerView>(null);
   const { user } = useAuthStore();
@@ -38,13 +40,29 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const { setStorySpotBriefInfo } = useStoryStore();
   const { userBookmarkList } = useBookmarkStore();
-  const { insertBookmark, fetchBookmark, removeBookmark } = useBookmark();
+  const { insertBookmark, removeBookmark } = useBookmark();
+  const {
+    setButtonStyle,
+    setShowBackButton,
+    setShowCloseButton,
+    setOnBackPress,
+    setOnClosePress,
+  } = useHeaderButtonStore();
 
   const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
   const handleTabPress = (tab: TabType) => {
     setActiveTab(tab);
     pagerRef.current?.setPage(tab === "sightInfo" ? 0 : 1);
   };
+
+  useEffect(() => {
+    setButtonStyle("NONE");
+    setShowBackButton(false);
+    setShowCloseButton(true);
+    setOnClosePress(() => {
+      handleHeaderBackPress();
+    });
+  }, [setShowBackButton, setShowCloseButton, handleHeaderBackPress]);
 
   //sight 조회 시 srotyId 저장
   useEffect(() => {
@@ -74,6 +92,10 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   return (
     <Container>
+      <HeaderContainer>
+        <HeaderButton />
+      </HeaderContainer>
+
       <SightHeaderContainer>
         <SightTitle>{selectedSight.title}</SightTitle>
         <RouteAddButton
@@ -178,7 +200,10 @@ export default SightDetailCard;
 
 const Container = styled.View`
   gap: 12px;
-  margin-bottom: 20px;
+`;
+
+const HeaderContainer = styled.View`
+  margin-bottom: 60px;
 `;
 
 const SightHeaderContainer = styled.View`

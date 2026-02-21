@@ -160,7 +160,7 @@ const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
   );
 };
 
-const Container = styled.View``;
+const Container = styled.ScrollView``;
 
 const SightDeatilContainer = styled.View``;
 
@@ -200,6 +200,7 @@ const LoadingText = styled.Text``;
 const VisitorInfoWrapper = styled.View`
   padding-left: 16px;
   padding-right: 16px;
+  margin-bottom: 30px;
 `;
 
 const InfoRow = styled.View`

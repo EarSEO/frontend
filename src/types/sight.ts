@@ -62,7 +62,7 @@ export interface SightDetailCardProps {
   isDetailLoading: boolean;
   isInCart: boolean;
   onToggleRoute: () => void;
-  onClose: () => void;
+  handleHeaderBackPress: () => void;
 }
 
 export interface SearchSightParams {
