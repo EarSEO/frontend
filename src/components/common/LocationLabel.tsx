@@ -40,7 +40,7 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
       return "";
     }
     if (distance < 1000) {
-      return `${distance}M`;
+      return `${Math.round(distance)}M`;
     }
     const kilometers = (distance / 1000).toFixed(1);
     return `${kilometers}KM`;
