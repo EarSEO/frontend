@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 
+import { Alert } from "react-native";
 import PagerView from "react-native-pager-view";
 
+import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import { useBookmark } from "@/hooks/sight/useBookmark";
@@ -35,6 +37,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 }) => {
   const pagerRef = useRef<PagerView>(null);
   const { user } = useAuthStore();
+  const router = useRouter();
 
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
@@ -45,7 +48,6 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     setButtonStyle,
     setShowBackButton,
     setShowCloseButton,
-    setOnBackPress,
     setOnClosePress,
   } = useHeaderButtonStore();
 
@@ -62,7 +64,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     setOnClosePress(() => {
       handleHeaderBackPress();
     });
-  }, [setShowBackButton, setShowCloseButton, handleHeaderBackPress]);
+  }, [setShowBackButton, handleHeaderBackPress, setOnClosePress]);
 
   //sight 조회 시 srotyId 저장
   useEffect(() => {
@@ -124,11 +126,26 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
             <BeforeAddRoute width={28} height={28} />
           )}
         </RouteAddButton>
+
         <BookMarkAddButton
           onPress={(e) => {
             e.stopPropagation();
 
-            if (!user) return;
+            if (!user) {
+              Alert.alert("로그인이 필요합니다.", "로그인하시겠습니까?", [
+                {
+                  text: "아니오",
+                  style: "cancel",
+                },
+                {
+                  text: "예",
+                  onPress: () => {
+                    router.push("/myPage/login");
+                  },
+                },
+              ]);
+              return;
+            }
 
             if (isBookmark) {
               removeBookmark(selectedSight.id);

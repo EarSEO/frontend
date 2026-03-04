@@ -53,25 +53,28 @@ const SightStory = () => {
 
   return (
     <Container>
-      {loading ? <InfoText>이야기 불러오는 중...</InfoText> : null}
-
-      <StoryContentContainer>
-        <StoryWrapper>
-          {storyDetails?.map((story, index) => (
-            <StoryCard
-              key={`${story.createdAt}-${index}`}
-              storyId={story.storyAuthor?.storyAuthorId}
-              userNickName={story.storyAuthor?.nickname}
-              stroySpotName={story.title}
-              storyConcept={story.storyConcept}
-              content={story.content}
-              imageUrls={story.imageUrls}
-              likeCount={story.likeCount}
-              createdAt={story.createdAt}
-            />
-          ))}
-        </StoryWrapper>
-      </StoryContentContainer>
+      {storyDetails ? (
+        <StoryContentContainer>
+          {loading ? <InfoText>이야기 불러오는 중...</InfoText> : null}
+          <StoryWrapper>
+            {storyDetails?.map((story, index) => (
+              <StoryCard
+                key={`${story.createdAt}-${index}`}
+                storyId={story.storyAuthor?.storyAuthorId}
+                userNickName={story.storyAuthor?.nickname}
+                stroySpotName={story.title}
+                storyConcept={story.storyConcept}
+                content={story.content}
+                imageUrls={story.imageUrls}
+                likeCount={story.likeCount}
+                createdAt={story.createdAt}
+              />
+            ))}
+          </StoryWrapper>
+        </StoryContentContainer>
+      ) : (
+        <InfoText>아직 이야기가 없습니다.</InfoText>
+      )}
     </Container>
   );
 };
@@ -85,5 +88,6 @@ const StoryContentContainer = styled.View``;
 const StoryWrapper = styled.Pressable``;
 
 const InfoText = styled.Text`
-  padding: 12px 16px;
+  padding: 20px;
+  text-align: center;
 `;
