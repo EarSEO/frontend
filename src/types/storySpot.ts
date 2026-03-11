@@ -80,8 +80,8 @@ export interface GetStoryRequest {
   storySpotId: number;
   query: {
     query: {
-      longitude: string;
-      latitude: string;
+      longitude: number;
+      latitude: number;
       locale: "KO" | "EN";
       page?: number;
       size?: number;
@@ -95,10 +95,10 @@ export interface GetStoryRequest {
 }
 
 export interface GetMapStoriesRequest {
-  minLongitude: string;
-  minLatitude: string;
-  maxLongitude: string;
-  maxLatitude: string;
+  minLongitude: number;
+  minLatitude: number;
+  maxLongitude: number;
+  maxLatitude: number;
   page: number;
   size: number;
   sort: string;
@@ -115,8 +115,8 @@ export interface StoryData {
 }
 
 export interface GetSpotBriefInfoRequest {
-  longitude: string;
-  latitude: string;
+  longitude: number;
+  latitude: number;
 }
 
 export interface CreateStoryRequest {

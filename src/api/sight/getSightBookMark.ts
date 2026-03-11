@@ -17,12 +17,7 @@ export const getAddBookmark = async (
   try {
     const response = await api.post<BaseResponse<BookmarkEditResponse>>(
       API_ENDPOINTS.SIGHT.BOOKMARK.ADD(sightId),
-      {},
-      {
-        headers: {
-          "X-USER-ID": userId,
-        },
-      }
+      {}
     );
     return response.data.data;
   } catch (error) {
@@ -38,11 +33,7 @@ export const getDeleteBookmark = async (
   try {
     const response = await api.delete<BaseResponse<BookmarkEditResponse>>(
       API_ENDPOINTS.SIGHT.BOOKMARK.DELETE(sightId),
-      {
-        headers: {
-          "X-USER_ID": userId,
-        },
-      }
+      {}
     );
     return response.data.data;
   } catch (error) {

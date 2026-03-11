@@ -67,13 +67,13 @@ export interface SightDetailCardProps {
 
 export interface SearchSightParams {
   keyword: string;
-  longitude: string;
-  latitude: string;
-  minLongitude: string;
-  minLatitude: string;
-  maxLongitude: string;
-  maxLatitude: string;
-  limit: string;
+  longitude: number;
+  latitude: number;
+  minLongitude: number;
+  minLatitude: number;
+  maxLongitude: number;
+  maxLatitude: number;
+  limit: number;
 }
 
 export interface CurationItem {

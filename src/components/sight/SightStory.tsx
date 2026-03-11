@@ -26,8 +26,8 @@ const SightStory = () => {
       storySpotId: sightStoryId,
       query: {
         query: {
-          longitude: String(selectedSight.longitude),
-          latitude: String(selectedSight.latitude),
+          longitude: selectedSight.longitude,
+          latitude: selectedSight.latitude,
           locale: "KO" as const,
           page: 0,
           size: 1000,

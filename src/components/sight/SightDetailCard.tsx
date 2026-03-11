@@ -68,8 +68,8 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   useEffect(() => {
     if (!selectedSight) return;
     const sightLocation = {
-      longitude: String(selectedSight.longitude),
-      latitude: String(selectedSight.latitude),
+      longitude: selectedSight.longitude,
+      latitude: selectedSight.latitude,
     };
     setStorySpotBriefInfo(sightLocation);
   }, [setStorySpotBriefInfo, selectedSight?.latitude, selectedSight?.latitude]);
