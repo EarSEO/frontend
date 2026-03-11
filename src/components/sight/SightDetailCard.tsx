@@ -16,7 +16,6 @@ import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useAuthStore } from "@/store/useAuthStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
@@ -203,8 +202,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
 export default SightDetailCard;
 
-const Container = styled.View`
+const Container = styled.ScrollView`
   gap: 12px;
+  height: 100%;
 `;
 
 const HeaderContainer = styled.View`
@@ -293,5 +293,6 @@ const StyledPagerView = styled(PagerView)`
 const PageContainer = styled.View`
   flex: 1;
   width: 100%;
+  height: 100%;
   overflow: hidden;
 `;

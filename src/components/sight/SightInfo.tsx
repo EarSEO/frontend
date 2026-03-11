@@ -160,7 +160,7 @@ const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
   );
 };
 
-const Container = styled.ScrollView``;
+const Container = styled.View``;
 
 const SightDeatilContainer = styled.View``;
 
