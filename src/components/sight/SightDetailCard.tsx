@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import { useBookmark } from "@/hooks/sight/useBookmark";
+import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { SightDetailCardProps } from "@/types/sight";
 
@@ -24,6 +25,7 @@ import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
+import { StoryAddButton } from "../story/StoryAddButton";
 import SightInfo from "./SightInfo";
 import SightStory from "./SightStory";
 
@@ -36,8 +38,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   handleHeaderBackPress,
 }) => {
   const pagerRef = useRef<PagerView>(null);
-  const { user } = useAuthStore();
-  const router = useRouter();
+  const requireLogin = useRequireLogin();
 
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
@@ -102,6 +103,8 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
         <SightTitle>{selectedSight.title}</SightTitle>
         <RouteAddButton
           onPress={(e) => {
+            if (!requireLogin()) return;
+
             e.stopPropagation();
             if (isInCart) {
               removeRouteCartItem(String(selectedSight.id));
@@ -130,22 +133,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
         <BookMarkAddButton
           onPress={(e) => {
             e.stopPropagation();
-
-            if (!user) {
-              Alert.alert("로그인이 필요합니다.", "로그인하시겠습니까?", [
-                {
-                  text: "아니오",
-                  style: "cancel",
-                },
-                {
-                  text: "예",
-                  onPress: () => {
-                    router.push("/myPage/login");
-                  },
-                },
-              ]);
-              return;
-            }
+            if (!requireLogin()) return;
 
             if (isBookmark) {
               removeBookmark(selectedSight.id);
@@ -197,6 +185,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
           <TabText active={activeTab === "sightStory"}>이야기</TabText>
         </TabButton>
       </TabContainer>
+
       <StyledPagerView ref={pagerRef} onPageSelected={handlePageSelected}>
         <PageContainer key="1">
           <SightInfo
@@ -207,6 +196,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
         <PageContainer key="2">
           <SightStory />
+          <StoryAddButton />
         </PageContainer>
       </StyledPagerView>
     </Container>

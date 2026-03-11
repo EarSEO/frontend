@@ -8,11 +8,13 @@ import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import { useLocation } from "../useLocation";
+import { useRequireLogin } from "../useRequireLogin";
 
 export const useCurationDetail = () => {
   const { location } = useLocation();
   const { insertRouteCartItem } = useRouteCartStore();
   const router = useRouter();
+  const requireLogin = useRequireLogin();
 
   const [curations, setCurations] = useState<CurationItem[]>([]);
   const [isCurationLoading, setIsCurationLoading] = useState(false);
@@ -69,6 +71,8 @@ export const useCurationDetail = () => {
 
   //이 여행으로 대치하고 여행 시작하기
   const handleAddSightListToMy = useCallback(() => {
+    if (!requireLogin()) return;
+
     if (routeCartItems.length > 0) {
       alert("현재 카트에 저장된 경로가 있습니다.");
     } else {
