@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, FlatList } from "react-native";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ChevronLeft, MessageSquare } from "lucide-react-native";
+import { ChevronLeft, MessageSquareHeart } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import SightCard from "@/components/common/SightCard";
@@ -66,7 +66,7 @@ export default function PastTripDetail() {
 
     return (
       <StorySpotItem onPress={() => handleCardPress(item)}>
-        <MessageSquare size={20} color={theme.colors.text.textSecondary} />
+        <MessageSquareHeart size={20} color={theme.colors.text.textSecondary} />
         <StorySpotText>{item.itemName}</StorySpotText>
       </StorySpotItem>
     );
