@@ -3,6 +3,8 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
+import { distanceToString } from "@/util/locationUtil";
+
 interface AddressLabelProps {
   address: string;
   distance: number;
@@ -20,19 +22,11 @@ const AddressLabel: React.FC<AddressLabelProps> = ({
   iconSize = 16,
   fontSize,
 }) => {
-  const formatDistance = () => {
-    if (distance < 1000) {
-      return `${Math.round(distance)}M`;
-    }
-    const kilometers = (distance / 1000).toFixed(1);
-    return `${kilometers}KM`;
-  };
-
   return (
     <AddressLavelContainer>
       <MapPin size={iconSize} color={theme.colors.text.textPrimary} />
       <AddressSection>
-        <Distance fontSize={fontSize}>{formatDistance()}</Distance>
+        <Distance fontSize={fontSize}>{distanceToString(distance)}</Distance>
         <Address fontSize={fontSize}>{address}</Address>
       </AddressSection>
     </AddressLavelContainer>
