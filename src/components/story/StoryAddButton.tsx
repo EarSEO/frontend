@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import { useRequireLogin } from "@/hooks/useRequireLogin";
@@ -7,6 +8,7 @@ import { useRequireLogin } from "@/hooks/useRequireLogin";
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 
 export const StoryAddButton = () => {
+  const router = useRouter();
   const requireLogin = useRequireLogin();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 중복 클릭 방지
 
@@ -16,6 +18,8 @@ export const StoryAddButton = () => {
     setTimeout(() => setButtonDisabled(false), 500);
 
     if (!requireLogin()) return;
+
+    router.push("/story/spotLocationSelected");
   };
 
   return (

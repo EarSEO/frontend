@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import { Alert } from "react-native";
 import PagerView from "react-native-pager-view";
 
-import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import { useBookmark } from "@/hooks/sight/useBookmark";
