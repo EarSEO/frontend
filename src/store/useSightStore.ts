@@ -10,6 +10,8 @@ interface SightState {
   isDetailLoading: boolean;
   error: string | null;
 
+  navigateSightId: string | null;
+
   setSights: (sights: SightInfo[]) => void;
   selectSight: (sight: SightInfo | null) => void;
   setSightDetail: (detail: SightDetailInfo | null) => void;
@@ -18,6 +20,9 @@ interface SightState {
   setError: (error: string | null) => void;
   clearSelection: () => void;
   reset: () => void;
+
+  setNavigateSightId: (sightId: string) => void;
+  clearNavigateSightId: () => void;
 }
 
 const initialState = {
@@ -27,6 +32,7 @@ const initialState = {
   isLoading: false,
   isDetailLoading: false,
   error: null,
+  navigateSightId: null,
 };
 
 export const useSightStore = create<SightState>((set) => ({
@@ -55,4 +61,8 @@ export const useSightStore = create<SightState>((set) => ({
     }),
 
   reset: () => set(initialState),
+
+  setNavigateSightId: (sightId) => set({ navigateSightId: sightId }),
+
+  clearNavigateSightId: () => set({ navigateSightId: null }),
 }));

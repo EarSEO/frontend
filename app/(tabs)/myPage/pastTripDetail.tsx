@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { ActivityIndicator, FlatList } from "react-native";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
+import { ChevronLeft, MessageSquare } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import SightCard from "@/components/common/SightCard";
@@ -13,6 +13,9 @@ import { useCompletedRoute } from "@/hooks/route/useCompletedRoute";
 import { CompletedRouteItem } from "@/types/completedRoute";
 
 import { theme } from "@/styles/theme";
+
+import { useStoryStore } from "@/store/story/useStoryStore";
+import { useSightStore } from "@/store/useSightStore";
 
 export default function PastTripDetail() {
   const router = useRouter();
@@ -27,15 +30,11 @@ export default function PastTripDetail() {
 
   const handleCardPress = (item: CompletedRouteItem) => {
     if (item.itemType === "SIGHT") {
-      router.push({
-        pathname: "/(tabs)",
-        params: { sightId: item.itemId },
-      } as any);
+      useSightStore.getState().setNavigateSightId(item.itemId);
+      router.push("/(tabs)");
     } else {
-      router.push({
-        pathname: "/(tabs)/story",
-        params: { storySpotId: item.itemId },
-      } as any);
+      useStoryStore.getState().setNavigateStorySpotId(Number(item.itemId));
+      router.push("/(tabs)/story");
     }
   };
 
@@ -49,18 +48,29 @@ export default function PastTripDetail() {
     };
   }, [routeId]);
 
-  const renderItem = ({ item }: { item: CompletedRouteItem }) => (
-    <CardWrapper>
-      <SightCard
-        image={item.itemImageUrl}
-        sightName={item.itemName}
-        sightTheme={item.itemType === "SIGHT" ? "관광지" : "이야기 스팟"}
-        iconStyle="DETAIL"
-        iconColor={theme.colors.text.textSecondary}
-        onCardPress={() => handleCardPress(item)}
-      />
-    </CardWrapper>
-  );
+  const renderItem = ({ item }: { item: CompletedRouteItem }) => {
+    if (item.itemType === "SIGHT") {
+      return (
+        <CardWrapper>
+          <SightCard
+            image={item.itemImageUrl}
+            sightName={item.itemName}
+            sightTheme="관광지"
+            iconStyle="DETAIL"
+            iconColor={theme.colors.text.textSecondary}
+            onCardPress={() => handleCardPress(item)}
+          />
+        </CardWrapper>
+      );
+    }
+
+    return (
+      <StorySpotItem onPress={() => handleCardPress(item)}>
+        <MessageSquare size={20} color={theme.colors.text.textSecondary} />
+        <StorySpotText>{item.itemName}</StorySpotText>
+      </StorySpotItem>
+    );
+  };
 
   if (isDetailLoading) {
     return (
@@ -149,4 +159,17 @@ const EmptyText = styled.Text`
   font-family: ${theme.typography.fontFamily.regular};
   font-size: ${theme.typography.fontSize.sm}px;
   color: ${theme.colors.text.textTertiary};
+`;
+
+const StorySpotItem = styled.TouchableOpacity`
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 10px;
+`;
+
+const StorySpotText = styled.Text`
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${theme.colors.text.textPrimary};
 `;

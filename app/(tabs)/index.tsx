@@ -5,7 +5,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
 
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
 import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
@@ -17,6 +16,7 @@ import Map from "@/components/map/Map";
 import SightDetailCard from "@/components/sight/SightDetailCard";
 
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
+import { useSightNavigation } from "@/hooks/sight/useSightNavigation";
 import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
@@ -25,10 +25,7 @@ import { SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
-import { getSightDetail } from "@/api/sight/getSight";
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
-import { useSightStore } from "@/store/useSightStore";
 
 export default function Index() {
   const bottomSheetRef = useRef<any>(null);
@@ -41,7 +38,6 @@ export default function Index() {
 
   const [searchText, setSearchText] = useState("");
   const [showResults, setShowResults] = useState(false);
-  const { sightId } = useLocalSearchParams<{ sightId?: string }>();
 
   const {
     sights,
@@ -71,43 +67,16 @@ export default function Index() {
     fetchCurations();
   }, [fetchCurations]);
 
+  const { navigateSightId, navigateToSight } = useSightNavigation({
+    mapRef,
+    location,
+  });
+
   useEffect(() => {
-    if (sightId && location) {
-      const fetchAndMove = async () => {
-        try {
-          const detail = await getSightDetail({
-            id: sightId,
-            longitude: location.longitude,
-            latitude: location.latitude,
-          });
-
-          // 지도 이동
-          mapRef.current?.moveToLocation({
-            latitude: detail.latitude,
-            longitude: detail.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-
-          // 선택된 관광지 설정
-          const sight: SightInfo = {
-            id: sightId,
-            title: detail.title,
-            longitude: detail.longitude,
-            latitude: detail.latitude,
-            geoHash: "",
-          };
-          
-          useSightStore.getState().selectSight(sight);
-          useSightStore.getState().setSightDetail(detail);
-        } catch (error) {
-          console.error("관광지 조회 실패:", error);
-        }
-      };
-
-      fetchAndMove();
+    if (navigateSightId && location) {
+      navigateToSight(navigateSightId);
     }
-  }, [sightId, location.latitude, location.longitude]);
+  }, [navigateSightId, location.latitude, location.longitude, navigateToSight]);
 
   const handleSearch = useCallback(async () => {
     if (!searchText.trim()) return;

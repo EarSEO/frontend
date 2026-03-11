@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -29,6 +29,22 @@ export default function Index() {
   } = useStorySpotMap();
 
   const { spotLocationInMap } = useStoryStore();
+
+  const navigateStorySpotId = useStoryStore((state) => state.navigateStorySpotId);
+
+  useEffect(() => {
+    if (!navigateStorySpotId) return;
+
+    const targetSpot = spotLocationInMap?.find(
+      (spot) => spot.storySpotId === navigateStorySpotId
+    );
+
+    if (targetSpot) {
+      handleStoryMarkerPress(targetSpot);
+    }
+
+    useStoryStore.getState().clearNavigateStorySpotId();
+  }, [navigateStorySpotId, spotLocationInMap]);
 
   return (
     <Container>

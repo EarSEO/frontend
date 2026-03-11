@@ -39,6 +39,10 @@ interface StoryStore {
   searchedStoryInfo?: storySpots[];
   spotLocationInMap?: MapSpotInfoItem[];
 
+  navigateStorySpotId: number | null;
+  setNavigateStorySpotId: (storySpotId: number) => void;
+  clearNavigateStorySpotId: () => void;
+
   setSearchStory: (
     param: GetSearchStoryRequest
   ) => Promise<SearchStoryInfoResponse | undefined>;
@@ -200,6 +204,12 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
       return undefined;
     }
   },
+
+  navigateStorySpotId: null,
+
+  setNavigateStorySpotId: (storySpotId: number) => set({ navigateStorySpotId: storySpotId }),
+
+  clearNavigateStorySpotId: () => set({ navigateStorySpotId: null }),
 }));
 
 function formatDateArray(dateArray: number[] | string | undefined): string {
