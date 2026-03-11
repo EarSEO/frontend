@@ -4,6 +4,7 @@ import styled from "styled-components/native";
 
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
 import { useLocation } from "@/hooks/useLocation";
+import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { Point } from "@/types/geom";
 import { CurationSightList, SightInfo } from "@/types/sight";
@@ -34,24 +35,23 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   selectedCurationDescription,
   handleCardPress,
   handleHeaderBackPress,
-  handleHeaderClosePress,
 }) => {
   const {
     setButtonStyle,
     setShowBackButton,
     setShowCloseButton,
     setOnBackPress,
-    setOnClosePress,
   } = useHeaderButtonStore();
   const { isInCart } = useCurationDetail();
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const { location } = useLocation();
+  const requireLogin = useRequireLogin();
 
   //헤더 렌더링
   useEffect(() => {
     setButtonStyle("NONE");
     setShowBackButton(true);
-    setShowCloseButton(true);
+    setShowCloseButton(false);
     setOnBackPress(() => {
       handleHeaderBackPress();
     });
@@ -137,7 +137,8 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
                 ? theme.colors.main.primary
                 : theme.colors.black
             }
-            onIconPress={() =>
+            onIconPress={() => {
+              if (!requireLogin()) return;
               handleAddSightToMy(
                 sight.sightId,
                 sight.title,
@@ -145,8 +146,8 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
                 sight.address,
                 sight.imgUrl,
                 sight.point
-              )
-            }
+              );
+            }}
             onCardPress={() =>
               handleMoveToSightDetail(
                 sight.sightId,

@@ -40,7 +40,7 @@ const StorySpotHeader = () => {
         {storyItems?.map((storyItem, index) => (
           <StoryCard
             key={`${storyItem.createdAt}-${index}`}
-            authorId={storyItem?.storyAuthor?.storyAuthorId}
+            storyId={storyItem?.storyAuthor?.storyAuthorId}
             userNickName={storyItem.storyAuthor?.nickname}
             stroySpotName={storyItem.title}
             storyConcept={storyItem.storyConcept}

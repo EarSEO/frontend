@@ -9,7 +9,6 @@ import styled from "styled-components/native";
 
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import Button from "@/components/common/Button";
-import HeaderButton from "@/components/common/HeaderButton";
 import CurationDetail from "@/components/curation/CurationDetail";
 import CurationList from "@/components/curation/CurationList";
 import Map from "@/components/map/Map";
@@ -24,7 +23,6 @@ import { SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 
 export default function Index() {
@@ -213,7 +211,7 @@ export default function Index() {
                 isDetailLoading={isDetailLoading}
                 isInCart={isInCart}
                 onToggleRoute={handleToggleRoute}
-                onClose={deselectSight}
+                handleHeaderBackPress={deselectSight}
               />
             ) : curationSightList !== undefined ? (
               <>
