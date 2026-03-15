@@ -1,15 +1,15 @@
-import { Point } from "@/types/geom";
+import {LatLng} from "react-native-maps";
 
 export type RouteItemType = "SIGHT" | "STORY_SPOT";
 
 export interface GetRouteRequest {
-  point: Point;
+  point: LatLng;
   placeIds: string[];
 }
 
 export interface GetRouteResponse {
   routeId: number;
-  path: Point[];
+  path: LatLng[];
   routeItems: RouteItemResponse[];
 }
 
@@ -18,7 +18,7 @@ export interface RouteItemResponse {
   itemId: number;
   itemName: string;
   itemDocentUrl: string;
-  point: Point;
+  point: LatLng;
   itemTheme: string | undefined; // 관광지만
   itemImageUrl: string | undefined; // 관광지만
   itemAddress: string | undefined; // 관광지만

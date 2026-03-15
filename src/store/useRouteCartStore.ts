@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import {LatLng} from "react-native-maps";
 
-import { Point } from "@/types/geom";
+import { create } from "zustand";
 
 interface RouteCartStore {
   routeCartItems: RouteCartItem[];
@@ -14,7 +14,7 @@ export interface RouteCartItem {
   theme: string; // 관광지 테마
   title: string; // 관광지명
   address: string; // 구/동 단위 주소
-  point: Point; // 위경도
+  point: LatLng; // 위경도
   imageUrl: string;
 }
 

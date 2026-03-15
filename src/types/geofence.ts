@@ -1,4 +1,4 @@
-import { Point } from "@/types/geom";
+import {LatLng} from "react-native-maps";
 
 import { RouteItem } from "@/store/useRouteStore";
 
@@ -7,7 +7,7 @@ export type GeofenceType = "RouteItem";
 export interface GeofenceData {
   id: string;
   geofenceType: GeofenceType;
-  point: Point;
+  point: LatLng;
 }
 
 export const routeItemToGeofenceData = (routeItem: RouteItem): GeofenceData => {

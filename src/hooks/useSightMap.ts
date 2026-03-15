@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
+import {BoundingBox} from "react-native-maps";
+
 import {
   RectangleBoundsParams,
   SearchSightParams,
@@ -40,6 +42,7 @@ export const useSightMap = () => {
   const fetchSightsInBounds = useCallback(
     async (bounds: RectangleBoundsParams) => {
       try {
+        if(bounds.maxLongitude === bounds.minLongitude || bounds.maxLatitude === bounds.minLatitude) return;
         setLoading(true);
         setError(null);
         const result = await getSightsInRectangle(bounds);
@@ -53,6 +56,15 @@ export const useSightMap = () => {
     },
     [setSights, setLoading, setError]
   );
+
+  const fetchSightInBoundingBox = useCallback((boundingBox: BoundingBox) => {
+    fetchSightsInBounds({
+      minLatitude: boundingBox.southWest.latitude,
+      minLongitude: boundingBox.southWest.longitude,
+      maxLatitude: boundingBox.northEast.latitude,
+      maxLongitude: boundingBox.northEast.longitude,
+    });
+  }, [fetchSightsInBounds]);
 
   // 디바운스 적용된 조회 (기존 코드 유지)
   const fetchSightsDebounced = useCallback(
@@ -195,6 +207,7 @@ export const useSightMap = () => {
 
     // 액션
     fetchSightsInBounds,
+    fetchSightInBoundingBox,
     fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,

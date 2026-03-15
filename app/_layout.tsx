@@ -21,6 +21,7 @@ import {
   isGeofenceActive,
 } from "@/services/geofence/geofenceService";
 import { setAudioModeDuckOthers } from "@/store/useAudioPlayerStore";
+import {useBaseMapStore} from "@/store/useBaseMapStore";
 import { useRouteStore } from "@/store/useRouteStore";
 
 SplashScreen.preventAutoHideAsync();
@@ -30,6 +31,15 @@ SplashScreen.setOptions({
 
 TaskManager.defineTask(GEOFENCE_TASK, geofenceTask);
 setAudioModeDuckOthers();
+
+useBaseMapStore.subscribe((state, prevState) => {
+  if (state.mapRef !== prevState.mapRef) {
+    console.log('[참조 변경 감지]', new Date().toISOString());
+    console.log('이전:', prevState.mapRef);
+    console.log('이후:', state.mapRef);
+    console.trace(); // 호출 스택 출력
+  }
+})
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({

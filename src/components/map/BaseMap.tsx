@@ -1,27 +1,38 @@
-import React, { useEffect, useRef } from "react";
+import React, {useCallback, useEffect} from "react";
 
-import {Dimensions, StyleSheet, TouchableOpacity} from "react-native";
-import MapView, {PROVIDER_DEFAULT, Region} from "react-native-maps";
+import {Dimensions, StyleSheet, TouchableOpacity, View} from "react-native";
+import {LayoutChangeEvent} from "react-native/Libraries/Types/CoreEventTypes";
+import {MapPressEvent, Marker, MarkerPressEvent, Polyline, PROVIDER_DEFAULT, Region} from "react-native-maps";
 import type {PanDragEvent} from "react-native-maps/dist/src/MapView.types";
 import Animated, {
+  SharedValue,
   useAnimatedProps,
   useAnimatedStyle,
 } from "react-native-reanimated";
 
 import {Locate, LocateFixed} from "lucide-react-native";
+import styled from "styled-components/native";
 
 import ClusterMapView from "@/components/map/clustering/ClusteredMapView";
 
+import {useStorySpotMap} from "@/hooks/story/useStorySpotMap";
 import {useBaseMap} from "@/hooks/useBaseMap";
+import {useSightMap} from "@/hooks/useSightMap";
 
 import {theme} from "@/styles/theme";
+import MapPin from "@/assets/icons/map/MapPin.svg";
 
+import {useStoryStore} from "@/store/story/useStoryStore";
 import {useBaseMapStore} from "@/store/useBaseMapStore";
-import {useBottomSheetStore} from "@/store/useBottomSheetStore";
 import {useLocationStore} from "@/store/useLocationStore";
+import {useRouteStore} from "@/store/useRouteStore";
+import {useSightStore} from "@/store/useSightStore";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
+const CENTER_PIN_HEIGHT = 45;
+const CENTER_PIN_WIDTH = 45;
+const CENTER_PIN_SHADOW_HEIGHT = 9;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const AnimatedClusterMapView = React.memo(Animated.createAnimatedComponent(ClusterMapView));
@@ -29,18 +40,33 @@ const AnimatedTouchable = React.memo(Animated.createAnimatedComponent(TouchableO
 
 interface BaseMapProps {
   initialRegion?: Region;
+  bottomSheetPosition: SharedValue<number>;
 }
 
-const BaseMap: React.FC<BaseMapProps> = ({initialRegion}) => {
-  const mapRef = useRef<MapView>(null);
+const BaseMap: React.FC<BaseMapProps> = ({initialRegion, bottomSheetPosition}) => {
   const location = useLocationStore(state => state.location);
   const {setCameraFollow, onPressLocateButton, onRegionChange, onRegionChangeCompleteWithRegion, fitToPoints, initBaseMapBottomSheetCallbacks, onRegionChangeCompleteWithBoundingBox} = useBaseMap();
-  const {setMapRef, setIsMapFollowingUser} = useBaseMapStore();
+  const {setIsMapFollowingUser, setCenterPinPoint} = useBaseMapStore();
+  const mapRef = useBaseMapStore(state => state.mapRef);
   const enableCluster = useBaseMapStore((state) => state.enableCluster);
+  const mapMovable = useBaseMapStore((state) => state.mapMovable);
   const isMapFollowingUser = useBaseMapStore((state) => state.isMapFollowingUser);
   const locationButtonVisible = useBaseMapStore((state) => state.locationButtonVisible);
   const mapComponent = useBaseMapStore((state) => state.mapComponent);
-  const bottomSheetPosition = useBottomSheetStore((state) => state.bottomSheetPosition);
+  const centerPinVisibility = useBaseMapStore((state) => state.centerPinVisibility);
+
+  const {fetchSightDetail} = useSightMap();
+  const {selectSight} = useSightStore();
+  const selectedSight = useSightStore(state => state.selectedSight);
+  const sights = useSightStore(state => state.sights);
+
+  const {handleStoryMarkerPress} = useStorySpotMap();
+  const selectedStorySpot = useStoryStore(state => state.selectedStorySpot);
+  const spotLocationInMap = useStoryStore(state => state.spotLocationInMap);
+
+  const routeItems = useRouteStore(state => state.routeItems);
+  const path = useRouteStore(state => state.path);
+  const pathVisibility = useRouteStore(state => state.pathVisibility);
 
   const buttonAnimatedStyle = useAnimatedStyle(() => {
     if (!bottomSheetPosition) {
@@ -58,8 +84,22 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion}) => {
     }
   }));
 
+  const pinAnimatedStyle = useAnimatedStyle(() => {
+    const visibleMapHeight = bottomSheetPosition.value;
+    const centerY = visibleMapHeight / 2;
+    return {
+      top: centerY - CENTER_PIN_HEIGHT/2 + CENTER_PIN_SHADOW_HEIGHT,
+    };
+  });
+
+  const handleCenterPinLayout = useCallback(async (event: LayoutChangeEvent) => {
+    const { x, y, width, height } = event.nativeEvent.layout;
+    const centerX = x + width / 2;
+    const centerPoint = y + CENTER_PIN_HEIGHT - CENTER_PIN_SHADOW_HEIGHT;
+    setCenterPinPoint({x: centerX, y: centerPoint});
+  }, []);
+
   useEffect(() => {
-    setMapRef(mapRef);
     // 화면 로드 후 사용자 위치로 이동
     setTimeout(() => {
       useBaseMapStore.getState().setIsMapFollowingUser(true);
@@ -78,10 +118,6 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion}) => {
         spiralEnabled={false}
         animatedProps={animatedProps}
         mapRef={mapRef}
-        onMapReady={async () => {
-          setMapRef(mapRef);
-          useBaseMapStore.getState().mapRef = mapRef;
-        }}
         style={[StyleSheet.absoluteFill]}
         provider={PROVIDER_DEFAULT}
         initialRegion={initialRegion || {...location, latitudeDelta: 0.01, longitudeDelta: 0.01}}
@@ -89,7 +125,8 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion}) => {
         showsMyLocationButton={false}
         showsCompass={false}
         pointsOfInterestFilter={['airport', 'publicTransport']} // POI 공항, 대중교통만 활성화
-        scrollEnabled={true}
+        scrollEnabled={mapMovable}
+        zoomEnabled={mapMovable}
         rotateEnabled={false}
         pitchEnabled={false}
         toolbarEnabled={false}
@@ -112,12 +149,93 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion}) => {
             setIsMapFollowingUser(false);
           }
         }}
+        onPress={(e: MapPressEvent) => {
+          e.stopPropagation();
+          selectSight(null);
+        }}
         followsUserLocation={isMapFollowingUser}
         spiderLineColor={"#00000000"}
         clusterFontFamily={theme.typography.fontFamily.bold}
       >
         {mapComponent}
+        {pathVisibility && path && (
+          <>
+            <Polyline
+              coordinates={path?.map((point) => ({
+                latitude: point.latitude,
+                longitude: point.longitude,
+              }))}
+              strokeColor={theme.colors.main.primary400}
+              strokeWidth={4}
+              lineCap="round"
+              lineJoin="round"
+              geodesic={true}
+            />
+            {
+              routeItems?.map((sight) => (
+                <Marker
+                  key={sight.itemId}
+                  coordinate={{
+                    latitude: sight.point.latitude,
+                    longitude: sight.point.longitude,
+                  }}
+                  title={sight.itemName}
+                  pinColor={theme.colors.main.primary}
+                />
+              ))}
+          </>
+        )}
+        {sights.map((sight) =>
+          <Marker
+            key={sight.id}
+            coordinate={{
+              latitude: sight.latitude,
+              longitude: sight.longitude,
+            }}
+            pinColor={
+              selectedSight?.id === sight.id
+                ? "#FF6B6B"
+                : theme.colors.main.primary
+            }
+            onPress={(e: MarkerPressEvent) => {
+              e.stopPropagation();
+              fetchSightDetail(sight, {
+                longitude: location.longitude,
+                latitude: location.latitude,
+              })
+              selectSight(sight);
+            }}
+            onDeselect={() => selectSight(null)}
+          />
+        )}
+        {spotLocationInMap?.map((spotInfo) =>
+          <Marker
+            key={spotInfo.storySpotId}
+            coordinate={{
+              latitude: spotInfo.latitude,
+              longitude: spotInfo.longitude,
+            }}
+            pinColor={
+              selectedStorySpot?.storySpotId === spotInfo.storySpotId
+                ? "#FF6B6B"
+                : theme.colors.main.primary
+            }
+            onPress={(e) => {
+              e.stopPropagation();
+              handleStoryMarkerPress?.(spotInfo);
+            }}
+          />
+        )}
       </AnimatedClusterMapView>
+      {
+        centerPinVisibility &&
+          <AnimatedCenterPin
+            style={pinAnimatedStyle}
+            onLayout={handleCenterPinLayout}
+          >
+            <MapPin width={CENTER_PIN_WIDTH} height={CENTER_PIN_HEIGHT} />
+          </AnimatedCenterPin>
+      }
       <AnimatedTouchable
         style={[styles.locationButton, buttonAnimatedStyle, {display: locationButtonVisible ? 'flex' : 'none'}]}
         onPress={onPressLocateButton}
@@ -151,5 +269,15 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
 });
+
+const CenterPin = styled.View`
+  position: absolute;
+  left: 50%;
+  z-index: 0;
+  margin-left: -22.5px;
+  pointer-events: none;
+`;
+
+const AnimatedCenterPin = Animated.createAnimatedComponent(CenterPin);
 
 export default React.memo(BaseMap);

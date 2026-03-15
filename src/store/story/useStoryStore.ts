@@ -38,6 +38,7 @@ interface StoryStore {
   newSpotLocation?: GetStorySpotInfoRequest[];
   searchedStoryInfo?: storySpots[];
   spotLocationInMap?: MapSpotInfoItem[];
+  selectedStorySpot?: MapSpotInfoItem | undefined;
 
   setSearchStory: (
     param: GetSearchStoryRequest
@@ -61,6 +62,10 @@ interface StoryStore {
   setStoryLocationInMap: (
     param: GetStoriesInMapRequest
   ) => Promise<MapSpotInfoItem[] | undefined>;
+
+  resetSpotLocationInMap: () => void;
+
+  setSelectedStorySpot: (selectedStorySpot: MapSpotInfoItem | undefined) => void;
 }
 
 interface StoryItem {
@@ -92,6 +97,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   storySpotBriefInfo: undefined,
   spotLocationInMap: undefined,
   searchedStoryInfo: undefined,
+  selectedStorySpot: undefined,
 
   //마커 선택 시 이야기게시글 불러오기
   setStoryInfo: async (
@@ -199,6 +205,13 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
       set({ searchedStoryInfo: undefined });
       return undefined;
     }
+  },
+  resetSpotLocationInMap: () => {
+    set({spotLocationInMap: []})
+  },
+
+  setSelectedStorySpot: (selectedStorySpot: MapSpotInfoItem | undefined) => {
+    set({selectedStorySpot});
   },
 }));
 

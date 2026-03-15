@@ -16,6 +16,9 @@ interface storyAddStore {
   resetSavedStorySpot: () => void;
   selectedSpotId?: number;
   selectedSpotTitle?: string;
+
+  onStoryAdd: boolean;
+  setOnStoryAdd: (onStoryAdd: boolean) => void;
 }
 
 export const useStoryAddStore = create<storyAddStore>((set, get) => ({
@@ -48,4 +51,9 @@ export const useStoryAddStore = create<storyAddStore>((set, get) => ({
     set({
       storyLocation: undefined,
     }),
+
+  onStoryAdd: false,
+  setOnStoryAdd: (onStoryAdd: boolean) => {
+    set({ onStoryAdd });
+  }
 }));

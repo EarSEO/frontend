@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Keyboard } from "react-native";
+import {BoundingBox} from "react-native-maps";
+
+import {useBaseMap} from "@/hooks/useBaseMap";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
@@ -14,6 +17,7 @@ import { KOREA_GEOM } from "@/constants/geometry";
 
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
+import {useBaseMapStore} from "@/store/useBaseMapStore";
 
 import { useCustomPinNavigation } from "./useCustomPinNavigation";
 
@@ -27,6 +31,8 @@ export const useStorySpotMap = () => {
     storySpotBriefInfo,
     setSearchStory,
   } = useStoryStore();
+
+  const {moveToLocation} = useBaseMap();
 
   const { storyLocation } = useStoryAddStore();
 
@@ -69,6 +75,15 @@ export const useStorySpotMap = () => {
     []
   );
 
+  const fetchStorySpotInBoundingBox = useCallback((boundingBox: BoundingBox) => {
+    handleRegionChange({
+      minLatitude: boundingBox.southWest.latitude,
+      minLongitude: boundingBox.southWest.longitude,
+      maxLatitude: boundingBox.northEast.latitude,
+      maxLongitude: boundingBox.northEast.longitude,
+    });
+  }, [handleRegionChange]);
+
   // 스토리 마커 선택 시
   const handleStoryMarkerPress = useCallback((story: MapSpotInfoItem) => {
     const storyRequest = {
@@ -90,7 +105,8 @@ export const useStorySpotMap = () => {
     });
 
     setStoryInfo(storyRequest);
-    moveToCustomPinLocation(mapRef, story.latitude, story.longitude);
+    moveToLocation(story);
+    // moveToCustomPinLocation(mapRef, story.latitude, story.longitude);
     setSelectedMarkerId(storySpotBriefInfo?.spotId);
   }, []);
 
@@ -100,7 +116,8 @@ export const useStorySpotMap = () => {
     const mapLng = sight.longitude;
 
     setSelectedSpot(Number(sight.id), sight.title);
-    moveToCustomPinLocation(mapRef, mapLat, mapLng);
+    moveToLocation(sight);
+    // moveToCustomPinLocation(useBaseMapStore.getState().mapRef, mapLat, mapLng);
   }, []);
 
   //이야기 검색 시
@@ -135,6 +152,7 @@ export const useStorySpotMap = () => {
     selectedMarker: selectedMarkerId,
     handleMapPress,
     handleRegionChange,
+    fetchStorySpotInBoundingBox,
     handleStoryMarkerPress,
     handleSightMarkerPress,
     setSearchTitle: setSearchStory,

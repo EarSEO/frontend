@@ -1,11 +1,11 @@
 import { useCallback, useEffect } from "react";
 
+import {LatLng} from "react-native-maps";
+
 import styled from "styled-components/native";
 
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
-import { useLocation } from "@/hooks/useLocation";
 
-import { Point } from "@/types/geom";
 import { CurationSightList, SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
@@ -66,7 +66,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
       sightTheme: string,
       sightAddress: string,
       sightImage: string,
-      sightLocation: Point
+      sightLocation: LatLng,
     ) => {
       const AddCartSight = {
         sightId: sightId,
@@ -95,7 +95,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
       sightId: string,
       sightTitle: string,
       sightGeohash: string,
-      sightLocation: Point
+      sightLocation: LatLng
     ) => {
       const sight = {
         id: sightId,

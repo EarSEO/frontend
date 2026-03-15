@@ -1,11 +1,9 @@
 import {useCallback, useEffect} from "react";
 
 import {GestureResponderEvent} from "react-native";
-import {BoundingBox, Details, Region} from "react-native-maps";
+import {BoundingBox, Details, LatLng, Region} from "react-native-maps";
 
 import {SNAP_POINT_TYPE} from "@gorhom/bottom-sheet";
-
-import {Point} from "@/types/geom";
 
 import {useBaseMapStore} from "@/store/useBaseMapStore";
 import {useBottomSheetStore} from "@/store/useBottomSheetStore";
@@ -16,6 +14,11 @@ export const useBaseMap = () => {
 
   const getCurMapRef = useCallback(() => {
       return useBaseMapStore.getState().mapRef;
+  }, []);
+
+  const moveToLocation = useCallback((latLng: LatLng) => {
+    const mapRef = getCurMapRef();
+    mapRef?.current?.animateCamera({center: latLng});
   }, []);
 
   const moveToRegion = useCallback(async (region: Region, duration = 300) => {
@@ -32,7 +35,7 @@ export const useBaseMap = () => {
     return await mapRef.current.getMapBoundaries();
   }, []);
 
-  const fitToPoints = useCallback((points: Point[]) => {
+  const fitToPoints = useCallback((points: LatLng[]) => {
     const mapRef = getCurMapRef();
     if (!mapRef?.current || points.length === 0) return;
     mapRef.current.fitToCoordinates(points, {
@@ -66,7 +69,9 @@ export const useBaseMap = () => {
   }, [moveToCurrentLocation]);
 
   const onRegionChange = useCallback((region: Region) => {
-    useBaseMapStore.getState().setCurrentMapRegion(region);
+    const boundingBox = getCurMapRef()?.current?.boundingBoxForRegion(region);
+    if(!boundingBox) return;
+    useBaseMapStore.getState().setCurrentMapBoundingBox(boundingBox);
   }, []);
 
   // 지도의 RegionChangeComplete 이벤트 기준 마커 로드
@@ -74,9 +79,10 @@ export const useBaseMap = () => {
   const onRegionChangeCompleteWithRegion = useCallback((region: Region, details: Details, markers: Marker[] | undefined, delay = 300) => {
     useBaseMapStore.getState().startRegionChangeDebounce(async () => {
       const regionChangeCompleteMethod = useBaseMapStore.getState().regionChangeCompleteMethod;
-      const currentMapRegion = useBaseMapStore.getState().currentMapRegion;
-      if (currentMapRegion && regionChangeCompleteMethod) {
-        regionChangeCompleteMethod(regionToBoundingBox(currentMapRegion));
+      const boundingBox = getCurMapRef()?.current?.boundingBoxForRegion(region);
+      if (boundingBox && regionChangeCompleteMethod) {
+        regionChangeCompleteMethod(boundingBox);
+        useBaseMapStore.getState().setCurrentMapBoundingBox(boundingBox);
       }
     }, delay);
   }, []);
@@ -86,11 +92,22 @@ export const useBaseMap = () => {
     useBaseMapStore.getState().startRegionChangeDebounce(async () => {
       const regionChangeCompleteMethod = useBaseMapStore.getState().regionChangeCompleteMethod;
       const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
+      console.log("mapBoundaries", mapBoundaries);
       if (mapBoundaries && regionChangeCompleteMethod) {
         regionChangeCompleteMethod(mapBoundaries);
-        useBaseMapStore.getState().setCurrentMapRegion(boundingBoxToRegion(mapBoundaries));
+        useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
       }
     }, delay);
+  }, []);
+
+  // 초기 마커 로드
+  const loadMarkerFromStore = useCallback(async () => {
+    const regionChangeCompleteMethod = useBaseMapStore.getState().regionChangeCompleteMethod;
+    const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
+    if (mapBoundaries && regionChangeCompleteMethod) {
+      regionChangeCompleteMethod(mapBoundaries);
+      useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
+    }
   }, []);
 
   const {setOnBottomSheetChange, setOnBottomSheetAnimate} = useBottomSheetStore();
@@ -127,6 +144,7 @@ export const useBaseMap = () => {
   }, []);
 
   return {
+    moveToLocation,
     moveToRegion,
     getBoundaries,
     fitToPoints,
@@ -136,6 +154,7 @@ export const useBaseMap = () => {
     onRegionChange,
     onRegionChangeCompleteWithRegion,
     onRegionChangeCompleteWithBoundingBox,
+    loadMarkerFromStore,
     initBaseMapBottomSheetCallbacks,
   };
 }

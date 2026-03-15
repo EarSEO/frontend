@@ -1,4 +1,4 @@
-import { Point } from "./geom";
+import {LatLng} from "react-native-maps";
 
 // 관광지 기본 정보 (목록 조회용)
 export interface SightInfo {
@@ -103,6 +103,6 @@ export interface CurationSightList {
   distance: number;
   address: string;
   imgUrl: string;
-  point: Point;
+  point: LatLng;
   geoHash: string;
 }

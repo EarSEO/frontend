@@ -1,7 +1,8 @@
+import {LatLng} from "react-native-maps";
+
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 
-import { Point } from "@/types/geom";
 import {
   GetRouteRequest,
   GetRouteResponse,
@@ -19,7 +20,7 @@ import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 interface RouteStore {
-  path: Point[] | undefined;
+  path: LatLng[] | undefined;
   routeItems: RouteItem[] | undefined;
 
   setRoute: (body: GetRouteRequest) => Promise<GetRouteResponse | undefined>;
@@ -32,6 +33,9 @@ interface RouteStore {
   deQueueStorySpot: (itemId: number) => void;
 
   setVisited: (routeItem: RouteItem) => void;
+
+  pathVisibility: boolean;
+  setPathVisibility: (pathVisibility: boolean) => void;
 }
 
 export interface RouteItem {
@@ -39,7 +43,7 @@ export interface RouteItem {
   itemId: number;
   itemName: string;
   itemDocentUrl: string;
-  point: Point;
+  point: LatLng;
   itemTheme: string | undefined; // 관광지만
   itemImageUrl: string | undefined; // 관광지만
   summaryId: number | undefined; // 이야기 스팟만
@@ -182,4 +186,9 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
       }),
     });
   },
+
+  pathVisibility: false,
+  setPathVisibility: (pathVisibility: boolean): void => {
+    set({pathVisibility});
+  }
 }));

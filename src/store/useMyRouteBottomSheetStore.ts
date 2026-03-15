@@ -1,7 +1,7 @@
+import {LatLng} from "react-native-maps";
+
 import * as Location from "expo-location";
 import { create } from "zustand";
-
-import { Point } from "@/types/geom";
 
 import { useRouteCartStore } from "@/store/useRouteCartStore";
 import { useRouteStore } from "@/store/useRouteStore";
@@ -54,7 +54,7 @@ export const useMyRouteBottomSheetStore = create<MyRouteBottomSheetStore>(
         point: {
           latitude: currentPosition.coords.latitude,
           longitude: currentPosition.coords.longitude,
-        } as Point,
+        } as LatLng,
         placeIds: useRouteCartStore
           .getState()
           .routeCartItems.map((routCartItem) => routCartItem.sightId),
