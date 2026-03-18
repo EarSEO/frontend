@@ -3,13 +3,13 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 
 export const StoryAddButton = () => {
   const router = useRouter();
-  const { isLogined } = useAuthStore();
+  const requireLogin = useRequireLogin();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 중복 클릭 방지
 
   const handleAddStory = () => {
@@ -17,9 +17,9 @@ export const StoryAddButton = () => {
     setButtonDisabled(true);
     setTimeout(() => setButtonDisabled(false), 500);
 
-    if (isLogined === true) {
-      router.push("/story/spotLocationSelected");
-    } else router.replace("/myPage/login");
+    if (!requireLogin()) return;
+
+    router.push("/story/spotLocationSelected");
   };
 
   return (

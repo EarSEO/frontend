@@ -38,6 +38,11 @@ export const API_ENDPOINTS = {
       CURATION: "/api/sight/curation",
       SIGHT_LIST: (curationId: number) => `/api/sight/curation/${curationId}`,
     },
+    BOOKMARK: {
+      ADD: (sightId: string) => `/api/user/sight/${sightId}/bookmark`,
+      DELETE: (sightId: string) => `/api/user/sight/${sightId}/bookmark`,
+      GET_BOOKMARK: "/api/user/sight/bookmark",
+    },
   },
 
   ROUTE: {

@@ -16,7 +16,7 @@ import Heart from "./Heart";
 import MoreMenuButton from "./MoreMenuButton";
 
 interface StoryCardProps {
-  storyId: number;
+  storyId: number | undefined;
   profileUrl?: string;
   userNickName?: string;
   stroySpotName?: string;
@@ -173,13 +173,15 @@ const StoryCard: React.FC<StoryCardProps> = ({
           </ContentWrapper>
           <PostInfoWrapper>
             <HeartIconSection>
-              <Heart 
-                storyId={storyId}
-                likeCount={likeCount ?? 0}
-                isLiked={!!isLiked}
-                onToggle={toggleLike}
-                disabled={isLoading} 
-              />
+              {storyId ? (
+                <Heart
+                  storyId={storyId}
+                  likeCount={likeCount ?? 0}
+                  isLiked={!!isLiked}
+                  onToggle={toggleLike}
+                  disabled={isLoading}
+                />
+              ) : null}
             </HeartIconSection>
             <CreatedAtSection>{createdAt}</CreatedAtSection>
           </PostInfoWrapper>

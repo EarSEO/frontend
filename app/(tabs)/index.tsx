@@ -30,7 +30,7 @@ export default function Index() {
   const animatedPosition = useSharedValue(0);
   const mapRef = useRef<MapRef | null>(null);
 
-  const location = useLocationStore(state => state.location);
+  const location = useLocationStore((state) => state.location);
   const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
     useRouteCartStore();
 
@@ -86,7 +86,7 @@ export default function Index() {
         longitude: location.longitude,
         latitude: location.latitude,
       },
-      bounds,
+      bounds
     );
 
     setShowResults(true);
@@ -112,7 +112,7 @@ export default function Index() {
   };
 
   const isInCart = routeCartItems.some(
-    (item) => item.sightId === selectedSight?.id,
+    (item) => item.sightId === selectedSight?.id
   );
 
   const handleToggleRoute = () => {
@@ -211,7 +211,7 @@ export default function Index() {
                 isDetailLoading={isDetailLoading}
                 isInCart={isInCart}
                 onToggleRoute={handleToggleRoute}
-                onClose={deselectSight}
+                handleHeaderBackPress={deselectSight}
               />
             ) : curationSightList !== undefined ? (
               <>
