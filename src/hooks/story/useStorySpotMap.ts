@@ -54,10 +54,10 @@ export const useStorySpotMap = () => {
       maxLatitude: number;
     }) => {
       const mapStoriesRequest: GetMapStoriesRequest = {
-        minLongitude: bounds.minLongitude.toString(),
-        minLatitude: bounds.minLatitude.toString(),
-        maxLongitude: bounds.maxLongitude.toString(),
-        maxLatitude: bounds.maxLatitude.toString(),
+        minLongitude: bounds.minLongitude,
+        minLatitude: bounds.minLatitude,
+        maxLongitude: bounds.maxLongitude,
+        maxLatitude: bounds.maxLatitude,
         page: 0,
         size: 10,
         sort: "createdAt,desc",
@@ -75,8 +75,8 @@ export const useStorySpotMap = () => {
       storySpotId: story.storySpotId,
       query: {
         query: {
-          longitude: story.longitude.toString(),
-          latitude: story.latitude.toString(),
+          longitude: story.longitude,
+          latitude: story.latitude,
           locale: "KO" as const,
           page: 0,
           size: 1000,
@@ -85,13 +85,13 @@ export const useStorySpotMap = () => {
       },
     };
     setStorySpotBriefInfo({
-      latitude: String(story.latitude),
-      longitude: String(story.longitude),
+      latitude: story.latitude,
+      longitude: story.longitude,
     });
 
     setStoryInfo(storyRequest);
     moveToCustomPinLocation(mapRef, story.latitude, story.longitude);
-    setSelectedMarkerId(storySpotBriefInfo?.spotId);
+    setSelectedMarkerId(storyRequest?.storySpotId);
   }, []);
 
   //sight 마커선택 시
@@ -122,8 +122,8 @@ export const useStorySpotMap = () => {
       };
       await setSearchStory(searchParams);
       setStorySpotBriefInfo({
-        latitude: String(storyLocation.latitude),
-        longitude: String(storyLocation.longitude),
+        latitude: storyLocation.latitude,
+        longitude: storyLocation.longitude,
       });
     } catch (error) {
       throw error;

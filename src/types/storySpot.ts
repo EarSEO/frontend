@@ -16,6 +16,23 @@ export interface GetMapStoryResponse {
   hasPrevious?: boolean;
 }
 
+export interface StoryItem {
+  storyAuthor?: {
+    storyAuthorId?: number;
+    nickname?: string;
+    profileUrl?: string;
+  };
+
+  title?: string;
+  content?: string;
+  locale?: "KO" | "EN";
+  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+  likeCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  imageUrls?: string[];
+}
+
 export interface GetLocationSpotBriefInfoResponse {
   spotId?: number;
   titles?: string[];
@@ -32,7 +49,7 @@ export interface SpotTitleListResponse {
 }
 
 export interface StoryAuthorResponse {
-  storyAuthorId?: number;
+  storyAuthorId: number;
   nickname?: string;
   profileUrl?: string;
 }
@@ -63,25 +80,25 @@ export interface GetStoryRequest {
   storySpotId: number;
   query: {
     query: {
-      longitude: string;
-      latitude: string;
+      longitude: number;
+      latitude: number;
       locale: "KO" | "EN";
       page?: number;
       size?: number;
       sort?:
-      | "createdAt,desc"
-      | "createdAt,asc"
-      | "likeCount,desc"
-      | "likeCount,asc";
+        | "createdAt,desc"
+        | "createdAt,asc"
+        | "likeCount,desc"
+        | "likeCount,asc";
     };
   };
 }
 
 export interface GetMapStoriesRequest {
-  minLongitude: string;
-  minLatitude: string;
-  maxLongitude: string;
-  maxLatitude: string;
+  minLongitude: number;
+  minLatitude: number;
+  maxLongitude: number;
+  maxLatitude: number;
   page: number;
   size: number;
   sort: string;
@@ -98,8 +115,8 @@ export interface StoryData {
 }
 
 export interface GetSpotBriefInfoRequest {
-  longitude: string;
-  latitude: string;
+  longitude: number;
+  latitude: number;
 }
 
 export interface CreateStoryRequest {

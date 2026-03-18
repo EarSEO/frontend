@@ -10,10 +10,12 @@ import LastTripIcon from "@/assets/icons/last-trip-icon.svg";
 import MyStoryIcon from "@/assets/icons/mystory-icon.svg";
 
 import { useAuthStore } from "@/store/useAuthStore";
+import { useBookmarkStore } from "@/store/useBookmarkStore";
 
 export default function MyPageIndex() {
   const router = useRouter();
   const { isLogined, user, logout } = useAuthStore();
+  const { resetUserBookmarkList } = useBookmarkStore();
 
   const handleLogout = () => {
     Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
@@ -28,6 +30,7 @@ export default function MyPageIndex() {
           try {
             await logout();
             Alert.alert("알림", "로그아웃 되었습니다.");
+            resetUserBookmarkList();
           } catch (error) {
             console.error(error);
             Alert.alert("오류", "로그아웃 처리 중 문제가 발생했습니다.");

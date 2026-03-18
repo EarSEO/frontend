@@ -1,65 +1,89 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-import { GestureResponderEvent } from "react-native";
+import PagerView from "react-native-pager-view";
 
-import {
-  Banknote,
-  Clock,
-  Headphones,
-  Map,
-  ParkingCircle,
-  Phone,
-} from "lucide-react-native";
 import styled from "styled-components/native";
+
+import { useBookmark } from "@/hooks/sight/useBookmark";
+import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { SightDetailCardProps } from "@/types/sight";
 
+import { theme } from "@/styles/theme";
+import AfterAddBookmark from "@/assets/icons/afterAddBookmark.svg";
 import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
+import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import {
-  sightToCustomAudioMetadata,
-  useAudioPlayerStore,
-} from "@/store/useAudioPlayerStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
+import { useBookmarkStore } from "@/store/useBookmarkStore";
+import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { useRouteCartStore } from "@/store/useRouteCartStore";
-import { distanceToString } from "@/util/locationUtil";
-import { normalizeHtmlBreaks } from "@/util/textNormalize";
+
+import AddressLabel from "../common/AddressLabel";
+import HeaderButton from "../common/HeaderButton";
+import { StoryAddButton } from "../story/StoryAddButton";
+import SightInfo from "./SightInfo";
+import SightStory from "./SightStory";
+
+type TabType = "sightInfo" | "sightStory";
 
 const SightDetailCard: React.FC<SightDetailCardProps> = ({
   selectedSight,
   sightDetail,
   isDetailLoading,
-  onClose,
+  handleHeaderBackPress,
 }) => {
+  const pagerRef = useRef<PagerView>(null);
+  const requireLogin = useRequireLogin();
+
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
-  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
-  const setTemporarySightInfo = useAudioPlayerStore(
-    (state) => state.setTemporarySightInfo,
-  );
+  const { setStorySpotBriefInfo } = useStoryStore();
+  const { userBookmarkList } = useBookmarkStore();
+  const { insertBookmark, removeBookmark } = useBookmark();
+  const {
+    setButtonStyle,
+    setShowBackButton,
+    setShowCloseButton,
+    setOnClosePress,
+  } = useHeaderButtonStore();
 
-  const isMyDocentPlaying =
-    sightDetail !== null &&
-    audioMetadata?.id === sightToCustomAudioMetadata(sightDetail).id;
+  const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
+  const handleTabPress = (tab: TabType) => {
+    setActiveTab(tab);
+    pagerRef.current?.setPage(tab === "sightInfo" ? 0 : 1);
+  };
 
-  const onPressDocent = (e: GestureResponderEvent) => {
-    e.stopPropagation();
-    if (!sightDetail?.docentUrl) return;
-    if (isMyDocentPlaying) {
-      setTemporarySightInfo();
-    } else {
-      setTemporarySightInfo(sightDetail);
-    }
+  useEffect(() => {
+    setButtonStyle("NONE");
+    setShowBackButton(false);
+    setShowCloseButton(true);
+    setOnClosePress(() => {
+      handleHeaderBackPress();
+    });
+  }, [setShowBackButton, handleHeaderBackPress, setOnClosePress]);
+
+  //sight 조회 시 srotyId 저장
+  useEffect(() => {
+    if (!selectedSight) return;
+    const sightLocation = {
+      longitude: selectedSight.longitude,
+      latitude: selectedSight.latitude,
+    };
+    setStorySpotBriefInfo(sightLocation);
+  }, [setStorySpotBriefInfo, selectedSight?.latitude, selectedSight?.latitude]);
+
+  const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
+    const position = e.nativeEvent.position;
+    setActiveTab(position === 0 ? "sightInfo" : "sightStory");
   };
 
   if (!selectedSight) return null;
 
-  const checkData = (data: string | undefined | null) => {
-    const normalized = normalizeHtmlBreaks(data);
-    return normalized && normalized.trim() !== ""
-      ? normalized
-      : "데이터가 존재하지 않습니다";
-  };
+  const isBookmark =
+    userBookmarkList?.bookmarks.some((b) => b.sightId === selectedSight.id) ??
+    false;
 
   const isInCart =
     routeCartItems.filter((routeCartItem) => {
@@ -68,10 +92,16 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   return (
     <Container>
-      <HeaderRow>
+      <HeaderContainer>
+        <HeaderButton />
+      </HeaderContainer>
+
+      <SightHeaderContainer>
         <SightTitle>{selectedSight.title}</SightTitle>
-        <IconButton
+        <RouteAddButton
           onPress={(e) => {
+            if (!requireLogin()) return;
+
             e.stopPropagation();
             if (isInCart) {
               removeRouteCartItem(String(selectedSight.id));
@@ -95,131 +125,98 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
           ) : (
             <BeforeAddRoute width={28} height={28} />
           )}
-        </IconButton>
-      </HeaderRow>
+        </RouteAddButton>
+
+        <BookMarkAddButton
+          onPress={(e) => {
+            e.stopPropagation();
+            if (!requireLogin()) return;
+
+            if (isBookmark) {
+              removeBookmark(selectedSight.id);
+            } else {
+              insertBookmark(selectedSight.id);
+            }
+          }}
+        >
+          {isBookmark ? (
+            <AfterAddBookmark width={28} height={28} />
+          ) : (
+            <BeforeAddBookmark width={28} height={28} />
+          )}
+        </BookMarkAddButton>
+      </SightHeaderContainer>
 
       {isDetailLoading ? (
         <LoadingText>상세 정보 로딩 중...</LoadingText>
       ) : sightDetail ? (
-        <>
-          <BasicInfoRow>
-            <SightDistance>
-              {distanceToString(sightDetail.distance)}
-            </SightDistance>
+        <SightTopInfoWrapper>
+          <BasicInfoWrapper>
+            <AddressLabel
+              address={sightDetail.address}
+              distance={sightDetail.distance}
+              fontSize={theme.typography.fontSize.sm}
+            />
             <SightTheme>{sightDetail.theme}</SightTheme>
-          </BasicInfoRow>
-          <SightText>{checkData(sightDetail.address)}</SightText>
+          </BasicInfoWrapper>
 
-          <MainImage
+          <SightImage
             source={{
               uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
             }}
             resizeMode="cover"
           />
-          {sightDetail.docentUrl && (
-            <DocentButton onPress={onPressDocent}>
-              <Headphones
-                size={20}
-                color={isMyDocentPlaying ? "#1DB954" : "#333"}
-              />
-              <DocentText>
-                {isMyDocentPlaying ? "일시정지" : "도슨트 듣기"}
-              </DocentText>
-            </DocentButton>
-          )}
-
-          <Section>
-            <SectionTitle>소개</SectionTitle>
-            <DescriptionText>{checkData(sightDetail.outl)}</DescriptionText>
-          </Section>
-
-          <Section>
-            <SectionTitle>방문정보</SectionTitle>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Map size={18} color="#666" />
-                <InfoLabel>주소</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.fullAddress)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Clock size={18} color="#666" />
-                <InfoLabel>운영시간</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.useTime)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Clock size={18} color="#666" />
-                <InfoLabel>휴무일</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.restDate)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Phone size={18} color="#666" />
-                <InfoLabel>전화번호</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.tel)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <Banknote size={18} color="#666" />
-                <InfoLabel>입장료</InfoLabel>
-              </InfoLabelArea>
-              <InfoValue>{checkData(sightDetail.useFee)}</InfoValue>
-            </InfoRow>
-
-            <InfoRow>
-              <InfoLabelArea>
-                <ParkingCircle size={18} color="#666" />
-                <InfoLabel>주차 가능</InfoLabel>
-              </InfoLabelArea>
-
-              {sightDetail.parking ? (
-                <Badge
-                  type={sightDetail.parking.includes("불가") ? "bad" : "good"}
-                >
-                  <BadgeText>
-                    {sightDetail.parking.includes("불가") ? "불가" : "가능"}
-                  </BadgeText>
-                </Badge>
-              ) : (
-                <InfoValue>데이터가 존재하지 않습니다</InfoValue>
-              )}
-            </InfoRow>
-          </Section>
-        </>
+        </SightTopInfoWrapper>
       ) : null}
+      <TabContainer>
+        <TabButton
+          active={activeTab === "sightInfo"}
+          onPress={() => handleTabPress("sightInfo")}
+        >
+          <TabText active={activeTab === "sightInfo"}>정보</TabText>
+        </TabButton>
+        <TabButton
+          active={activeTab === "sightStory"}
+          onPress={() => handleTabPress("sightStory")}
+        >
+          <TabText active={activeTab === "sightStory"}>이야기</TabText>
+        </TabButton>
+      </TabContainer>
 
-      <CloseButton onPress={onClose}>
-        <CloseButtonText>닫기</CloseButtonText>
-      </CloseButton>
+      <StyledPagerView ref={pagerRef} onPageSelected={handlePageSelected}>
+        <PageContainer key="1">
+          <SightInfo
+            isDetailLoading={isDetailLoading}
+            sightDetail={sightDetail}
+          />
+        </PageContainer>
+
+        <PageContainer key="2">
+          <SightStory />
+          <StoryAddButton />
+        </PageContainer>
+      </StyledPagerView>
     </Container>
   );
 };
 
 export default SightDetailCard;
 
-const Container = styled.View`
-  gap: 8px;
-  padding-horizontal: 10px;
+const Container = styled.ScrollView`
+  gap: 12px;
+  height: 100%;
 `;
 
-const HeaderRow = styled.View`
+const HeaderContainer = styled.View`
+  margin-bottom: 60px;
+`;
+
+const SightHeaderContainer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-`;
-
-const IconButton = styled.TouchableOpacity`
-  padding: 4px;
+  margin-left: 16px;
+  margin-right: 16px;
 `;
 
 const SightTitle = styled.Text`
@@ -229,33 +226,28 @@ const SightTitle = styled.Text`
   flex: 1;
 `;
 
-const BasicInfoRow = styled.View`
+const RouteAddButton = styled.TouchableOpacity`
+  padding: 4px;
+`;
+const BookMarkAddButton = styled.TouchableOpacity`
+  padding: 4px;
+`;
+
+const BasicInfoWrapper = styled.View`
   flex-direction: row;
   align-items: center;
   gap: 8px;
 `;
 
-const SightDistance = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
-  color: ${({ theme }) => theme.colors.main.primary};
-`;
-
 const SightTheme = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.xs}px;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
   color: ${({ theme }) => theme.colors.text.textTertiary};
 `;
 
-const SectionTitle = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.lg}px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  color: ${({ theme }) => theme.colors.text.textPrimary};
-  margin-top: 16px;
-  margin-bottom: 16px;
-`;
-
-const SightText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
+const SightTopInfoWrapper = styled.View`
+  margin-left: 16px;
+  margin-right: 16px;
+  gap: 16px;
 `;
 
 const LoadingText = styled.Text`
@@ -263,85 +255,44 @@ const LoadingText = styled.Text`
   color: ${({ theme }) => theme.colors.text.textTertiary};
 `;
 
-const CloseButton = styled.TouchableOpacity`
-  margin-top: 12px;
-  padding: 12px;
-  background-color: ${({ theme }) => theme.colors.grey.neutral100};
-  border-radius: 8px;
-  align-items: center;
-`;
-
-const CloseButtonText = styled.Text`
-  font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
-  color: ${({ theme }) => theme.colors.text.textSecondary};
-`;
-
-const MainImage = styled.Image`
+const SightImage = styled.Image`
   width: 100%;
   height: 200px;
   border-radius: 8px;
-  margin-bottom: 0;
 `;
 
-const DocentButton = styled.TouchableOpacity`
-  flex-direction: row;
+const TabButton = styled.TouchableOpacity<{ active: boolean }>`
+  flex: 1;
   align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
   padding: 12px;
-  border-radius: 24px;
-  margin-bottom: 24px;
-  gap: 8px;
+  border-bottom-width: 2px;
+  border-bottom-color: ${({ active }) =>
+    active ? theme.colors.text.textPrimary : "transparent"};
 `;
 
-const DocentText = styled.Text`
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
-`;
-
-const InfoRow = styled.View`
+const TabContainer = styled.View`
   flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+  border-bottom-width: 1px;
+  border-bottom-color: ${theme.colors.grey.neutral200};
 `;
 
-const InfoLabelArea = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
+const TabText = styled.Text<{ active: boolean }>`
+  font-family: ${({ active }) =>
+    active
+      ? theme.typography.fontFamily.semiBold
+      : theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${({ active }) =>
+    active ? theme.colors.text.textPrimary : theme.colors.text.textTertiary};
 `;
 
-const InfoLabel = styled.Text`
-  font-size: 14px;
-  color: #666;
+const StyledPagerView = styled(PagerView)`
+  height: 360px;
 `;
 
-const InfoValue = styled.Text`
-  font-size: 14px;
-  color: #000;
-  font-weight: 500;
-`;
-
-const Section = styled.View`
-  margin-bottom: 24px;
-`;
-
-const Badge = styled.View<{ type: "good" | "bad" }>`
-  padding: 4px 10px;
-  border-radius: 4px;
-  background-color: ${({ type }) => (type === "good" ? "#66BB6A" : "#EF5350")};
-`;
-
-const BadgeText = styled.Text`
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-`;
-
-const DescriptionText = styled.Text`
-  font-size: 14px;
-  color: #444;
-  line-height: 22px;
+const PageContainer = styled.View`
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 `;

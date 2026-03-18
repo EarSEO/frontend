@@ -8,13 +8,15 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
+import { distanceToString } from "@/util/locationUtil";
+
 export type LocationInfo = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
 
 export interface LocationLabelProps {
   locationInfo?: LocationInfo;
   locationTitle?: string;
   address?: string;
-  distance?: number;
+  distance: number;
   logitude?: number;
   latitude?: number;
   locationtheme?: string;
@@ -34,17 +36,6 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
   onPress,
 }) => {
   const onlyTitle = !address && !distance && !locationtheme;
-
-  const formatDistance = () => {
-    if (!distance) {
-      return "";
-    }
-    if (distance < 1000) {
-      return `${distance}M`;
-    }
-    const kilometers = (distance / 1000).toFixed(1);
-    return `${kilometers}KM`;
-  };
 
   const getIconName = () => {
     const iconProps = { size: 20, color: theme.colors.text.textPrimary };
@@ -78,7 +69,7 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
           </TopRow>
           <BottomRow>
             <Address>{address}</Address>
-            <Distance>{formatDistance()}</Distance>
+            <Distance>{distanceToString(distance)}</Distance>
           </BottomRow>
         </ContentWrapper>
       </LabelContainer>
