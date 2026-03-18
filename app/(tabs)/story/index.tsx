@@ -12,7 +12,9 @@ import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
+import { useStoryNavigation } from "@/hooks/story/useStoryNavigation";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
+import { useLocation } from "@/hooks/useLocation";
 
 import { useStoryStore } from "@/store/story/useStoryStore";
 
@@ -23,6 +25,7 @@ export default function Index() {
   const {
     mapRef,
     selectedMarker,
+    setSelectedMarker,
     handleMapPress,
     handleRegionChange,
     handleStoryMarkerPress,
@@ -30,21 +33,19 @@ export default function Index() {
 
   const { spotLocationInMap } = useStoryStore();
 
-  const navigateStorySpotId = useStoryStore((state) => state.navigateStorySpotId);
+  const { location } = useLocation();
+
+  const { navigateStorySpotId, navigateToStorySpot } = useStoryNavigation({
+    mapRef,
+    location,
+    setSelectedMarker,
+  });
 
   useEffect(() => {
-    if (!navigateStorySpotId) return;
-
-    const targetSpot = spotLocationInMap?.find(
-      (spot) => spot.storySpotId === navigateStorySpotId
-    );
-
-    if (targetSpot) {
-      handleStoryMarkerPress(targetSpot);
+    if (navigateStorySpotId && location) {
+      navigateToStorySpot(navigateStorySpotId);
     }
-
-    useStoryStore.getState().clearNavigateStorySpotId();
-  }, [navigateStorySpotId, spotLocationInMap]);
+  }, [navigateStorySpotId, location.latitude, location.longitude, navigateToStorySpot]);
 
   return (
     <Container>

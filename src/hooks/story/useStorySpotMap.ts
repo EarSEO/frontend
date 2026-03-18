@@ -133,6 +133,7 @@ export const useStorySpotMap = () => {
   return {
     mapRef,
     selectedMarker: selectedMarkerId,
+    setSelectedMarker: setSelectedMarkerId,
     handleMapPress,
     handleRegionChange,
     handleStoryMarkerPress,
