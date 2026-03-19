@@ -42,6 +42,10 @@ interface StoryStore {
   isLoading: boolean;
   loading: boolean;
 
+  navigateStorySpotId: number | null;
+  setNavigateStorySpotId: (storySpotId: number) => void;
+  clearNavigateStorySpotId: () => void;
+
   setSearchStory: (
     param: GetSearchTitleRequest
   ) => Promise<SearchSpotInfoResponse | undefined>;
@@ -191,6 +195,11 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     }
   },
 
+  navigateStorySpotId: null,
+
+  setNavigateStorySpotId: (storySpotId: number) => set({ navigateStorySpotId: storySpotId }),
+
+  clearNavigateStorySpotId: () => set({ navigateStorySpotId: null }),
   setStoryLoading: (loading: boolean) => {
     set({ isLoading: loading });
   },

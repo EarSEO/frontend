@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -12,7 +12,9 @@ import MainStoryHeader from "@/components/story/MainStoryHeader";
 import { StoryAddButton } from "@/components/story/StoryAddButton";
 import StorySpotHeader from "@/components/story/StorySpotHeader";
 
+import { useStoryNavigation } from "@/hooks/story/useStoryNavigation";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
+import { useLocation } from "@/hooks/useLocation";
 
 import { useStoryStore } from "@/store/story/useStoryStore";
 
@@ -23,12 +25,27 @@ export default function Index() {
   const {
     mapRef,
     selectedMarker,
+    setSelectedMarker,
     handleMapPress,
     handleRegionChange,
     handleStoryMarkerPress,
   } = useStorySpotMap();
 
   const { spotLocationInMap } = useStoryStore();
+
+  const { location } = useLocation();
+
+  const { navigateStorySpotId, navigateToStorySpot } = useStoryNavigation({
+    mapRef,
+    location,
+    setSelectedMarker,
+  });
+
+  useEffect(() => {
+    if (navigateStorySpotId && location) {
+      navigateToStorySpot(navigateStorySpotId);
+    }
+  }, [navigateStorySpotId, location.latitude, location.longitude, navigateToStorySpot]);
 
   return (
     <Container>

@@ -15,6 +15,7 @@ import Map from "@/components/map/Map";
 import SightDetailCard from "@/components/sight/SightDetailCard";
 
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
+import { useSightNavigation } from "@/hooks/sight/useSightNavigation";
 import { useLocation } from "@/hooks/useLocation";
 import { useSightMap } from "@/hooks/useSightMap";
 
@@ -64,6 +65,17 @@ export default function Index() {
   useEffect(() => {
     fetchCurations();
   }, [fetchCurations]);
+
+  const { navigateSightId, navigateToSight } = useSightNavigation({
+    mapRef,
+    location,
+  });
+
+  useEffect(() => {
+    if (navigateSightId && location) {
+      navigateToSight(navigateSightId);
+    }
+  }, [navigateSightId, location.latitude, location.longitude, navigateToSight]);
 
   const handleSearch = useCallback(async () => {
     if (!searchText.trim()) return;
