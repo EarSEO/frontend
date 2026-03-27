@@ -1,6 +1,6 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 
-import {View} from "react-native";
+import { View } from "react-native";
 
 import styled from "styled-components/native";
 
@@ -10,20 +10,20 @@ import OnTourButton from "@/components/myRoute/button/OnTourButton";
 import PreTourButton from "@/components/myRoute/button/PreTourButton";
 import MyRouteSightList from "@/components/myRoute/sight/MyRouteSightList";
 
-import {theme} from "@/styles/theme";
+import { theme } from "@/styles/theme";
 
-import {useBottomSheetStore} from "@/store/useBottomSheetStore";
-import {useMyRouteBottomSheetStore} from "@/store/useMyRouteBottomSheetStore";
-import {useRouteCartStore} from "@/store/useRouteCartStore";
+import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 
 const RouteBottomSheet = () => {
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
   const isOnTour = useMyRouteBottomSheetStore((state) => state.isOnTour);
   const isPreTour = useMyRouteBottomSheetStore((state) => state.isPreTour);
   const isPreTourDelete = useMyRouteBottomSheetStore(
-    (state) => state.isPreTourDelete,
+    (state) => state.isPreTourDelete
   );
-  const {setBottomSheetAbsoluteBottom} = useBottomSheetStore();
+  const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
 
   const title = isPreTour ? (
     <Title>나의 경로</Title>
@@ -55,7 +55,7 @@ const RouteBottomSheet = () => {
     setBottomSheetAbsoluteBottom(button);
     return () => {
       setBottomSheetAbsoluteBottom(undefined);
-    }
+    };
   }, [isPreTour, isPreTourDelete, isOnTour, routeCartItems]);
 
   return (
@@ -63,8 +63,8 @@ const RouteBottomSheet = () => {
       <View style={{ alignSelf: "center" }}>{title}</View>
       {content}
     </View>
-  )
-}
+  );
+};
 
 export default RouteBottomSheet;
 

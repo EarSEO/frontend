@@ -12,7 +12,6 @@ import API_ENDPOINTS from "@/constants/endpoints";
 import appleLoginApi from "@/api/auth/appleLoginApi";
 import socialSignupApi from "@/api/auth/socialSignupApi";
 import api from "@/api/axios";
-import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from "@/store/secureStoreKey";
 
 import {
   BaseResponse,
@@ -24,7 +23,8 @@ import {
   SocialLoginResponse,
   SocialSignUpRequest,
   User,
-} from "../types/auth";
+} from "../../types/auth";
+import { ACCESS_TOKEN, REFRESH_TOKEN, USER_INFO } from "./secureStoreKey";
 
 interface AuthState {
   user: User | null;
@@ -35,10 +35,13 @@ interface AuthState {
   signup: (userData: SignUpRequest) => Promise<SignUpResponse>;
   socialLogin: (
     provider: Provider,
-    authCode: string,
+    authCode: string
   ) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
-  appleLogin: (identityToken: string, fullName?: string) => Promise<SocialLoginResponse>;
+  appleLogin: (
+    identityToken: string,
+    fullName?: string
+  ) => Promise<SocialLoginResponse>;
   logout: () => Promise<void>;
   loadUser: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -58,7 +61,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       const response = await api.post<BaseResponse<LoginResponse>>(
         `${API_ENDPOINTS.AUTH.LOGIN}`,
-        credentials,
+        credentials
       );
       const { accessToken, refreshToken, memberId, email, nickname, role } =
         response.data.data;
@@ -97,7 +100,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
       const response = await api.post<SignUpResponse>(
         `${API_ENDPOINTS.AUTH.SIGNUP}`,
-        userData,
+        userData
       );
 
       set({ isLoading: false });
@@ -114,7 +117,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       const response = await api.post<SocialLoginResponse>(
         `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE}`,
-        { authCode },
+        { authCode }
       );
 
       const data = response.data;
@@ -186,7 +189,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  appleLogin: async (identityToken: string, fullName?: string): Promise<SocialLoginResponse> => {
+  appleLogin: async (
+    identityToken: string,
+    fullName?: string
+  ): Promise<SocialLoginResponse> => {
     try {
       set({ isLoading: true });
       const data = await appleLoginApi(identityToken, fullName);
@@ -270,7 +276,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
       const response = await api.put<BaseResponse<ProfileUpdateResponse>>(
         API_ENDPOINTS.MEMBER.EDIT_PROFILE,
-        data,
+        data
       );
 
       const updatedProfile = response.data.data;
@@ -330,7 +336,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
       await api.put<BaseResponse<void>>(
         API_ENDPOINTS.MEMBER.CHANGE_PASSWORD,
-        data,
+        data
       );
       set({ isLoading: false });
     } catch (error) {
@@ -344,7 +350,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: true });
 
       const response = await api.get<BaseResponse<ProfileUpdateResponse>>(
-        API_ENDPOINTS.MEMBER.GET_PROFILE,
+        API_ENDPOINTS.MEMBER.GET_PROFILE
       );
 
       const profile = response.data.data;

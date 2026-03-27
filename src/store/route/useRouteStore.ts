@@ -1,4 +1,4 @@
-import {LatLng} from "react-native-maps";
+import { LatLng } from "react-native-maps";
 
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
@@ -15,9 +15,10 @@ import {
   startGeofence,
   stopGeofence,
 } from "@/services/geofence/geofenceService";
-import { PROCEEDING_ROUTE_ID } from "@/store/secureStoreKey";
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+
+import { PROCEEDING_ROUTE_ID } from "../profile/secureStoreKey";
 
 interface RouteStore {
   path: LatLng[] | undefined;
@@ -57,7 +58,7 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
   routeItems: undefined,
 
   setRoute: async (
-    body: GetRouteRequest,
+    body: GetRouteRequest
   ): Promise<GetRouteResponse | undefined> => {
     try {
       const response: GetRouteResponse = await getRouteApi(body);
@@ -89,7 +90,7 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
           (routeItem.itemType === "SIGHT" && routeItem.visited === false) ||
           (routeItem.itemType === "STORY_SPOT" &&
             routeItem.visited === false &&
-            routeItem.isQueued),
+            routeItem.isQueued)
       ).length;
       absoluteFinish = remains === undefined || remains <= 1;
     }
@@ -103,7 +104,7 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     const { routeItems } = get();
     if (!routeItems) return undefined;
     const firstSightIdx = routeItems.findIndex(
-      (routeItem) => routeItem.itemType === "SIGHT",
+      (routeItem) => routeItem.itemType === "SIGHT"
     );
     let lastSightIdx = -1;
     for (let i = routeItems.length - 1; i >= 0; i--) {
@@ -125,7 +126,7 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     return routeItems.filter(
       (routeItem) =>
         routeItem.itemType === "SIGHT" ||
-        (routeItem.itemType === "STORY_SPOT" && routeItem.isQueued),
+        (routeItem.itemType === "STORY_SPOT" && routeItem.isQueued)
     ).length;
   },
   getQueuedItems: (): RouteItem[] => {
@@ -134,7 +135,7 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
     return routeItems.filter(
       (routeItem) =>
         routeItem.itemType === "SIGHT" ||
-        (routeItem.itemType === "STORY_SPOT" && routeItem.isQueued),
+        (routeItem.itemType === "STORY_SPOT" && routeItem.isQueued)
     );
   },
   enQueueStorySpot: (itemId: number): void => {
@@ -189,6 +190,6 @@ export const useRouteStore = create<RouteStore>((set, get) => ({
 
   pathVisibility: false,
   setPathVisibility: (pathVisibility: boolean): void => {
-    set({pathVisibility});
-  }
+    set({ pathVisibility });
+  },
 }));

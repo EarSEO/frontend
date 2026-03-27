@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 interface MoreMenuProps {
   visible: boolean;

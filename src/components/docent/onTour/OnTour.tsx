@@ -8,7 +8,7 @@ import GeoPlaySwitch from "@/components/docent/onTour/GeoPlaySwitch";
 
 import { theme } from "@/styles/theme";
 
-import { useRouteStore } from "@/store/useRouteStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 const OnTour: React.FC = () => {

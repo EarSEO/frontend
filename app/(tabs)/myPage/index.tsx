@@ -9,7 +9,7 @@ import BookmarkIcon from "@/assets/icons/bookmark-icon.svg";
 import LastTripIcon from "@/assets/icons/last-trip-icon.svg";
 import MyStoryIcon from "@/assets/icons/mystory-icon.svg";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 
 export default function MyPageIndex() {

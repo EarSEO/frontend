@@ -8,11 +8,11 @@ import { MapPinPlusIcon } from "lucide-react-native";
 
 import { theme } from "@/styles/theme";
 
-import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
-import { RouteCartItem } from "@/store/useRouteCartStore";
+import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetStore";
+import { RouteCartItem } from "@/store/route/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
 import View = Animated.View;
-import {useLocationStore} from "@/store/useLocationStore";
+import { useLocationStore } from "@/store/useLocationStore";
 
 interface MyRouteSightCellProps {
   routeCartItem: RouteCartItem;
@@ -21,17 +21,17 @@ interface MyRouteSightCellProps {
 const MyRouteSightCell: React.FC<MyRouteSightCellProps> = ({
   routeCartItem,
 }) => {
-  const location = useLocationStore(state => state.location);
+  const location = useLocationStore((state) => state.location);
   const distance = getDistance(
     { latitude: location.latitude, longitude: location.longitude },
     {
       latitude: routeCartItem.point.latitude,
       longitude: routeCartItem.point.longitude,
-    },
+    }
   );
   const { addDeleteList, removeDeleteList } = useMyRouteBottomSheetStore();
   const isPreTourDelete = useMyRouteBottomSheetStore(
-    (state) => state.isPreTourDelete,
+    (state) => state.isPreTourDelete
   );
   const deleteList = useMyRouteBottomSheetStore((state) => state.deleteList);
   const isChecked = deleteList.includes(routeCartItem.sightId);

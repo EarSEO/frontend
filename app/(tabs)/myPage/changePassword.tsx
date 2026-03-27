@@ -7,7 +7,7 @@ import Button from "@/components/common/Button";
 
 import { theme } from "@/styles/theme";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function ChangePassword() {
   const router = useRouter();
@@ -21,8 +21,10 @@ export default function ChangePassword() {
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [apiError, setApiError] = useState("");
   const isNewPasswordValid = newPassword.length >= 8;
-  const isPasswordMatch = newPassword === confirmPassword && confirmPassword.length > 0;
-  const isFormValid = currentPassword.length > 0 && isNewPasswordValid && isPasswordMatch;
+  const isPasswordMatch =
+    newPassword === confirmPassword && confirmPassword.length > 0;
+  const isFormValid =
+    currentPassword.length > 0 && isNewPasswordValid && isPasswordMatch;
 
   const handleChangePassword = async () => {
     // 에러 초기화
@@ -67,7 +69,8 @@ export default function ChangePassword() {
       setConfirmPassword("");
       router.back();
     } catch (error: any) {
-      const message = error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
+      const message =
+        error.response?.data?.message || "비밀번호 변경에 실패했습니다.";
       setApiError(message);
     }
   };
@@ -90,7 +93,9 @@ export default function ChangePassword() {
             placeholder="현재 비밀번호"
             placeholderTextColor={theme.colors.text.textTertiary}
           />
-          {currentPasswordError && <ErrorText>{currentPasswordError}</ErrorText>}
+          {currentPasswordError && (
+            <ErrorText>{currentPasswordError}</ErrorText>
+          )}
         </InputSection>
 
         <InputSection>
@@ -107,9 +112,11 @@ export default function ChangePassword() {
             placeholderTextColor={theme.colors.text.textTertiary}
           />
           {newPasswordError && <ErrorText>{newPasswordError}</ErrorText>}
-          {newPassword.length > 0 && newPassword.length < 8 && !newPasswordError && (
-            <ErrorText>비밀번호는 최소 8자 이상이어야 합니다.</ErrorText>
-          )}
+          {newPassword.length > 0 &&
+            newPassword.length < 8 &&
+            !newPasswordError && (
+              <ErrorText>비밀번호는 최소 8자 이상이어야 합니다.</ErrorText>
+            )}
         </InputSection>
 
         <InputSection>
@@ -125,10 +132,14 @@ export default function ChangePassword() {
             placeholder="새 비밀번호 확인"
             placeholderTextColor={theme.colors.text.textTertiary}
           />
-          {confirmPasswordError && <ErrorText>{confirmPasswordError}</ErrorText>}
-          {confirmPassword.length > 0 && !isPasswordMatch && !confirmPasswordError && (
-            <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
+          {confirmPasswordError && (
+            <ErrorText>{confirmPasswordError}</ErrorText>
           )}
+          {confirmPassword.length > 0 &&
+            !isPasswordMatch &&
+            !confirmPasswordError && (
+              <ErrorText>비밀번호가 일치하지 않습니다.</ErrorText>
+            )}
         </InputSection>
 
         {apiError && <ApiErrorText>{apiError}</ApiErrorText>}

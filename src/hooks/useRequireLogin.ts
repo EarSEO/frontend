@@ -2,7 +2,7 @@ import { Alert } from "react-native";
 
 import { useRouter } from "expo-router";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export const useRequireLogin = () => {
   const { user } = useAuthStore();

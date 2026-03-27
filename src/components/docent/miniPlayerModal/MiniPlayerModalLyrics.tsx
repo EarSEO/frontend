@@ -2,7 +2,7 @@ import { ScrollView, Text } from "react-native";
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
 
 const MiniPlayerModalLyrics: React.FC = () => {
   const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);

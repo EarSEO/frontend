@@ -12,9 +12,9 @@ import { RouteItemType } from "@/types/route";
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
-import { useMiniPlayerStore } from "@/store/useMiniPlayerStore";
-import { useRouteStore } from "@/store/useRouteStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
+import { useMiniPlayerStore } from "@/store/docent/useMiniPlayerStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 const MiniPlayerModalQueueList: React.FC = () => {
@@ -32,7 +32,7 @@ const MiniPlayerModalQueueList: React.FC = () => {
         router.push(`/story?id=${id}`); //TODO 이야기 라우팅 협의 필요
       }
     },
-    [router],
+    [router]
   );
   return (
     <ScrollView>

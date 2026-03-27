@@ -8,14 +8,14 @@ import styled from "styled-components/native";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 
+import { useAppleLogin } from "@/hooks/profile/useAppleLogin";
 import { useBookmark } from "@/hooks/sight/useBookmark";
-import { useAppleLogin } from "@/hooks/useAppleLogin";
 
 import { theme } from "@/styles/theme";
 import AppleLogo from "@/assets/icons/apple-logo.svg";
 import GoogleLogo from "@/assets/icons/google-logo.svg";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function Login() {
   const [email, setEmail] = useState("");

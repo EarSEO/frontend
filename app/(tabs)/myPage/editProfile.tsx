@@ -6,7 +6,7 @@ import styled from "styled-components/native";
 
 import Button from "@/components/common/Button";
 
-import { useEditProfile } from "@/hooks/useEditProfile";
+import { useEditProfile } from "@/hooks/profile/useEditProfile";
 
 import { theme } from "@/styles/theme";
 import { NATIONALITIES } from "@/constants/nationalities";

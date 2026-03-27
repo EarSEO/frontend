@@ -10,8 +10,8 @@ import { SightDetailInfo } from "@/types/sight";
 
 import getSightScriptApi from "@/api/sight/getSightDocentScriptApi";
 import getStoryScriptApi from "@/api/story/getStoryDocentScriptApi";
-import { useMiniPlayerStore } from "@/store/useMiniPlayerStore";
-import { RouteItem, useRouteStore } from "@/store/useRouteStore";
+import { useMiniPlayerStore } from "@/store/docent/useMiniPlayerStore";
+import { RouteItem, useRouteStore } from "@/store/route/useRouteStore";
 
 const globalPlayer = createAudioPlayer(null, {
   updateInterval: 100,
@@ -74,7 +74,7 @@ interface CustomAudioMetadata {
 }
 
 export const routeItemToCustomAudioMetadata = (
-  routeItem: RouteItem,
+  routeItem: RouteItem
 ): CustomAudioMetadata => {
   return {
     id:
@@ -91,7 +91,7 @@ export const routeItemToCustomAudioMetadata = (
 };
 
 export const sightToCustomAudioMetadata = (
-  sightDetailInfo: SightDetailInfo,
+  sightDetailInfo: SightDetailInfo
 ): CustomAudioMetadata => {
   return {
     id: "SIGHT" + "_" + sightDetailInfo.id,
@@ -203,11 +203,11 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
     let script = "";
     if (audioMetadata.routeItem.itemType === "SIGHT")
       script = await getSightScriptApi(audioMetadata.routeItem.itemId).then(
-        (docentScript) => docentScript.script,
+        (docentScript) => docentScript.script
       );
     else
       script = await getStoryScriptApi(audioMetadata.routeItem.itemId).then(
-        (docentScript) => docentScript.script,
+        (docentScript) => docentScript.script
       );
     set({
       audioMetadata: {
@@ -280,7 +280,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set, get) => ({
       {
         showSeekBackward: true,
         showSeekForward: true,
-      },
+      }
     );
   },
 }));

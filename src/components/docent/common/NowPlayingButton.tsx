@@ -10,8 +10,8 @@ import { theme } from "@/styles/theme";
 import {
   routeItemToCustomAudioMetadata,
   useAudioPlayerStore,
-} from "@/store/useAudioPlayerStore";
-import { RouteItem, useRouteStore } from "@/store/useRouteStore";
+} from "@/store/docent/useAudioPlayerStore";
+import { RouteItem, useRouteStore } from "@/store/route/useRouteStore";
 
 type ButtonIcon = "PAUSE" | "PLAY" | "MUSICAL_NOTES";
 export type PlayButtonPosition = "LIST" | "MINI_PLAYER";
@@ -62,7 +62,7 @@ const NowPlayingButton: React.FC<NowPlayingButtonProps> = ({
       resume,
       setAudioMetadata,
       routeItems,
-    ],
+    ]
   );
 
   if (!routeItems) return <></>;

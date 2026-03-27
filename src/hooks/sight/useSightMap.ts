@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 
-import {BoundingBox} from "react-native-maps";
+import { BoundingBox } from "react-native-maps";
 
 import {
   RectangleBoundsParams,
@@ -10,7 +10,7 @@ import {
 
 import { getSearchSight } from "@/api/sight/getSearchSight";
 import { getSightDetail, getSightsInRectangle } from "@/api/sight/getSight";
-import { useSightStore } from "@/store/useSightStore";
+import { useSightStore } from "@/store/sight/useSightStore";
 
 export const useSightMap = () => {
   const {
@@ -42,7 +42,11 @@ export const useSightMap = () => {
   const fetchSightsInBounds = useCallback(
     async (bounds: RectangleBoundsParams) => {
       try {
-        if(bounds.maxLongitude === bounds.minLongitude || bounds.maxLatitude === bounds.minLatitude) return;
+        if (
+          bounds.maxLongitude === bounds.minLongitude ||
+          bounds.maxLatitude === bounds.minLatitude
+        )
+          return;
         setLoading(true);
         setError(null);
         const result = await getSightsInRectangle(bounds);
@@ -57,14 +61,17 @@ export const useSightMap = () => {
     [setSights, setLoading, setError]
   );
 
-  const fetchSightInBoundingBox = useCallback((boundingBox: BoundingBox) => {
-    fetchSightsInBounds({
-      minLatitude: boundingBox.southWest.latitude,
-      minLongitude: boundingBox.southWest.longitude,
-      maxLatitude: boundingBox.northEast.latitude,
-      maxLongitude: boundingBox.northEast.longitude,
-    });
-  }, [fetchSightsInBounds]);
+  const fetchSightInBoundingBox = useCallback(
+    (boundingBox: BoundingBox) => {
+      fetchSightsInBounds({
+        minLatitude: boundingBox.southWest.latitude,
+        minLongitude: boundingBox.southWest.longitude,
+        maxLatitude: boundingBox.northEast.latitude,
+        maxLongitude: boundingBox.northEast.longitude,
+      });
+    },
+    [fetchSightsInBounds]
+  );
 
   // 디바운스 적용된 조회 (기존 코드 유지)
   const fetchSightsDebounced = useCallback(
@@ -99,13 +106,13 @@ export const useSightMap = () => {
 
         const params: SearchSightParams = {
           keyword,
-          longitude: currentLocation.longitude,
-          latitude: currentLocation.latitude,
-          minLongitude: bounds.minLongitude,
-          minLatitude: bounds.minLatitude,
-          maxLongitude: bounds.maxLongitude,
-          maxLatitude: bounds.maxLatitude,
-          limit: limit,
+          longitude: String(currentLocation.longitude),
+          latitude: String(currentLocation.latitude),
+          minLongitude: String(bounds.minLongitude),
+          minLatitude: String(bounds.minLatitude),
+          maxLongitude: String(bounds.maxLongitude),
+          maxLatitude: String(bounds.maxLatitude),
+          limit: String(limit),
         };
 
         const results = await getSearchSight(params);

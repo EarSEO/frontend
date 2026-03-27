@@ -11,7 +11,7 @@ import { Gender, Provider } from "@/types/auth";
 
 import { theme } from "@/styles/theme";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function SocialSignUp() {
   const router = useRouter();

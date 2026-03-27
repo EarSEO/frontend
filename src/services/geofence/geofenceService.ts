@@ -1,4 +1,4 @@
-import {APP_ENV_GEOFENCE_RADIUS} from '@env';
+import { APP_ENV_GEOFENCE_RADIUS } from "@env";
 import * as Location from "expo-location";
 import {
   LocationAccuracy,
@@ -16,11 +16,10 @@ import {
 
 import { GEOFENCE_TASK } from "@/constants/taskManagerTaskKeys";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
-import { useRouteStore } from "@/store/useRouteStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 
-const GEOFENCE_RADIUS =
-  Number(APP_ENV_GEOFENCE_RADIUS) ?? 100;
+const GEOFENCE_RADIUS = Number(APP_ENV_GEOFENCE_RADIUS) ?? 100;
 const GEOFENCE_LIMIT = 20;
 
 type GeofenceTaskData = {
@@ -43,7 +42,7 @@ export const geofenceTask = async ({
     const currentRouteItem = useRouteStore
       .getState()
       .routeItems?.filter(
-        (routeItem) => region.identifier === routeItemToGeofenceId(routeItem),
+        (routeItem) => region.identifier === routeItemToGeofenceId(routeItem)
       )
       .at(0);
     if (!currentRouteItem || currentRouteItem.visited) return;
@@ -66,7 +65,7 @@ export const geofenceTask = async ({
             (routeItem.itemType === "SIGHT" && routeItem.visited === false) ||
             (routeItem.itemType === "STORY_SPOT" &&
               routeItem.visited === false &&
-              routeItem.isQueued),
+              routeItem.isQueued)
         ).length;
       if (remains === undefined || remains <= 1) {
         // 모든 관광지, 방문 예정 스팟 방문 완료
@@ -93,7 +92,7 @@ export const startGeofence = async () => {
         (routeItem.itemType === "SIGHT" && routeItem.visited === false) ||
         (routeItem.itemType === "STORY_SPOT" &&
           routeItem.visited === false &&
-          routeItem.isQueued),
+          routeItem.isQueued)
     )
     .map((routeItem) => ({
       ...routeItem,

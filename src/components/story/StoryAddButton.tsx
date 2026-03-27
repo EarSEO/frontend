@@ -5,6 +5,8 @@ import styled from "styled-components/native";
 
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 
+import { useAuthStore } from "@/store/profile/useAuthStore";
+
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 
 export const StoryAddButton = () => {

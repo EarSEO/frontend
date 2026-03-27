@@ -15,16 +15,16 @@ import OnTourButton from "@/components/myRoute/button/OnTourButton";
 import PreTourButton from "@/components/myRoute/button/PreTourButton";
 import MyRouteSightList from "@/components/myRoute/sight/MyRouteSightList";
 
-import { useSightMap } from "@/hooks/useSightMap";
+import { useSightMap } from "@/hooks/sight/useSightMap";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
-import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
-import { useRouteStore } from "@/store/useRouteStore";
+import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 export default function MyRoute() {
@@ -37,7 +37,7 @@ export default function MyRoute() {
   const path = useRouteStore((state) => state.path);
   const routeItems = useRouteStore((state) => state.routeItems);
   const isPreTourDelete = useMyRouteBottomSheetStore(
-    (state) => state.isPreTourDelete,
+    (state) => state.isPreTourDelete
   );
 
   const { selectedSight, fetchSightsDebounced, fetchSightDetail } =

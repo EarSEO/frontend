@@ -5,7 +5,7 @@ import {
   getBookmarkInfo,
   getDeleteBookmark,
 } from "@/api/sight/getSightBookMark";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 
 export const useBookmark = () => {

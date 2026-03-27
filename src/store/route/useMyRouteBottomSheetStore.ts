@@ -1,10 +1,10 @@
-import {LatLng} from "react-native-maps";
+import { LatLng } from "react-native-maps";
 
 import * as Location from "expo-location";
 import { create } from "zustand";
 
-import { useRouteCartStore } from "@/store/useRouteCartStore";
-import { useRouteStore } from "@/store/useRouteStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 
 interface MyRouteBottomSheetStore {
   isPreTour: boolean;
@@ -81,5 +81,5 @@ export const useMyRouteBottomSheetStore = create<MyRouteBottomSheetStore>(
         deleteList: [],
       });
     },
-  }),
+  })
 );

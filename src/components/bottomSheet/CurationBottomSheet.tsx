@@ -1,19 +1,19 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 
 import Button from "@/components/common/Button";
 import CurationDetail from "@/components/curation/CurationDetail";
 import CurationList from "@/components/curation/CurationList";
 
-import {useCurationDetail} from "@/hooks/sight/useCurationDetail";
-import {useSightMap} from "@/hooks/useSightMap";
+import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
+import { useSightMap } from "@/hooks/sight/useSightMap";
 
-import {theme} from "@/styles/theme";
+import { theme } from "@/styles/theme";
 
-import {useBottomSheetStore} from "@/store/useBottomSheetStore";
+import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 
 const CurationBottomSheet = () => {
-  const {fetchSightDetail} = useSightMap();
-  const {setBottomSheetAbsoluteBottom} = useBottomSheetStore();
+  const { fetchSightDetail } = useSightMap();
+  const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
 
   const {
     curations,
@@ -47,7 +47,7 @@ const CurationBottomSheet = () => {
     setBottomSheetAbsoluteBottom(button);
     return () => {
       setBottomSheetAbsoluteBottom(undefined);
-    }
+    };
   }, [curationSightList]);
 
   return (

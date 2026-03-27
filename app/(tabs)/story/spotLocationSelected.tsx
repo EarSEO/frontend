@@ -14,18 +14,18 @@ import StorySpotMap from "@/components/map/StorySpotMap";
 import SpotLocationAdd from "@/components/storyAdd/SpotLocationAdd";
 import SpotNameAdd from "@/components/storyAdd/SpotNameAdd";
 
+import { useSightMap } from "@/hooks/sight/useSightMap";
 import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
-import { useSightMap } from "@/hooks/useSightMap";
 
 import { theme } from "@/styles/theme";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
+import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useAuthStore } from "@/store/useAuthStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
-import {useLocationStore} from "@/store/useLocationStore";
+import { useLocationStore } from "@/store/useLocationStore";
 
 export default function SpotLocationSelected() {
   const { spotLocationInMap, mainStoryMapRequest } = useStoryStore();
@@ -60,7 +60,7 @@ export default function SpotLocationSelected() {
   } = useHeaderButtonStore();
 
   const { isLogined } = useAuthStore();
-  const location = useLocationStore(state => state.location);
+  const location = useLocationStore((state) => state.location);
   const { sights, selectedSight } = useSightMap();
 
   const Ref = useRef<any>(null);

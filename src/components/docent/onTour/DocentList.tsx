@@ -10,7 +10,7 @@ import StorySpotDocentCell from "@/components/docent/onTour/StorySpotDocentCell"
 
 import { RouteItemType } from "@/types/route";
 
-import { useRouteStore } from "@/store/useRouteStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 
 const DocentList: React.FC = () => {
   const { routeItems } = useRouteStore();
@@ -23,7 +23,7 @@ const DocentList: React.FC = () => {
         router.push(`/story?id=${id}`); //TODO 이야기 라우팅 협의 필요
       }
     },
-    [router],
+    [router]
   );
   return (
     <ScrollView>

@@ -4,7 +4,7 @@ import SightDocentBriefInfo from "@/components/docent/common/SightDocentBriefInf
 
 import { theme } from "@/styles/theme";
 
-import { RouteItem } from "@/store/useRouteStore";
+import { RouteItem } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 export interface MiniPlayerModalDocentCellProps {

@@ -16,8 +16,8 @@ import { CreateStoryRequest } from "@/types/storySpot";
 import { theme } from "@/styles/theme";
 
 import { getcreateStory } from "@/api/story/getStoryAddApi";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
-import { useAuthStore } from "@/store/useAuthStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
 type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";

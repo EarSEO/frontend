@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
 
 interface MiniPlayerStore {
   enableLyrics: boolean;

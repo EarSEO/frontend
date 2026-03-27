@@ -2,7 +2,7 @@ import { Animated, Switch, Text } from "react-native";
 
 import { theme } from "@/styles/theme";
 import View = Animated.View;
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
 
 const GeoPlaySwitch: React.FC = () => {
   const geoPlay = useAudioPlayerStore((state) => state.geoPlay);

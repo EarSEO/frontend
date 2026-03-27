@@ -15,7 +15,7 @@ import { theme } from "@/styles/theme";
 import API_ENDPOINTS from "@/constants/endpoints";
 
 import api from "@/api/axios";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function SignUp() {
   const [step, setStep] = useState(1);

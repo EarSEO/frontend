@@ -5,7 +5,7 @@ import { MessageSquareHeart } from "lucide-react-native";
 
 import { theme } from "@/styles/theme";
 
-import { useRouteStore } from "@/store/useRouteStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 export interface QueueStorySpotButtonProps {

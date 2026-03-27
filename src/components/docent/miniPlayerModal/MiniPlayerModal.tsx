@@ -10,7 +10,7 @@ import MiniPlayerTitle from "@/components/docent/miniPlayerModal/MiniPlayerTitle
 
 import { theme } from "@/styles/theme";
 
-import { useMiniPlayerStore } from "@/store/useMiniPlayerStore";
+import { useMiniPlayerStore } from "@/store/docent/useMiniPlayerStore";
 
 const MiniPlayerModal: React.FC = () => {
   const { enableLyrics, enableModal, closeModal } = useMiniPlayerStore();
@@ -19,7 +19,7 @@ const MiniPlayerModal: React.FC = () => {
       e.stopPropagation();
       closeModal();
     },
-    [closeModal],
+    [closeModal]
   );
   return (
     <Modal

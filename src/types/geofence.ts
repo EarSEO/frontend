@@ -1,6 +1,6 @@
-import {LatLng} from "react-native-maps";
+import { LatLng } from "react-native-maps";
 
-import { RouteItem } from "@/store/useRouteStore";
+import { RouteItem } from "@/store/route/useRouteStore";
 
 export type GeofenceType = "RouteItem";
 

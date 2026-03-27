@@ -15,10 +15,16 @@ import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
+import {
+  sightToCustomAudioMetadata,
+  useAudioPlayerStore,
+} from "@/store/docent/useAudioPlayerStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { distanceToString } from "@/util/locationUtil";
+import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
@@ -48,6 +54,10 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     setShowCloseButton,
     setOnClosePress,
   } = useHeaderButtonStore();
+  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
+  const setTemporarySightInfo = useAudioPlayerStore(
+    (state) => state.setTemporarySightInfo
+  );
 
   const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
   const handleTabPress = (tab: TabType) => {

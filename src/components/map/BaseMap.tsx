@@ -1,103 +1,136 @@
-import React, {useCallback, useEffect} from "react";
+import React, { useCallback, useEffect } from "react";
 
-import {Dimensions, StyleSheet, TouchableOpacity, View} from "react-native";
-import {LayoutChangeEvent} from "react-native/Libraries/Types/CoreEventTypes";
-import {MapPressEvent, Marker, MarkerPressEvent, Polyline, PROVIDER_DEFAULT, Region} from "react-native-maps";
-import type {PanDragEvent} from "react-native-maps/dist/src/MapView.types";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { LayoutChangeEvent } from "react-native/Libraries/Types/CoreEventTypes";
+import {
+  MapPressEvent,
+  Marker,
+  MarkerPressEvent,
+  Polyline,
+  PROVIDER_DEFAULT,
+  Region,
+} from "react-native-maps";
+import type { PanDragEvent } from "react-native-maps/dist/src/MapView.types";
 import Animated, {
   SharedValue,
   useAnimatedProps,
   useAnimatedStyle,
 } from "react-native-reanimated";
 
-import {Locate, LocateFixed} from "lucide-react-native";
+import { Locate, LocateFixed } from "lucide-react-native";
 import styled from "styled-components/native";
 
 import ClusterMapView from "@/components/map/clustering/ClusteredMapView";
 
-import {useStorySpotMap} from "@/hooks/story/useStorySpotMap";
-import {useBaseMap} from "@/hooks/useBaseMap";
-import {useSightMap} from "@/hooks/useSightMap";
+import { useSightMap } from "@/hooks/sight/useSightMap";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
+import { useBaseMap } from "@/hooks/useBaseMap";
 
-import {theme} from "@/styles/theme";
+import { theme } from "@/styles/theme";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
-import {useStoryStore} from "@/store/story/useStoryStore";
-import {useBaseMapStore} from "@/store/useBaseMapStore";
-import {useLocationStore} from "@/store/useLocationStore";
-import {useRouteStore} from "@/store/useRouteStore";
-import {useSightStore} from "@/store/useSightStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
+import { useSightStore } from "@/store/sight/useSightStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
+import { useBaseMapStore } from "@/store/useBaseMapStore";
+import { useLocationStore } from "@/store/useLocationStore";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
 const CENTER_PIN_HEIGHT = 45;
 const CENTER_PIN_WIDTH = 45;
 const CENTER_PIN_SHADOW_HEIGHT = 9;
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 
-const AnimatedClusterMapView = React.memo(Animated.createAnimatedComponent(ClusterMapView));
-const AnimatedTouchable = React.memo(Animated.createAnimatedComponent(TouchableOpacity));
+const AnimatedClusterMapView = React.memo(
+  Animated.createAnimatedComponent(ClusterMapView)
+);
+const AnimatedTouchable = React.memo(
+  Animated.createAnimatedComponent(TouchableOpacity)
+);
 
 interface BaseMapProps {
   initialRegion?: Region;
   bottomSheetPosition: SharedValue<number>;
 }
 
-const BaseMap: React.FC<BaseMapProps> = ({initialRegion, bottomSheetPosition}) => {
-  const location = useLocationStore(state => state.location);
-  const {setCameraFollow, onPressLocateButton, onRegionChange, onRegionChangeCompleteWithRegion, fitToPoints, initBaseMapBottomSheetCallbacks, onRegionChangeCompleteWithBoundingBox} = useBaseMap();
-  const {setIsMapFollowingUser, setCenterPinPoint} = useBaseMapStore();
-  const mapRef = useBaseMapStore(state => state.mapRef);
+const BaseMap: React.FC<BaseMapProps> = ({
+  initialRegion,
+  bottomSheetPosition,
+}) => {
+  const location = useLocationStore((state) => state.location);
+  const {
+    setCameraFollow,
+    onPressLocateButton,
+    onRegionChange,
+    onRegionChangeCompleteWithRegion,
+    fitToPoints,
+    initBaseMapBottomSheetCallbacks,
+    onRegionChangeCompleteWithBoundingBox,
+  } = useBaseMap();
+  const { setIsMapFollowingUser, setCenterPinPoint } = useBaseMapStore();
+  const mapRef = useBaseMapStore((state) => state.mapRef);
   const enableCluster = useBaseMapStore((state) => state.enableCluster);
   const mapMovable = useBaseMapStore((state) => state.mapMovable);
-  const isMapFollowingUser = useBaseMapStore((state) => state.isMapFollowingUser);
-  const locationButtonVisible = useBaseMapStore((state) => state.locationButtonVisible);
+  const isMapFollowingUser = useBaseMapStore(
+    (state) => state.isMapFollowingUser
+  );
+  const locationButtonVisible = useBaseMapStore(
+    (state) => state.locationButtonVisible
+  );
   const mapComponent = useBaseMapStore((state) => state.mapComponent);
-  const centerPinVisibility = useBaseMapStore((state) => state.centerPinVisibility);
+  const centerPinVisibility = useBaseMapStore(
+    (state) => state.centerPinVisibility
+  );
 
-  const {fetchSightDetail} = useSightMap();
-  const {selectSight} = useSightStore();
-  const selectedSight = useSightStore(state => state.selectedSight);
-  const sights = useSightStore(state => state.sights);
+  const { fetchSightDetail } = useSightMap();
+  const { selectSight } = useSightStore();
+  const selectedSight = useSightStore((state) => state.selectedSight);
+  const sights = useSightStore((state) => state.sights);
 
-  const {handleStoryMarkerPress} = useStorySpotMap();
-  const selectedStorySpot = useStoryStore(state => state.selectedStorySpot);
-  const spotLocationInMap = useStoryStore(state => state.spotLocationInMap);
+  const { handleStoryMarkerPress } = useStorySpotMap();
+  const selectedStorySpot = useStoryStore((state) => state.selectedStorySpot);
+  const spotLocationInMap = useStoryStore((state) => state.spotLocationInMap);
 
-  const routeItems = useRouteStore(state => state.routeItems);
-  const path = useRouteStore(state => state.path);
-  const pathVisibility = useRouteStore(state => state.pathVisibility);
+  const routeItems = useRouteStore((state) => state.routeItems);
+  const path = useRouteStore((state) => state.path);
+  const pathVisibility = useRouteStore((state) => state.pathVisibility);
 
   const buttonAnimatedStyle = useAnimatedStyle(() => {
     if (!bottomSheetPosition) {
-      return {bottom: LOCATION_BUTTON_MARGIN};
+      return { bottom: LOCATION_BUTTON_MARGIN };
     }
 
-    const translateY = bottomSheetPosition.value - (LOCATION_BUTTON_SIZE + LOCATION_BUTTON_MARGIN);
-    return {top: 0, transform: [{translateY}]};
+    const translateY =
+      bottomSheetPosition.value -
+      (LOCATION_BUTTON_SIZE + LOCATION_BUTTON_MARGIN);
+    return { top: 0, transform: [{ translateY }] };
   });
 
   const animatedProps = useAnimatedProps(() => ({
     mapPadding: {
       // top: 50, // 검색바
       bottom: SCREEN_HEIGHT - ((bottomSheetPosition?.value ?? 0) + 70), // 바텀시트 + 네비게이션바
-    }
+    },
   }));
 
   const pinAnimatedStyle = useAnimatedStyle(() => {
     const visibleMapHeight = bottomSheetPosition.value;
     const centerY = visibleMapHeight / 2;
     return {
-      top: centerY - CENTER_PIN_HEIGHT/2 + CENTER_PIN_SHADOW_HEIGHT,
+      top: centerY - CENTER_PIN_HEIGHT / 2 + CENTER_PIN_SHADOW_HEIGHT,
     };
   });
 
-  const handleCenterPinLayout = useCallback(async (event: LayoutChangeEvent) => {
-    const { x, y, width, height } = event.nativeEvent.layout;
-    const centerX = x + width / 2;
-    const centerPoint = y + CENTER_PIN_HEIGHT - CENTER_PIN_SHADOW_HEIGHT;
-    setCenterPinPoint({x: centerX, y: centerPoint});
-  }, []);
+  const handleCenterPinLayout = useCallback(
+    async (event: LayoutChangeEvent) => {
+      const { x, y, width, height } = event.nativeEvent.layout;
+      const centerX = x + width / 2;
+      const centerPoint = y + CENTER_PIN_HEIGHT - CENTER_PIN_SHADOW_HEIGHT;
+      setCenterPinPoint({ x: centerX, y: centerPoint });
+    },
+    []
+  );
 
   useEffect(() => {
     // 화면 로드 후 사용자 위치로 이동
@@ -120,11 +153,17 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion, bottomSheetPosition}) =
         mapRef={mapRef}
         style={[StyleSheet.absoluteFill]}
         provider={PROVIDER_DEFAULT}
-        initialRegion={initialRegion || {...location, latitudeDelta: 0.01, longitudeDelta: 0.01}}
+        initialRegion={
+          initialRegion || {
+            ...location,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }
+        }
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={false}
-        pointsOfInterestFilter={['airport', 'publicTransport']} // POI 공항, 대중교통만 활성화
+        pointsOfInterestFilter={["airport", "publicTransport"]} // POI 공항, 대중교통만 활성화
         scrollEnabled={mapMovable}
         zoomEnabled={mapMovable}
         rotateEnabled={false}
@@ -171,21 +210,20 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion, bottomSheetPosition}) =
               lineJoin="round"
               geodesic={true}
             />
-            {
-              routeItems?.map((sight) => (
-                <Marker
-                  key={sight.itemId}
-                  coordinate={{
-                    latitude: sight.point.latitude,
-                    longitude: sight.point.longitude,
-                  }}
-                  title={sight.itemName}
-                  pinColor={theme.colors.main.primary}
-                />
-              ))}
+            {routeItems?.map((sight) => (
+              <Marker
+                key={sight.itemId}
+                coordinate={{
+                  latitude: sight.point.latitude,
+                  longitude: sight.point.longitude,
+                }}
+                title={sight.itemName}
+                pinColor={theme.colors.main.primary}
+              />
+            ))}
           </>
         )}
-        {sights.map((sight) =>
+        {sights.map((sight) => (
           <Marker
             key={sight.id}
             coordinate={{
@@ -202,13 +240,13 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion, bottomSheetPosition}) =
               fetchSightDetail(sight, {
                 longitude: location.longitude,
                 latitude: location.latitude,
-              })
+              });
               selectSight(sight);
             }}
             onDeselect={() => selectSight(null)}
           />
-        )}
-        {spotLocationInMap?.map((spotInfo) =>
+        ))}
+        {spotLocationInMap?.map((spotInfo) => (
           <Marker
             key={spotInfo.storySpotId}
             coordinate={{
@@ -225,32 +263,34 @@ const BaseMap: React.FC<BaseMapProps> = ({initialRegion, bottomSheetPosition}) =
               handleStoryMarkerPress?.(spotInfo);
             }}
           />
-        )}
+        ))}
       </AnimatedClusterMapView>
-      {
-        centerPinVisibility &&
-          <AnimatedCenterPin
-            style={pinAnimatedStyle}
-            onLayout={handleCenterPinLayout}
-          >
-            <MapPin width={CENTER_PIN_WIDTH} height={CENTER_PIN_HEIGHT} />
-          </AnimatedCenterPin>
-      }
+      {centerPinVisibility && (
+        <AnimatedCenterPin
+          style={pinAnimatedStyle}
+          onLayout={handleCenterPinLayout}
+        >
+          <MapPin width={CENTER_PIN_WIDTH} height={CENTER_PIN_HEIGHT} />
+        </AnimatedCenterPin>
+      )}
       <AnimatedTouchable
-        style={[styles.locationButton, buttonAnimatedStyle, {display: locationButtonVisible ? 'flex' : 'none'}]}
+        style={[
+          styles.locationButton,
+          buttonAnimatedStyle,
+          { display: locationButtonVisible ? "flex" : "none" },
+        ]}
         onPress={onPressLocateButton}
         activeOpacity={0.7}
       >
-        {
-          isMapFollowingUser ?
-            <LocateFixed size={24} color={theme.colors.main.primary400}/>
-            :
-            <Locate size={24} color={theme.colors.grey.neutral600}/>
-        }
+        {isMapFollowingUser ? (
+          <LocateFixed size={24} color={theme.colors.main.primary400} />
+        ) : (
+          <Locate size={24} color={theme.colors.grey.neutral600} />
+        )}
       </AnimatedTouchable>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   locationButton: {
@@ -263,7 +303,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
     zIndex: 5,

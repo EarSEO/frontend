@@ -15,15 +15,18 @@ import Map from "@/components/map/Map";
 import SightDetailCard from "@/components/sight/SightDetailCard";
 
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
-import { useSightMap } from "@/hooks/useSightMap";
+import { useSightMap } from "@/hooks/sight/useSightMap";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
+import {
+  RouteCartItem,
+  useRouteCartStore,
+} from "@/store/route/useRouteCartStore";
 import { useLocationStore } from "@/store/useLocationStore";
-import { RouteCartItem, useRouteCartStore } from "@/store/useRouteCartStore";
 
 export default function Index() {
   const bottomSheetRef = useRef<any>(null);

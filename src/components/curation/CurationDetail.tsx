@@ -12,9 +12,9 @@ import { CurationSightList, SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 import { useLocationStore } from "@/store/useLocationStore";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
 
 import HeaderButton from "../common/HeaderButton";
 import SightCard from "../common/SightCard";

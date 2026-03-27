@@ -1,6 +1,6 @@
 import Button from "@/components/common/Button";
 
-import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
+import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetStore";
 
 const OnTourButton: React.FC = () => {
   const { setPreTour } = useMyRouteBottomSheetStore();

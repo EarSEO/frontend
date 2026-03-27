@@ -10,7 +10,7 @@ import { useMyStory } from "@/hooks/story/useMyStory";
 import { theme } from "@/styles/theme";
 import { DEFAULT_IMAGE_URL } from "@/assets/images/defaultImage";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 import Heart from "./Heart";
 import MoreMenuButton from "./MoreMenuButton";

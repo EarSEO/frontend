@@ -4,7 +4,7 @@ import { Animated } from "react-native";
 
 import MyRouteSightCell from "@/components/myRoute/sight/MyRouteSightCell";
 
-import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 import View = Animated.View;
 
 const MyRouteSightList: React.FC = () => {
