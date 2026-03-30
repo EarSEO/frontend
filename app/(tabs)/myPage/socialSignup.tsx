@@ -62,9 +62,11 @@ export default function SocialSignUp() {
                 },
               ]);
             } catch (error: any) {
-              const message =
-                error.response?.data?.message || "회원가입에 실패했습니다.";
-              Alert.alert("오류", message);
+              const status = error.response?.status || "no status";
+              const data = JSON.stringify(error.response?.data || {});
+              const paramInfo = JSON.stringify(params);
+              const message = `status: ${status}\ndata: ${data}\nparams: ${paramInfo}`;
+              Alert.alert("디버그", message);
             } finally {
               setIsLoading(false);
             }

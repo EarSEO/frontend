@@ -62,6 +62,7 @@ api.interceptors.response.use(
     const NO_AUTH_URLS = [
       API_ENDPOINTS.AUTH.SOCIAL_LOGIN_APPLE,
       // API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE,
+      API_ENDPOINTS.AUTH.SOCIAL_SIGNUP,
     ];
     const requestUrl = originalRequest.url || "";
     const isNoAuthRequest = NO_AUTH_URLS.some(url => requestUrl.includes(url));

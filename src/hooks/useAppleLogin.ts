@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Platform } from "react-native";
+import { Alert, Platform } from "react-native";
 
 import * as AppleAuthentication from "expo-apple-authentication";
 import { useRouter } from "expo-router";
@@ -44,6 +44,7 @@ export const useAppleLogin = () => {
                 const response = await appleLogin(credential.identityToken, fullName || undefined);
 
                 if (response.isNewMember) {
+                    Alert.alert("디버그", JSON.stringify(response));
                     router.push({
                         pathname: "/myPage/socialSignup",
                         params: {
