@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { Alert } from "react-native";
-
 import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from "@env";
 import * as Google from "expo-auth-session/providers/google";
 import { useRouter } from "expo-router";
@@ -28,11 +26,7 @@ export const useGoogleLogin = () => {
             const idToken = response.params.id_token;
             if (idToken) {
                 handleLoginWithToken(idToken);
-            } else {
-                Alert.alert("디버그", "id_token이 없음: " + JSON.stringify(response.params));
             }
-        } else if (response) {
-            Alert.alert("디버그", "response type: " + response.type);
         }
     }, [response]);
 
@@ -57,9 +51,6 @@ export const useGoogleLogin = () => {
                 router.back();
             }
         } catch (error: any) {
-            const status = error.response?.status || "no status";
-            const data = JSON.stringify(error.response?.data || {});
-            Alert.alert("디버그 Google", `status: ${status}\ndata: ${data}`);
             setError("Google 로그인에 실패했습니다.");
             console.error("Google login error:", error);
         } finally {
