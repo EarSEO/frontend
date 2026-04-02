@@ -59,4 +59,5 @@ jobs:
           APP_ENV_GEOFENCE_RADIUS: ${{ secrets.GEOFENCE_RADIUS || '100' }}
           GOOGLE_WEB_CLIENT_ID: ${{ secrets.GOOGLE_WEB_CLIENT_ID }}
           GOOGLE_IOS_CLIENT_ID: ${{ secrets.GOOGLE_IOS_CLIENT_ID }}
+
         run: npx eas update --channel production --platform android --message "${{ github.event.inputs.message }}"
