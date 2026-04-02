@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { GOOGLE_WEB_CLIENT_ID } from "@env";
-import * as AuthSession from "expo-auth-session";
+import { GOOGLE_IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from "@env";
 import * as Google from "expo-auth-session/providers/google";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -16,15 +15,10 @@ export const useGoogleLogin = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const redirectUri = AuthSession.makeRedirectUri({
-        scheme: "earseo",
-    });
-
     const [request, response, promptAsync] = Google.useAuthRequest({
         clientId: GOOGLE_WEB_CLIENT_ID,
-        redirectUri,
+        iosClientId: GOOGLE_IOS_CLIENT_ID,
         scopes: ["openid", "profile", "email"],
-        responseType: "id_token",
     });
 
     useEffect(() => {
