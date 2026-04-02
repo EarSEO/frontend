@@ -1,4 +1,4 @@
-import {APP_ENV_API_BASE_URL} from '@env'
+import { APP_ENV_API_BASE_URL } from '@env'
 import axios, {
   AxiosError,
   AxiosInstance,
@@ -50,14 +50,24 @@ api.interceptors.request.use(
   },
 );
 
-// 응답 인턴셉터
+// 응답 인터셉터
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    // 인증 불필요 API는 refresh 시도하지 않음
+    const NO_AUTH_URLS = [
+      API_ENDPOINTS.AUTH.SOCIAL_LOGIN_APPLE,
+      // API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE,
+      API_ENDPOINTS.AUTH.SOCIAL_SIGNUP,
+    ];
+    const requestUrl = originalRequest.url || "";
+    const isNoAuthRequest = NO_AUTH_URLS.some(url => requestUrl.includes(url));
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isNoAuthRequest) {
       if (isRefreshing) {
         return new Promise((resolve) => {
           addRefreshSubscriber((token: string) => {
