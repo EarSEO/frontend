@@ -17,7 +17,7 @@ import { theme } from "@/styles/theme";
 import {
   sightToCustomAudioMetadata,
   useAudioPlayerStore,
-} from "@/store/useAudioPlayerStore";
+} from "@/store/docent/useAudioPlayerStore";
 import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 import Divider from "../story/Divider";

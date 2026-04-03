@@ -88,9 +88,10 @@ const BaseMap: React.FC<BaseMapProps> = ({
   const selectedSight = useSightStore((state) => state.selectedSight);
   const sights = useSightStore((state) => state.sights);
 
-  const { handleStoryMarkerPress } = useStorySpotMap();
-  const selectedStorySpot = useStoryStore((state) => state.selectedStorySpot);
-  const spotLocationInMap = useStoryStore((state) => state.spotLocationInMap);
+  const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
+  const spotLists = useStoryStore((state) => state.spotLists);
+  const { selectedStorySpot } = useStoryStore();
+  const { fetchSpotDetail } = useStorySpotMap();
 
   const routeItems = useRouteStore((state) => state.routeItems);
   const path = useRouteStore((state) => state.path);
@@ -191,6 +192,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
         onPress={(e: MapPressEvent) => {
           e.stopPropagation();
           selectSight(null);
+          selectedStorySpot([]);
         }}
         followsUserLocation={isMapFollowingUser}
         spiderLineColor={"#00000000"}
@@ -238,29 +240,29 @@ const BaseMap: React.FC<BaseMapProps> = ({
             onPress={(e: MarkerPressEvent) => {
               e.stopPropagation();
               fetchSightDetail(sight, {
-                longitude: location.longitude,
-                latitude: location.latitude,
+                longitude: sight.longitude,
+                latitude: sight.latitude,
               });
               selectSight(sight);
             }}
             onDeselect={() => selectSight(null)}
           />
         ))}
-        {spotLocationInMap?.map((spotInfo) => (
+        {spotLists?.map((spots) => (
           <Marker
-            key={spotInfo.storySpotId}
+            key={spots.storySpotId}
             coordinate={{
-              latitude: spotInfo.latitude,
-              longitude: spotInfo.longitude,
+              latitude: spots.latitude,
+              longitude: spots.longitude,
             }}
             pinColor={
-              selectedStorySpot?.storySpotId === spotInfo.storySpotId
+              briefSpotInfo?.storySpotId === spots.storySpotId
                 ? "#FF6B6B"
                 : theme.colors.main.primary
             }
             onPress={(e) => {
               e.stopPropagation();
-              handleStoryMarkerPress?.(spotInfo);
+              fetchSpotDetail(spots);
             }}
           />
         ))}

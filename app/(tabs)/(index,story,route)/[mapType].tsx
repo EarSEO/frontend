@@ -36,7 +36,7 @@ function MapTabScreen() {
   const { onRegionChangeCompleteWithBoundingBox } = useBaseMap();
   const { fetchSightInBoundingBox } = useSightMap();
   const { fetchStorySpotInBoundingBox } = useStorySpotMap();
-  const { resetSpotLocationInMap } = useStoryStore();
+  const { selectedStorySpot, setSpotListInMap } = useStoryStore();
   const { setSights } = useSightStore();
   const { setPathVisibility } = useRouteStore();
   const { onStoryAdd } = useStoryAddStore();
@@ -60,9 +60,9 @@ function MapTabScreen() {
       setSnapPoints(["45%", "75%"]);
       setTimeout(() => bottomSheetRef.current?.snapToIndex(0), 200);
       setSights([]);
-      resetSpotLocationInMap();
       setEnableCluster(false);
       setPathVisibility(true);
+      setSpotListInMap([]);
       setBottomSheetContent(<RouteBottomSheet />);
     } else if (mapType === "sight") {
       //TODO 관광지 지도용 요소 추가
@@ -107,8 +107,8 @@ function MapTabScreen() {
       setRegionChangeCompleteMethod(undefined);
       setPathVisibility(false);
       setSights([]);
-      resetSpotLocationInMap();
       setBottomSheetContent(undefined);
+      selectedStorySpot([]);
     };
   }, [mapType, onStoryAdd]);
 

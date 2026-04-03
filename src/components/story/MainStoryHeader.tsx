@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import styled from "styled-components/native";
 
 import { useStoryStore } from "@/store/story/useStoryStore";
@@ -6,7 +8,7 @@ import Divider from "./Divider";
 import StoryCard from "./StoryCard";
 
 const MainStoryHeader = () => {
-  const { storyListInMap } = useStoryStore();
+  const { storyLists } = useStoryStore();
 
   return (
     <HeaderContainer>
@@ -16,7 +18,7 @@ const MainStoryHeader = () => {
       </HeaderWrapper>
       <Divider />
       <ContentWrapper>
-        {storyListInMap?.map((mapStory, index) => (
+        {storyLists?.map((mapStory, index) => (
           <StoryCard
             key={`${mapStory.createdAt}-${index}`}
             storyId={mapStory.storyAuthor?.storyAuthorId}

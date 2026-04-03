@@ -1,164 +1,112 @@
 import { create } from "zustand";
 
 import {
-  GetLocationSpotBriefInfoResponse,
-  GetMapStoriesRequest,
-  GetMapStoryResponse,
+  BriefSpotInfo,
   GetSearchTitleRequest,
-  GetSpotBriefInfoRequest,
-  GetSpotTotalInfoResponse,
-  GetStoryRequest,
-  MapSpotInfoItem,
-  MapSpotInfoList,
   SearchSpotInfoResponse,
-  SpotInfoResponse,
-  SpotTitleListResponse,
-  StoryInfoResponse,
-  StoryItem,
+  SpotInfo,
+  SpotsItemInMap,
+  SpotTitleList,
+  StoryItems,
+  StoryListItem,
   storySpots,
-  StorySummaryResponse,
+  StorySummary,
 } from "@/types/storySpot";
 
-import {
-  getSearchStory,
-  getStoryInfo,
-  getStoryListInMap,
-  getStorySpotBriefInfo,
-  getStorySpotListInMap,
-} from "@/api/getStoryApi";
+import { getSearchStory } from "@/api/getStoryApi";
 
 interface StoryStore {
-  storyItems?: StoryItem[];
-  briefSpotInfo?: SpotInfoResponse;
-  mainStoryMapRequest?: GetMapStoriesRequest;
-  spotTitleList?: SpotTitleListResponse;
-  distance?: number;
-  summaries?: StorySummaryResponse[];
-  storyListInMap?: StoryInfoResponse[];
-  storySpotBriefInfo?: GetLocationSpotBriefInfoResponse;
-  newSpotLocation?: GetSpotBriefInfoRequest[];
-  searchedStoryInfo?: storySpots[];
-  spotLocationInMap?: MapSpotInfoItem[];
-  selectedStorySpot?: MapSpotInfoItem | undefined;
   isLoading: boolean;
-  loading: boolean;
+
+  setSpotListInMap: (spotLists: SpotsItemInMap[]) => void;
+  spotLists: SpotsItemInMap[];
+
+  setStoryListInMap: (storyLists: StoryListItem[]) => void;
+  storyLists: StoryListItem[];
+
+  selectedStorySpot: (selectedSpotStoryInfo: SpotInfo[]) => void;
 
   setSearchStory: (
     param: GetSearchTitleRequest
   ) => Promise<SearchSpotInfoResponse | undefined>;
-  resetSearchStory: () => void;
+  selectedSpotStoryInfo: SpotInfo[];
+  searchedStoryInfo?: storySpots[];
 
-  setStoryInfo: (
-    param: GetStoryRequest
-  ) => Promise<GetSpotTotalInfoResponse | undefined>;
-  resetStoryInfo: () => void;
+  storyItems?: StoryItems[];
+  briefSpotInfo?: BriefSpotInfo;
+  spotTitleList?: SpotTitleList;
+  distance?: number;
+  summaries?: StorySummary[];
 
-  setStoryListInMap: (
-    param: GetMapStoriesRequest
-  ) => Promise<StoryInfoResponse | undefined>;
-
-  setStorySpotBriefInfo: (
-    param: GetSpotBriefInfoRequest
-  ) => Promise<GetLocationSpotBriefInfoResponse | undefined>;
-
-  resetStorySpotInfo: () => void;
-
-  setStoryLocationInMap: (
-    param: GetMapStoriesRequest
-  ) => Promise<MapSpotInfoItem[] | undefined>;
-
-  resetSpotLocationInMap: () => void;
-
-  setSelectedStorySpot: (
-    selectedStorySpot: MapSpotInfoItem | undefined
-  ) => void;
+  setLoading: (loading: boolean) => void;
 }
 
-export const useStoryStore = create<StoryStore>((set, get) => ({
+const initialState = {
   briefSpotInfo: undefined,
   mainStoryMapRequest: undefined,
   storyItems: undefined,
   spotTitleList: undefined,
   distance: undefined,
   summaries: undefined,
-  storyListInMap: undefined,
-  storyMain: true,
-  storySpotBriefInfo: undefined,
-  spotLocationInMap: undefined,
-  searchedStoryInfo: undefined,
+
   selectedStorySpot: undefined,
+  selectedSpotStoryInfo: [],
+
+  spotLists: [],
+  storyLists: [],
+
   isLoading: true,
-  loading: true,
 
-  //마커 선택 시 이야기게시글 불러오기
-  setStoryInfo: async (
-    param: GetStoryRequest
-  ): Promise<GetSpotTotalInfoResponse | undefined> => {
-    try {
-      const response: GetSpotTotalInfoResponse = await getStoryInfo(param);
-      set({
-        briefSpotInfo: response.briefSpotInfo,
-        spotTitleList: response.spotTitleList,
-        distance: response.distance,
-        summaries: response.summaries,
-        storyItems: response.stories?.map((storyItem) => ({
-          ...storyItem,
-          createdAt: formatDateArray(storyItem.createdAt),
-        })),
-      });
-      return response;
-    } catch (error) {
-      set({ storyItems: undefined });
-      return undefined;
-    }
-  },
-  resetStoryInfo: () =>
+  searchedStoryInfo: undefined,
+};
+
+export const useStoryStore = create<StoryStore>((set, get) => ({
+  ...initialState,
+
+  //마커 리스트 정보
+  setSpotListInMap: (spotLists: SpotsItemInMap[]) => {
     set({
-      storyItems: undefined,
-      briefSpotInfo: undefined,
-      spotTitleList: undefined,
-      distance: undefined,
-      summaries: undefined,
-    }),
-
-  //지도 사각형 영역 내 이야기 게시글 조회
-  setStoryListInMap: async (
-    param: GetMapStoriesRequest
-  ): Promise<GetMapStoryResponse | undefined> => {
-    try {
-      const response: GetMapStoryResponse = await getStoryListInMap(param);
-      set({
-        storyListInMap: response.stories?.map((storyInMap) => ({
-          ...storyInMap,
-          createdAt: formatDateArray(storyInMap.createdAt),
-        })),
-      });
-      return response;
-    } catch (error) {
-      set({ storyListInMap: undefined });
-      return undefined;
-    }
+      spotLists,
+    });
   },
+  //게시글 리스트 정보
+  setStoryListInMap: (storyLists: StoryListItem[]) => {
+    const formattedStoryLists = storyLists.map((story) => ({
+      ...story,
+      createdAt: formatDateArray(story.createdAt),
+    }));
 
-  //스팟 위치 정보 -> 관련 스팟 이름,id 가져오기
-  setStorySpotBriefInfo: async (
-    param: GetSpotBriefInfoRequest
-  ): Promise<GetLocationSpotBriefInfoResponse | undefined> => {
-    try {
-      const response: GetLocationSpotBriefInfoResponse =
-        await getStorySpotBriefInfo(param);
-      set({
-        storySpotBriefInfo: response,
-      });
-      return response;
-    } catch (error) {
-      set({ storySpotBriefInfo: undefined });
-      return undefined;
-    }
-  },
-  resetStorySpotInfo: () => {
     set({
-      storySpotBriefInfo: undefined,
+      storyLists: formattedStoryLists,
+    });
+  },
+
+  //선택 된 spot
+  selectedStorySpot: (selectedSpotStoryInfo: SpotInfo[]) => {
+    const selectedSpotInfo = selectedSpotStoryInfo[0];
+
+    if (!selectedSpotInfo) {
+      set({
+        selectedSpotStoryInfo: [],
+        briefSpotInfo: undefined,
+        spotTitleList: undefined,
+        distance: undefined,
+        summaries: undefined,
+        storyItems: undefined,
+      });
+      return;
+    }
+
+    set({
+      selectedSpotStoryInfo,
+      briefSpotInfo: selectedSpotInfo.briefSpotInfo,
+      spotTitleList: selectedSpotInfo.spotTitleList,
+      distance: selectedSpotInfo.distance,
+      summaries: selectedSpotInfo.summaries,
+      storyItems: selectedSpotInfo.storyItems?.map((storyItem) => ({
+        ...storyItem,
+        createdAt: formatDateArray(storyItem.createdAt),
+      })),
     });
   },
 
@@ -182,33 +130,7 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     set({ searchedStoryInfo: undefined });
   },
 
-  //지도 사각형 내 스팟 마커 조회
-  setStoryLocationInMap: async (
-    param: GetMapStoriesRequest
-  ): Promise<MapSpotInfoItem[] | undefined> => {
-    try {
-      const response: MapSpotInfoList = await getStorySpotListInMap(param);
-      set({
-        spotLocationInMap: response.storySpots,
-        mainStoryMapRequest: param,
-      });
-      return response.storySpots;
-    } catch (error) {
-      set({ searchedStoryInfo: undefined });
-      return undefined;
-    }
-  },
-  resetSpotLocationInMap: () => {
-    set({ spotLocationInMap: [] });
-  },
-
-  setSelectedStorySpot: (selectedStorySpot: MapSpotInfoItem | undefined) => {
-    set({ selectedStorySpot });
-
-    setStoryLoading: (loading: boolean) => {
-      set({ isLoading: loading });
-    };
-  },
+  setLoading: (loading) => set({ isLoading: loading }),
 }));
 
 function formatDateArray(dateArray: number[] | string | undefined): string {

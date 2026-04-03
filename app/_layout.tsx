@@ -21,8 +21,8 @@ import {
   isGeofenceActive,
 } from "@/services/geofence/geofenceService";
 import { setAudioModeDuckOthers } from "@/store/docent/useAudioPlayerStore";
-import { useBaseMapStore } from "@/store/useBaseMapStore";
 import { useRouteStore } from "@/store/route/useRouteStore";
+import { useBaseMapStore } from "@/store/useBaseMapStore";
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({

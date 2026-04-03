@@ -106,13 +106,13 @@ export const useSightMap = () => {
 
         const params: SearchSightParams = {
           keyword,
-          longitude: String(currentLocation.longitude),
-          latitude: String(currentLocation.latitude),
-          minLongitude: String(bounds.minLongitude),
-          minLatitude: String(bounds.minLatitude),
-          maxLongitude: String(bounds.maxLongitude),
-          maxLatitude: String(bounds.maxLatitude),
-          limit: String(limit),
+          longitude: currentLocation.longitude,
+          latitude: currentLocation.latitude,
+          minLongitude: bounds.minLongitude,
+          minLatitude: bounds.minLatitude,
+          maxLongitude: bounds.maxLongitude,
+          maxLatitude: bounds.maxLatitude,
+          limit: limit,
         };
 
         const results = await getSearchSight(params);
