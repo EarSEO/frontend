@@ -7,10 +7,13 @@ import {
   SearchSightParams,
   SightInfo,
 } from "@/types/sight";
+import { BriefSpotInfo, GetSpotRequest, StoryItems } from "@/types/storySpot";
 
+import { getSpotInfo } from "@/api/getStoryApi";
 import { getSearchSight } from "@/api/sight/getSearchSight";
 import { getSightDetail, getSightsInRectangle } from "@/api/sight/getSight";
 import { useSightStore } from "@/store/sight/useSightStore";
+import { useStoryStore } from "@/store/story/useStoryStore";
 
 export const useSightMap = () => {
   const {
@@ -29,6 +32,8 @@ export const useSightMap = () => {
     clearSelection,
   } = useSightStore();
 
+  const { briefSpotInfo } = useStoryStore();
+
   // 검색 관련 상태
   const [searchResults, setSearchResults] = useState<SightInfo[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -37,6 +42,9 @@ export const useSightMap = () => {
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const searchDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  // 관광지 내 이야기 상태
+  const [sightStoryDetails, setSightstoryDetails] = useState<StoryItems[]>();
 
   // 영역 내 관광지 조회 (기존 코드 유지)
   const fetchSightsInBounds = useCallback(
@@ -198,10 +206,46 @@ export const useSightMap = () => {
     clearSelection();
   }, [clearSelection]);
 
+  //sight 이야기 조회
+  const fetchStoryDetail = useCallback(
+    async (spotInfo: BriefSpotInfo) => {
+      if (!spotInfo) {
+        setLoading(true);
+        return;
+      }
+
+      const req: GetSpotRequest = {
+        storySpotId: spotInfo.storySpotId,
+        query: {
+          query: {
+            longitude: spotInfo.longitude,
+            latitude: spotInfo.latitude,
+            locale: "KO" as const,
+            page: 0,
+            size: 1000,
+            sort: "createdAt,desc" as const,
+          },
+        },
+      };
+      try {
+        const res = await getSpotInfo(req);
+        setSightstoryDetails(res.storyItems);
+      } catch (e) {
+        setSightstoryDetails([]);
+      } finally {
+        setLoading(false);
+      }
+
+      setLoading(true);
+    },
+    [briefSpotInfo, selectedSight]
+  );
+
   return {
     // 상태
     sights,
     selectedSight,
+    sightStoryDetails,
     sightDetail,
     isLoading,
     isDetailLoading,
@@ -218,6 +262,7 @@ export const useSightMap = () => {
     fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,
+    fetchStoryDetail,
 
     // 검색 액션
     searchSightsInBounds,

@@ -2,65 +2,31 @@ import { useCallback, useEffect, useState } from "react";
 
 import styled from "styled-components/native";
 
-import { GetStoryRequest, StoryItem } from "@/types/storySpot";
+import { useSightMap } from "@/hooks/sight/useSightMap";
 
-import { getStoryInfo } from "@/api/getStoryApi";
+import { BriefSpotInfo, GetSpotRequest, StoryItems } from "@/types/storySpot";
+
+import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useSightStore } from "@/store/useSightStore";
 
 import StoryCard from "../story/StoryCard";
 
 const SightStory = () => {
-  const { selectedSight } = useSightStore();
-  const { storySpotBriefInfo } = useStoryStore();
-  const sightStoryId = storySpotBriefInfo?.spotId;
-
-  const [storyDetails, setStoryDetails] = useState<StoryItem[]>();
-  const [loading, setLoading] = useState(false);
-
-  const fetchStoryDetail = useCallback(async () => {
-    if (!sightStoryId || !selectedSight?.longitude || !selectedSight?.latitude)
-      return;
-
-    const req: GetStoryRequest = {
-      storySpotId: sightStoryId,
-      query: {
-        query: {
-          longitude: selectedSight.longitude,
-          latitude: selectedSight.latitude,
-          locale: "KO" as const,
-          page: 0,
-          size: 1000,
-          sort: "createdAt,desc" as const,
-        },
-      },
-    };
-    try {
-      const res = await getStoryInfo(req);
-      setStoryDetails(res.stories);
-    } catch (e) {
-      setStoryDetails([]);
-    } finally {
-      setLoading(false);
-    }
-
-    setLoading(true);
-  }, [storySpotBriefInfo, selectedSight]);
-
-  useEffect(() => {
-    fetchStoryDetail();
-  });
+  const { sightStoryDetails } = useSightMap();
+  const { briefSpotInfo } = useStoryStore();
+  const { isLoading } = useSightStore();
+  const sightStoryId = briefSpotInfo?.storySpotId;
 
   return (
     <Container>
-      {storyDetails ? (
+      {sightStoryDetails ? (
         <StoryContentContainer>
-          {loading ? <InfoText>이야기 불러오는 중...</InfoText> : null}
+          {isLoading ? <InfoText>이야기 불러오는 중...</InfoText> : null}
           <StoryWrapper>
-            {storyDetails?.map((story, index) => (
+            {sightStoryDetails?.map((story, index) => (
               <StoryCard
                 key={`${story.createdAt}-${index}`}
-                storyId={story.storyAuthor?.storyAuthorId}
+                storyId={sightStoryId}
                 userNickName={story.storyAuthor?.nickname}
                 stroySpotName={story.title}
                 storyConcept={story.storyConcept}

@@ -1,4 +1,4 @@
-import {LatLng} from "react-native-maps";
+import { LatLng } from "react-native-maps";
 
 // 관광지 기본 정보 (목록 조회용)
 export interface SightInfo {
@@ -63,6 +63,7 @@ export interface SightDetailCardProps {
   isInCart: boolean;
   onToggleRoute: () => void;
   handleHeaderBackPress: () => void;
+  handleHeaderClosePress: () => void;
 }
 
 export interface SearchSightParams {

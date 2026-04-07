@@ -9,7 +9,13 @@ import { useSightMap } from "@/hooks/sight/useSightMap";
 
 import { theme } from "@/styles/theme";
 
+import {
+  RouteCartItem,
+  useRouteCartStore,
+} from "@/store/route/useRouteCartStore";
 import { useBottomSheetStore } from "@/store/useBottomSheetStore";
+
+import SightDetailCard from "../sight/SightDetailCard";
 
 const CurationBottomSheet = () => {
   const { fetchSightDetail } = useSightMap();
@@ -27,13 +33,43 @@ const CurationBottomSheet = () => {
     setCurationSightList,
   } = useCurationDetail();
 
+  const { deselectSight, selectedSight, sightDetail, isDetailLoading } =
+    useSightMap();
+
+  const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
+    useRouteCartStore();
+  const isInCart = routeCartItems.some(
+    (item) => item.sightId === selectedSight?.id
+  );
+
+  const handleToggleRoute = () => {
+    if (!sightDetail || !selectedSight) return;
+
+    if (isInCart) {
+      removeRouteCartItem(selectedSight.id);
+    } else {
+      const cartItem: RouteCartItem = {
+        sightId: selectedSight.id,
+        theme: sightDetail.theme,
+        title: sightDetail.title,
+        address: sightDetail.address,
+        point: {
+          longitude: sightDetail.longitude,
+          latitude: sightDetail.latitude,
+        },
+        imageUrl: sightDetail.imgUrl,
+      };
+      insertRouteCartItem(cartItem);
+    }
+  };
+
   useEffect(() => {
     fetchCurations();
   }, []);
 
   useEffect(() => {
     const button =
-      curationSightList !== undefined ? (
+      curationSightList !== undefined && selectedSight == null ? (
         <Button
           text="이 경로로 여행을 떠나보세요."
           fontSize={theme.typography.fontSize.sm}
@@ -48,20 +84,31 @@ const CurationBottomSheet = () => {
     return () => {
       setBottomSheetAbsoluteBottom(undefined);
     };
-  }, [curationSightList]);
+  }, [curationSightList, selectedSight]);
 
   return (
     <>
-      {curationSightList !== undefined ? (
-        <>
-          <CurationDetail
-            curationSightList={curationSightList}
-            selectedCurationTitle={selectedCurationTitle}
-            selectedCurationDescription={selectedCurationDescription}
-            handleCardPress={fetchSightDetail}
-            handleHeaderBackPress={() => setCurationSightList(undefined)}
-          />
-        </>
+      {selectedSight && curationSightList ? (
+        <SightDetailCard
+          selectedSight={selectedSight}
+          sightDetail={sightDetail}
+          isDetailLoading={isDetailLoading}
+          isInCart={isInCart}
+          onToggleRoute={handleToggleRoute}
+          handleHeaderClosePress={() => {
+            setCurationSightList(undefined);
+            deselectSight();
+          }}
+          handleHeaderBackPress={deselectSight}
+        />
+      ) : curationSightList !== undefined ? (
+        <CurationDetail
+          curationSightList={curationSightList}
+          selectedCurationTitle={selectedCurationTitle}
+          selectedCurationDescription={selectedCurationDescription}
+          handleCardPress={fetchSightDetail}
+          handleHeaderBackPress={() => setCurationSightList(undefined)}
+        />
       ) : (
         <CurationList
           curations={curations}

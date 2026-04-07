@@ -120,11 +120,11 @@ export interface StoryListItem {
 
 //getSpotInfo 스팟 마커 리스트
 export interface GetSpotRequest {
-  storySpotId: number;
+  storySpotId: number | undefined;
   query: {
     query: {
-      longitude: number;
-      latitude: number;
+      longitude: number | undefined;
+      latitude: number | undefined;
       locale: "KO" | "EN";
       page?: number;
       size?: number;

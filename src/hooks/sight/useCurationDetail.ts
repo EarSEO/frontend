@@ -8,7 +8,6 @@ import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 import { useLocationStore } from "@/store/useLocationStore";
 
-import { useLocation } from "../useLocation";
 import { useRequireLogin } from "../useRequireLogin";
 
 export const useCurationDetail = () => {
@@ -21,8 +20,9 @@ export const useCurationDetail = () => {
   const [isCurationLoading, setIsCurationLoading] = useState(false);
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
 
-  const [curationSightList, setCurationSightList] =
-    useState<CurationSightList[]>();
+  const [curationSightList, setCurationSightList] = useState<
+    CurationSightList[] | undefined
+  >();
   const [selectedCurationTitle, setSelectedCurationTitle] = useState<
     string | undefined
   >("");

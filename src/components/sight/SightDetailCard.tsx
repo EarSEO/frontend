@@ -5,6 +5,7 @@ import PagerView from "react-native-pager-view";
 import styled from "styled-components/native";
 
 import { useBookmark } from "@/hooks/sight/useBookmark";
+import { useSightMap } from "@/hooks/sight/useSightMap";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { SightDetailCardProps } from "@/types/sight";
@@ -15,16 +16,10 @@ import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import {
-  sightToCustomAudioMetadata,
-  useAudioPlayerStore,
-} from "@/store/docent/useAudioPlayerStore";
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
-import { distanceToString } from "@/util/locationUtil";
-import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
@@ -39,25 +34,25 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   sightDetail,
   isDetailLoading,
   handleHeaderBackPress,
+  handleHeaderClosePress,
 }) => {
   const pagerRef = useRef<PagerView>(null);
   const requireLogin = useRequireLogin();
 
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
-  const { setStorySpotBriefInfo } = useStoryStore();
+  const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
+  const { fetchStoryDetail } = useSightMap();
   const { userBookmarkList } = useBookmarkStore();
+
   const { insertBookmark, removeBookmark } = useBookmark();
   const {
     setButtonStyle,
     setShowBackButton,
     setShowCloseButton,
     setOnClosePress,
+    setOnBackPress,
   } = useHeaderButtonStore();
-  const audioMetadata = useAudioPlayerStore((state) => state.audioMetadata);
-  const setTemporarySightInfo = useAudioPlayerStore(
-    (state) => state.setTemporarySightInfo
-  );
 
   const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
   const handleTabPress = (tab: TabType) => {
@@ -67,22 +62,27 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   useEffect(() => {
     setButtonStyle("NONE");
-    setShowBackButton(false);
+    setShowBackButton(true);
     setShowCloseButton(true);
-    setOnClosePress(() => {
-      handleHeaderBackPress();
-    });
-  }, [setShowBackButton, handleHeaderBackPress, setOnClosePress]);
+    setOnBackPress(handleHeaderBackPress);
+    setOnClosePress(handleHeaderClosePress);
+  }, [
+    setShowBackButton,
+    handleHeaderBackPress,
+    handleHeaderClosePress,
+    setOnClosePress,
+  ]);
 
   //sight 조회 시 srotyId 저장
   useEffect(() => {
     if (!selectedSight) return;
     const sightLocation = {
+      storyId: selectedSight,
       longitude: selectedSight.longitude,
       latitude: selectedSight.latitude,
     };
-    setStorySpotBriefInfo(sightLocation);
-  }, [setStorySpotBriefInfo, selectedSight?.latitude, selectedSight?.latitude]);
+    fetchStoryDetail(sightLocation);
+  }, [briefSpotInfo, selectedSight?.latitude, selectedSight?.latitude]);
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
     const position = e.nativeEvent.position;
@@ -212,7 +212,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
 export default SightDetailCard;
 
-const Container = styled.ScrollView`
+const Container = styled.View`
   gap: 12px;
   height: 100%;
 `;
@@ -234,6 +234,7 @@ const SightTitle = styled.Text`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.text.textPrimary};
   flex: 1;
+  margin-bottom: 5px;
 `;
 
 const RouteAddButton = styled.TouchableOpacity`
@@ -263,6 +264,8 @@ const SightTopInfoWrapper = styled.View`
 const LoadingText = styled.Text`
   font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
   color: ${({ theme }) => theme.colors.text.textTertiary};
+  margin-left: 16px;
+  margin-right: 16px;
 `;
 
 const SightImage = styled.Image`
@@ -297,7 +300,7 @@ const TabText = styled.Text<{ active: boolean }>`
 `;
 
 const StyledPagerView = styled(PagerView)`
-  height: 360px;
+  height: 100%;
 `;
 
 const PageContainer = styled.View`

@@ -46,7 +46,7 @@ const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
     e.stopPropagation();
     if (!sightDetail?.docentUrl) return;
     if (isMyDocentPlaying) {
-      setTemporarySightInfo();
+      setTemporarySightInfo(undefined);
     } else {
       setTemporarySightInfo(sightDetail);
     }

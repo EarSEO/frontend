@@ -167,9 +167,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
 
 export default CurationDetail;
 
-const Container = styled.View`
-  gap: 16px;
-`;
+const Container = styled.View``;
 
 const HeaderContainer = styled.View`
   margin-bottom: 60px;
@@ -190,6 +188,7 @@ const CurationDescription = styled.Text`
   font-family: ${({ theme }) => theme.typography.fontFamily.regular};
   font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
   color: ${({ theme }) => theme.colors.text.textSecondary};
+  margin-bottom: 10px;
 `;
 
 const SightListContainer = styled.View`
