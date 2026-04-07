@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import PagerView from "react-native-pager-view";
 
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import styled from "styled-components/native";
 
 import { useBookmark } from "@/hooks/sight/useBookmark";
@@ -82,7 +83,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       latitude: selectedSight.latitude,
     };
     fetchStoryDetail(sightLocation);
-  }, [briefSpotInfo, selectedSight?.latitude, selectedSight?.latitude]);
+  }, [briefSpotInfo, selectedSight?.latitude, selectedSight?.longitude]);
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
     const position = e.nativeEvent.position;
@@ -102,110 +103,115 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   return (
     <Container>
-      <HeaderContainer>
-        <HeaderButton />
-      </HeaderContainer>
+      <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+        <HeaderContainer>
+          <HeaderButton />
+        </HeaderContainer>
 
-      <SightHeaderContainer>
-        <SightTitle>{selectedSight.title}</SightTitle>
-        <RouteAddButton
-          onPress={(e) => {
-            if (!requireLogin()) return;
+        <SightHeaderContainer>
+          <SightTitle>{selectedSight.title}</SightTitle>
+          <RouteAddButton
+            onPress={(e) => {
+              if (!requireLogin()) return;
 
-            e.stopPropagation();
-            if (isInCart) {
-              removeRouteCartItem(String(selectedSight.id));
-            } else {
-              insertRouteCartItem({
-                sightId: String(sightDetail?.id ?? selectedSight.id),
-                theme: sightDetail?.theme ?? "",
-                title: sightDetail?.title ?? "",
-                address: sightDetail?.address ?? "",
-                point: {
-                  longitude: sightDetail?.longitude ?? selectedSight.longitude,
-                  latitude: sightDetail?.latitude ?? selectedSight.latitude,
-                },
-                imageUrl: sightDetail?.imgUrl ?? "",
-              });
-            }
-          }}
-        >
-          {isInCart ? (
-            <AfterAddRoute width={28} height={28} />
-          ) : (
-            <BeforeAddRoute width={28} height={28} />
-          )}
-        </RouteAddButton>
-
-        <BookMarkAddButton
-          onPress={(e) => {
-            e.stopPropagation();
-            if (!requireLogin()) return;
-
-            if (isBookmark) {
-              removeBookmark(selectedSight.id);
-            } else {
-              insertBookmark(selectedSight.id);
-            }
-          }}
-        >
-          {isBookmark ? (
-            <AfterAddBookmark width={28} height={28} />
-          ) : (
-            <BeforeAddBookmark width={28} height={28} />
-          )}
-        </BookMarkAddButton>
-      </SightHeaderContainer>
-
-      {isDetailLoading ? (
-        <LoadingText>상세 정보 로딩 중...</LoadingText>
-      ) : sightDetail ? (
-        <SightTopInfoWrapper>
-          <BasicInfoWrapper>
-            <AddressLabel
-              address={sightDetail.address}
-              distance={sightDetail.distance}
-              fontSize={theme.typography.fontSize.sm}
-            />
-            <SightTheme>{sightDetail.theme}</SightTheme>
-          </BasicInfoWrapper>
-
-          <SightImage
-            source={{
-              uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
+              e.stopPropagation();
+              if (isInCart) {
+                removeRouteCartItem(String(selectedSight.id));
+              } else {
+                insertRouteCartItem({
+                  sightId: String(sightDetail?.id ?? selectedSight.id),
+                  theme: sightDetail?.theme ?? "",
+                  title: sightDetail?.title ?? "",
+                  address: sightDetail?.address ?? "",
+                  point: {
+                    longitude:
+                      sightDetail?.longitude ?? selectedSight.longitude,
+                    latitude: sightDetail?.latitude ?? selectedSight.latitude,
+                  },
+                  imageUrl: sightDetail?.imgUrl ?? "",
+                });
+              }
             }}
-            resizeMode="cover"
-          />
-        </SightTopInfoWrapper>
-      ) : null}
-      <TabContainer>
-        <TabButton
-          active={activeTab === "sightInfo"}
-          onPress={() => handleTabPress("sightInfo")}
-        >
-          <TabText active={activeTab === "sightInfo"}>정보</TabText>
-        </TabButton>
-        <TabButton
-          active={activeTab === "sightStory"}
-          onPress={() => handleTabPress("sightStory")}
-        >
-          <TabText active={activeTab === "sightStory"}>이야기</TabText>
-        </TabButton>
-      </TabContainer>
+          >
+            {isInCart ? (
+              <AfterAddRoute width={28} height={28} />
+            ) : (
+              <BeforeAddRoute width={28} height={28} />
+            )}
+          </RouteAddButton>
 
-      <StyledPagerView ref={pagerRef} onPageSelected={handlePageSelected}>
-        <PageContainer key="1">
-          <SightInfo
-            isDetailLoading={isDetailLoading}
-            sightDetail={sightDetail}
-          />
-        </PageContainer>
+          <BookMarkAddButton
+            onPress={(e) => {
+              e.stopPropagation();
+              if (!requireLogin()) return;
 
-        <PageContainer key="2">
-          <SightStory />
-          <StoryAddButton />
-        </PageContainer>
-      </StyledPagerView>
+              if (isBookmark) {
+                removeBookmark(selectedSight.id);
+              } else {
+                insertBookmark(selectedSight.id);
+              }
+            }}
+          >
+            {isBookmark ? (
+              <AfterAddBookmark width={28} height={28} />
+            ) : (
+              <BeforeAddBookmark width={28} height={28} />
+            )}
+          </BookMarkAddButton>
+        </SightHeaderContainer>
+
+        {isDetailLoading ? (
+          <LoadingText>상세 정보 로딩 중...</LoadingText>
+        ) : sightDetail ? (
+          <SightTopInfoWrapper>
+            <BasicInfoWrapper>
+              <AddressLabel
+                address={sightDetail.address}
+                distance={sightDetail.distance}
+                fontSize={theme.typography.fontSize.sm}
+              />
+              <SightTheme>{sightDetail.theme}</SightTheme>
+            </BasicInfoWrapper>
+
+            <SightImage
+              source={{
+                uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
+              }}
+              resizeMode="cover"
+            />
+          </SightTopInfoWrapper>
+        ) : null}
+        <TabContainer>
+          <TabButton
+            active={activeTab === "sightInfo"}
+            onPress={() => handleTabPress("sightInfo")}
+          >
+            <TabText active={activeTab === "sightInfo"}>정보</TabText>
+          </TabButton>
+          <TabButton
+            active={activeTab === "sightStory"}
+            onPress={() => handleTabPress("sightStory")}
+          >
+            <TabText active={activeTab === "sightStory"}>이야기</TabText>
+          </TabButton>
+        </TabContainer>
+
+        <ContentContainer>
+          {activeTab === "sightInfo" ? (
+            <SightInfo
+              isDetailLoading={isDetailLoading}
+              sightDetail={sightDetail}
+            />
+          ) : (
+            <>
+              <SightStory />
+              <StoryButtonWrapper>
+                <StoryAddButton />
+              </StoryButtonWrapper>
+            </>
+          )}
+        </ContentContainer>
+      </BottomSheetScrollView>
     </Container>
   );
 };
@@ -234,7 +240,6 @@ const SightTitle = styled.Text`
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   color: ${({ theme }) => theme.colors.text.textPrimary};
   flex: 1;
-  margin-bottom: 5px;
 `;
 
 const RouteAddButton = styled.TouchableOpacity`
@@ -299,13 +304,8 @@ const TabText = styled.Text<{ active: boolean }>`
     active ? theme.colors.text.textPrimary : theme.colors.text.textTertiary};
 `;
 
-const StyledPagerView = styled(PagerView)`
-  height: 100%;
+const ContentContainer = styled.View`
+  flex: 1;
 `;
 
-const PageContainer = styled.View`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-`;
+const StoryButtonWrapper = styled.View``;

@@ -47,7 +47,9 @@ const SightStory = () => {
 
 export default SightStory;
 
-const Container = styled.View``;
+const Container = styled.View`
+  margin-bottom: 80px;
+`;
 
 const StoryContentContainer = styled.View``;
 
