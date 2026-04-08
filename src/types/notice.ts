@@ -1,8 +1,9 @@
 export interface NoticePageItem {
     noticeId: number;
     title: string;
+    createdAt: string;
+    updatedAt: string;
 }
-
 export interface NoticeDetail {
     noticeId: number;
     noticeTitle: string;

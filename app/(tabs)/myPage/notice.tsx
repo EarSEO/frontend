@@ -49,7 +49,10 @@ export default function Notice() {
     const renderItem = useCallback(
         ({ item }: { item: NoticePageItem }) => (
             <NoticeItem onPress={() => handleItemPress(item.noticeId)}>
-                <NoticeTitle>{item.title}</NoticeTitle>
+                <NoticeInfo>
+                    <NoticeTitle>{item.title}</NoticeTitle>
+                    <NoticeDate>{item.createdAt.replace(/\//g, ".")}</NoticeDate>
+                </NoticeInfo>
                 <ChevronRight size={20} color={theme.colors.grey.neutral400} />
             </NoticeItem>
         ),
@@ -130,11 +133,21 @@ const NoticeItem = styled.TouchableOpacity`
   border-bottom-color: ${theme.colors.grey.neutral200};
 `;
 
+const NoticeInfo = styled.View`
+    flex: 1;
+`;
+
 const NoticeTitle = styled.Text`
-  flex: 1;
-  font-family: ${theme.typography.fontFamily.medium};
-  font-size: ${theme.typography.fontSize.sm}px;
-  color: ${theme.colors.text.textPrimary};
+    font-family: ${theme.typography.fontFamily.medium};
+    font-size: ${theme.typography.fontSize.sm}px;
+    color: ${theme.colors.text.textPrimary};
+`;
+
+const NoticeDate = styled.Text`
+    font-family: ${theme.typography.fontFamily.regular};
+    font-size: ${theme.typography.fontSize.xxs}px;
+    color: ${theme.colors.text.textTertiary};
+    margin-top: 4px;
 `;
 
 const EmptyContainer = styled.View`
