@@ -72,7 +72,7 @@ export default function NoticeDetail() {
             </Header>
 
             <ScrollView contentContainerStyle={{ padding: 20 }}>
-                <DateText>{notice.createdAt}</DateText>
+                <DateText>{notice.createdAt.replace(/\//g, ".")}</DateText>
                 <TitleText>{notice.noticeTitle}</TitleText>
                 <Divider />
                 <ContentText>{notice.noticeContent}</ContentText>
