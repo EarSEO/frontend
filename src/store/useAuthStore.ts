@@ -33,10 +33,7 @@ interface AuthState {
 
   login: (credentials: LoginRequest) => Promise<void>;
   signup: (userData: SignUpRequest) => Promise<SignUpResponse>;
-  socialLogin: (
-    provider: Provider,
-    authCode: string,
-  ) => Promise<SocialLoginResponse>;
+  googleLogin: (idToken: string) => Promise<SocialLoginResponse>;
   socialSignup: (userData: SocialSignUpRequest) => Promise<void>;
   appleLogin: (identityToken: string, fullName?: string) => Promise<SocialLoginResponse>;
   logout: () => Promise<void>;
@@ -108,45 +105,38 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
   },
 
-  socialLogin: async (provider: Provider, authCode: string) => {
+  googleLogin: async (idToken: string): Promise<SocialLoginResponse> => {
     try {
       set({ isLoading: true });
 
-      const response = await api.post<SocialLoginResponse>(
-        `${API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE}`,
-        { authCode },
+      const response = await api.post<BaseResponse<SocialLoginResponse>>(
+        API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE,
+        { idToken },
       );
 
-      const data = response.data;
+      const data = response.data.data;
 
       if (data.isNewMember) {
         set({ isLoading: false });
         return data;
-      } else if (
-        data.accessToken &&
-        data.refreshToken &&
-        data.memberId &&
-        data.nickname &&
-        data.role
-      ) {
+      }
+
+      if (data.accessToken && data.refreshToken && data.memberId) {
         await SecureStore.setItemAsync(ACCESS_TOKEN, data.accessToken);
         await SecureStore.setItemAsync(REFRESH_TOKEN, data.refreshToken);
 
         const user: User = {
           memberId: data.memberId,
           email: data.email,
-          nickname: data.nickname,
-          role: data.role,
+          nickname: data.nickname || "",
+          role: data.role!,
           updatedAt: new Date(),
           profileUrl: "",
         };
         await SecureStore.setItemAsync(USER_INFO, JSON.stringify(user));
 
-        set({
-          user,
-          isLogined: true,
-          isLoading: false,
-        });
+        set({ user, isLogined: true, isLoading: false });
+        await get().fetchProfile();
       }
       return data;
     } catch (error) {

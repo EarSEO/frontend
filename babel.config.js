@@ -19,7 +19,7 @@ module.exports = function (api) {
           moduleName: "@env",
           path: ".env",
           safe: false,
-          allowlist: ['APP_ENV_API_BASE_URL', 'APP_ENV_GEOFENCE_RADIUS'],
+          allowlist: ['APP_ENV_API_BASE_URL', 'APP_ENV_GEOFENCE_RADIUS', 'GOOGLE_WEB_CLIENT_ID', 'GOOGLE_IOS_CLIENT_ID'],
           allowUndefined: true,
           verbose: false,
         },

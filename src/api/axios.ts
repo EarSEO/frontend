@@ -61,7 +61,7 @@ api.interceptors.response.use(
     // 인증 불필요 API는 refresh 시도하지 않음
     const NO_AUTH_URLS = [
       API_ENDPOINTS.AUTH.SOCIAL_LOGIN_APPLE,
-      // API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE,
+      API_ENDPOINTS.AUTH.SOCIAL_LOGIN_GOOGLE,
       API_ENDPOINTS.AUTH.SOCIAL_SIGNUP,
     ];
     const requestUrl = originalRequest.url || "";
