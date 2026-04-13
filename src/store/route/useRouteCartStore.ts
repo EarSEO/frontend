@@ -1,16 +1,16 @@
-import {LatLng} from "react-native-maps";
+import { LatLng } from "react-native-maps";
 
 import { create } from "zustand";
 
 interface RouteCartStore {
   routeCartItems: RouteCartItem[];
   insertRouteCartItem: (routeCartItem: RouteCartItem) => void;
-  removeRouteCartItem: (routeCartItemId: string) => void;
+  removeRouteCartItem: (routeCartItemId: number) => void;
   removeAllRouteCartItem: () => void;
 }
 
 export interface RouteCartItem {
-  sightId: string; // id
+  sightId: number; // id
   theme: string; // 관광지 테마
   title: string; // 관광지명
   address: string; // 구/동 단위 주소
@@ -26,7 +26,7 @@ export const useRouteCartStore = create<RouteCartStore>((set, get) => ({
       routeCartItems: [...routeCartItems, routeCartItem],
     }));
   },
-  removeRouteCartItem: (routeCartItemId: string): void => {
+  removeRouteCartItem: (routeCartItemId: number): void => {
     set({
       routeCartItems: get().routeCartItems.filter((routeCartItem) => {
         return routeCartItem.sightId !== routeCartItemId;

@@ -2,7 +2,7 @@ import { LatLng } from "react-native-maps";
 
 // 관광지 기본 정보 (목록 조회용)
 export interface SightInfo {
-  id: string;
+  id: number;
   title: string;
   longitude: number;
   latitude: number;
@@ -16,7 +16,7 @@ export interface SightMapInfoList {
 
 // 관광지 상세 정보
 export interface SightDetailInfo {
-  id: string;
+  id: number;
   theme: string; // 관광지 테마 (문화시설, 자연관광지 등)
   subTheme: string;
   overview: string; // 관광지 개요/설명
@@ -51,7 +51,7 @@ export interface CircleBoundsParams {
 }
 
 export interface SightDetailParams {
-  id: string;
+  id: number;
   longitude: number;
   latitude: number;
 }
@@ -101,7 +101,7 @@ export interface CurationSightListResponse {
 }
 
 export interface CurationSightList {
-  sightId: string;
+  sightId: number;
   title: string;
   subTheme: string;
   distance: number;

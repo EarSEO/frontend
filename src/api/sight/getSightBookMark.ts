@@ -11,7 +11,7 @@ import api from "../axios";
 
 //북마크 추가
 export const getAddBookmark = async (
-  sightId: string,
+  sightId: number,
   userId: number
 ): Promise<BookmarkEditResponse> => {
   try {
@@ -27,7 +27,7 @@ export const getAddBookmark = async (
 
 //북마크 삭제
 export const getDeleteBookmark = async (
-  sightId: string,
+  sightId: number,
   userId: number
 ): Promise<BookmarkEditResponse> => {
   try {

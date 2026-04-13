@@ -39,8 +39,8 @@ export const API_ENDPOINTS = {
       SIGHT_LIST: (curationId: number) => `/api/sight/curation/${curationId}`,
     },
     BOOKMARK: {
-      ADD: (sightId: string) => `/api/user/sight/${sightId}/bookmark`,
-      DELETE: (sightId: string) => `/api/user/sight/${sightId}/bookmark`,
+      ADD: (sightId: number) => `/api/user/sight/${sightId}/bookmark`,
+      DELETE: (sightId: number) => `/api/user/sight/${sightId}/bookmark`,
       GET_BOOKMARK: "/api/user/sight/bookmark",
     },
   },

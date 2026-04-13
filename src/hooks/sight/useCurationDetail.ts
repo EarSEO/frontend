@@ -64,7 +64,7 @@ export const useCurationDetail = () => {
 
   //카드에 있는지 확인
   const isInCart = useCallback(
-    (sightId: string) => {
+    (sightId: number) => {
       return routeCartItems.some((item) => item.sightId === sightId);
     },
     [routeCartItems]
