@@ -5,7 +5,7 @@ export interface BottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheet | null>;
   children?: React.ReactNode;
   animatedPosition?: SharedValue<number>;
-  snapPoints?: string[];
+  snapPoints?: (string | number)[];
   keyboardBehavior?: "interactive" | "extend" | "fillParent";
   initialIndex?: number;
 }

@@ -1,7 +1,8 @@
+import { useState } from "react";
+
 import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components/native";
 
-import { useCustomPinNavigation } from "@/hooks/story/useCustomPinNavigation";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 
 import { theme } from "@/styles/theme";
@@ -13,30 +14,14 @@ import Input from "../common/Input";
 import LocationLabel from "../common/LocationLabel";
 
 const SpotLocationAdd = () => {
-  const { setSelectedSpot, moveToCustomPinLocation } = useCustomPinNavigation();
-  const { searchedStoryInfo } = useStoryStore();
-  const { selectedSpotId, setStoryLocation } = useStoryAddStore();
+  const { searchResults, OnSpotSearch } = useStorySpotMap();
+  const { setSearchedSpot } = useStoryStore();
+  const searchedSpot = useStoryStore((state) => state.searchedSpot);
 
-  const { mapRef, setInputSpotName, inputSpotName, handleSearch } =
-    useStorySpotMap();
+  const [searchSpotName, setsearchSpotName] = useState<string>("");
 
   const handleSpotNamePass = (text: string) => {
-    setInputSpotName(text);
-  };
-
-  const handleSearchedSpot = (
-    spotId: number,
-    spotTitle: string | undefined,
-    latitude: number,
-    logitude: number
-  ) => {
-    if (selectedSpotId === spotId) {
-      setSelectedSpot(undefined, undefined);
-    } else {
-      setSelectedSpot(spotId, spotTitle);
-      setStoryLocation(latitude, logitude);
-      moveToCustomPinLocation(mapRef, latitude, logitude);
-    }
+    setsearchSpotName(text);
   };
 
   return (
@@ -44,12 +29,12 @@ const SpotLocationAdd = () => {
       <Content>
         <InputWrapper>
           <StyledInput
-            value={inputSpotName}
+            value={searchSpotName}
             onChangeText={handleSpotNamePass}
             placeholder="검색어를 입력하세요."
-            onSubmitEditing={handleSearch}
+            onSubmitEditing={() => OnSpotSearch(searchSpotName)}
           />
-          <SearchButtonWrapper onPress={handleSearch}>
+          <SearchButtonWrapper onPress={() => OnSpotSearch(searchSpotName)}>
             <Ionicons
               name="search"
               size={18}
@@ -60,22 +45,16 @@ const SpotLocationAdd = () => {
 
         <SearchListViewWrapper>
           <SearchList>
-            {searchedStoryInfo && searchedStoryInfo.length > 0 ? (
-              searchedStoryInfo?.map((item) => (
+            {searchResults && searchResults.length > 0 ? (
+              searchResults?.map((item) => (
                 <LocationLabel
                   key={item.storySpotId}
-                  locationTitle={item.title}
-                  latitude={item.latitude}
-                  logitude={item.longitude}
-                  isSelected={selectedSpotId === item.storySpotId}
-                  onPress={() =>
-                    handleSearchedSpot(
-                      item.storySpotId,
-                      item?.title,
-                      item.latitude,
-                      item.longitude
-                    )
-                  }
+                  locationTitle={item?.title}
+                  distance={item.distance}
+                  isSelected={searchedSpot?.storySpotId === item.storySpotId}
+                  onPress={() => {
+                    setSearchedSpot(item);
+                  }}
                 />
               ))
             ) : (

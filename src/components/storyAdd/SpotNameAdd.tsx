@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import styled from "styled-components/native";
 
+import { useStoryAdd } from "@/hooks/story/useStoryAdd";
+
 import { theme } from "@/styles/theme";
 
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
@@ -10,11 +12,11 @@ import { useStoryStore } from "@/store/story/useStoryStore";
 import Input from "../common/Input";
 
 const SpotNameAdd = () => {
-  const [inputSpotname, setInputSpotName] = useState<string>();
-  const { storySpotBriefInfo } = useStoryStore();
-  const { setNewSpotName, selectedSpotTitle, newSpotName } = useStoryAddStore();
+  const spotTitleList = useStoryStore((state) => state.spotTitleList);
+  const newSpotName = useStoryAddStore((state) => state.newSpotName);
+  const setNewSpotName = useStoryAddStore((state) => state.setNewSpotName);
 
-  const spotNames = storySpotBriefInfo?.titles;
+  const spotNames = spotTitleList?.titles;
 
   const spotTitles =
     spotNames
@@ -22,15 +24,14 @@ const SpotNameAdd = () => {
       .map((spotNames) => `📍${spotNames}`)
       .join(" ") || " ";
 
-  useEffect(() => {
-    if (selectedSpotTitle) {
-      setInputSpotName(selectedSpotTitle);
-      setNewSpotName(selectedSpotTitle);
-    }
-  }, [setInputSpotName]);
+  // useEffect(() => {
+  //   if (selectedSpotTitle) {
+  //     setInputSpotName(selectedSpotTitle);
+  //     setNewSpotName(selectedSpotTitle);
+  //   }
+  // }, [setInputSpotName]);
 
   const handleSpotName = (text: string) => {
-    setInputSpotName(text);
     setNewSpotName(text);
   };
 
@@ -43,7 +44,7 @@ const SpotNameAdd = () => {
 
       <InputWrapper>
         <StyledInput
-          value={inputSpotname}
+          value={newSpotName}
           onChangeText={handleSpotName}
           radius={10}
           placeholder={"스팟 이름을 입력해주세요."}

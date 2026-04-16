@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { LayoutChangeEvent } from "react-native/Libraries/Types/CoreEventTypes";
-import {
+import MapView, {
   MapPressEvent,
   Marker,
   MarkerPressEvent,
@@ -31,9 +31,11 @@ import MapPin from "@/assets/icons/map/MapPin.svg";
 
 import { useRouteStore } from "@/store/route/useRouteStore";
 import { useSightStore } from "@/store/sight/useSightStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useBaseMapStore } from "@/store/useBaseMapStore";
 import { useLocationStore } from "@/store/useLocationStore";
+import { LatLng } from "react-native-maps/src/sharedTypes";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
@@ -92,6 +94,9 @@ const BaseMap: React.FC<BaseMapProps> = ({
   const spotLists = useStoryStore((state) => state.spotLists);
   const { selectedStorySpot } = useStoryStore();
   const { fetchSpotDetail } = useStorySpotMap();
+  const { setStoryLocation } = useStoryAddStore();
+  const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
+  const setSpotListInMap = useStoryStore((state) => state.setSpotListInMap);
 
   const routeItems = useRouteStore((state) => state.routeItems);
   const path = useRouteStore((state) => state.path);
@@ -123,14 +128,24 @@ const BaseMap: React.FC<BaseMapProps> = ({
     };
   });
 
-  const handleCenterPinLayout = useCallback(
-    async (event: LayoutChangeEvent) => {
-      const { x, y, width, height } = event.nativeEvent.layout;
-      const centerX = x + width / 2;
-      const centerPoint = y + CENTER_PIN_HEIGHT - CENTER_PIN_SHADOW_HEIGHT;
-      setCenterPinPoint({ x: centerX, y: centerPoint });
+  //test
+  const markedLocation = useStoryAddStore((state) => state.markedLocation);
+  const handleCenterPinRegion = useCallback(
+    (region: Region) => {
+      setStoryLocation({
+        latitude: region.latitude,
+        longitude: region.longitude,
+      });
     },
-    []
+    [setStoryLocation]
+  );
+
+  const handleRegionChangeComplete = useCallback(
+    (region: Region, details: any) => {
+      onRegionChangeCompleteWithRegion(region, details, undefined);
+      handleCenterPinRegion(region);
+    },
+    [onRegionChangeCompleteWithRegion, handleCenterPinRegion]
   );
 
   useEffect(() => {
@@ -143,6 +158,12 @@ const BaseMap: React.FC<BaseMapProps> = ({
     // 바텀시트의 위치 상태에 따라 버튼 랜더링 및 마커 로드
     initBaseMapBottomSheetCallbacks();
   }, []);
+
+  useEffect(() => {
+    if (storyAddStep !== "none") {
+      setSpotListInMap([]);
+    }
+  }, [storyAddStep, setSpotListInMap]);
 
   return (
     <>
@@ -173,7 +194,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
         clusterColor={theme.colors.main.primary}
         onRegionChangeStart={onRegionChange}
         onRegionChange={onRegionChange}
-        onRegionChangeComplete={onRegionChangeCompleteWithRegion}
+        onRegionChangeComplete={handleRegionChangeComplete}
         userLocationUpdateInterval={1000}
         userLocationFastestInterval={1000}
         extent={1000} // 화면을 몇개의 타일로 나눌지
@@ -266,12 +287,17 @@ const BaseMap: React.FC<BaseMapProps> = ({
             }}
           />
         ))}
+        {markedLocation && (
+          <Marker
+            key={markedLocation?.latitude}
+            coordinate={markedLocation}
+            pinColor="green"
+          />
+        )}
       </AnimatedClusterMapView>
+
       {centerPinVisibility && (
-        <AnimatedCenterPin
-          style={pinAnimatedStyle}
-          onLayout={handleCenterPinLayout}
-        >
+        <AnimatedCenterPin style={pinAnimatedStyle}>
           <MapPin width={CENTER_PIN_WIDTH} height={CENTER_PIN_HEIGHT} />
         </AnimatedCenterPin>
       )}
@@ -315,8 +341,9 @@ const styles = StyleSheet.create({
 const CenterPin = styled.View`
   position: absolute;
   left: 50%;
-  z-index: 0;
+  top: 40%;
   margin-left: -22.5px;
+  margin-top: 12px;
   pointer-events: none;
 `;
 

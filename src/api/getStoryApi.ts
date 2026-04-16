@@ -1,8 +1,9 @@
+import { LatLng } from "react-native-maps/src/sharedTypes";
+
 import { BaseResponse } from "@/types/auth";
 import {
   GetLocationSpotBriefInfoResponse,
   GetSearchTitleRequest,
-  GetSpotBriefInfoRequest,
   GetSpotInMapRequest,
   GetSpotRequest,
   GetStoryInMapRequest,
@@ -33,7 +34,7 @@ export const getSpotInfo = async (param: GetSpotRequest): Promise<SpotInfo> => {
 //스팟 선택(storyId) -> 관련스팟 제목
 
 //스팟 선택(위치정보) -> 관련 스팟 제목,id 가져오기 (좌표기반이야기 스팟 정보 조회)
-export const getStorySpotBriefInfo = async (param: GetSpotBriefInfoRequest) => {
+export const getStorySpotBriefInfo = async (param: LatLng) => {
   try {
     const response = await api.get<
       BaseResponse<GetLocationSpotBriefInfoResponse>

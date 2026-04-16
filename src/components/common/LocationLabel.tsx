@@ -10,27 +10,23 @@ import { theme } from "@/styles/theme";
 
 import { distanceToString } from "@/util/locationUtil";
 
-export type LocationInfo = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
+export type SpotType = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
 
 export interface LocationLabelProps {
-  locationInfo?: LocationInfo;
+  spotType?: SpotType;
   locationTitle?: string;
   address?: string;
   distance: number;
-  logitude?: number;
-  latitude?: number;
   locationtheme?: string;
   isSelected?: boolean;
   onPress?: () => void;
 }
 
 const LocationLabel: React.FC<LocationLabelProps> = ({
-  locationInfo,
+  spotType,
   locationTitle,
   address,
   distance,
-  logitude,
-  latitude,
   locationtheme,
   isSelected = false,
   onPress,
@@ -39,7 +35,7 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
 
   const getIconName = () => {
     const iconProps = { size: 20, color: theme.colors.text.textPrimary };
-    switch (locationInfo) {
+    switch (spotType) {
       case "BOOKMARK":
         return <Bookmark {...iconProps} />;
       case "SIGHT":

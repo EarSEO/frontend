@@ -1,6 +1,6 @@
 import React from "react";
 
-import {Text, View} from "react-native";
+import { Text, View } from "react-native";
 
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 
@@ -8,7 +8,7 @@ import { BottomSheetProps } from "@/types/bottomSheet";
 
 import { theme } from "@/styles/theme";
 
-import {useBottomSheetStore} from "@/store/useBottomSheetStore";
+import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 
 const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
@@ -18,17 +18,25 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   keyboardBehavior = "interactive",
   initialIndex,
 }) => {
-  const content = useBottomSheetStore(state => state.bottomSheetContent);
-  const storeSnapPoints = useBottomSheetStore(state => state.snapPoints);
-  const bottomSheetAbsoluteBottom = useBottomSheetStore(state => state.bottomSheetAbsoluteBottom);
-  const onBottomSheetChange = useBottomSheetStore(state => state.onBottomSheetChange);
-  const onBottomSheetAnimate = useBottomSheetStore(state => state.onBottomSheetAnimate);
+  const content = useBottomSheetStore((state) => state.bottomSheetContent);
+  const storeSnapPoints = useBottomSheetStore((state) => state.snapPoints);
+  const bottomSheetAbsoluteBottom = useBottomSheetStore(
+    (state) => state.bottomSheetAbsoluteBottom
+  );
+  const onBottomSheetChange = useBottomSheetStore(
+    (state) => state.onBottomSheetChange
+  );
+  const onBottomSheetAnimate = useBottomSheetStore(
+    (state) => state.onBottomSheetAnimate
+  );
   return (
     <>
       <BottomSheet
         ref={bottomSheetRef}
-        snapPoints={snapPoints || storeSnapPoints || ["15%", "45%", "80%", "100%"]}
-        index={initialIndex || 1}
+        snapPoints={
+          snapPoints || storeSnapPoints || ["15%", "45%", "80%", "100%"]
+        }
+        index={initialIndex ?? 1}
         enablePanDownToClose={false}
         enableOverDrag={false}
         animatedPosition={animatedPosition}

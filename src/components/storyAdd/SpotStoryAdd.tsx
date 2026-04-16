@@ -1,9 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { Alert } from "react-native";
-
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
 import { ChevronRight, MapPin, X } from "lucide-react-native";
 import styled from "styled-components/native";
 
@@ -11,111 +7,47 @@ import Button from "@/components/common/Button";
 import HeaderButton from "@/components/common/HeaderButton";
 import Input from "@/components/common/Input";
 
-import { CreateStoryRequest } from "@/types/storySpot";
+import { CONCEPTS, StoryConcept, useStoryAdd } from "@/hooks/story/useStoryAdd";
 
 import { theme } from "@/styles/theme";
 
-import { getcreateStory } from "@/api/story/getStoryAddApi";
-import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
-type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
-
-const CONCEPTS = [
-  { value: "TIP", label: "🍯꿀팁" },
-  { value: "EXPERIENCE", label: "🗣️경험담" },
-  { value: "CULTURE", label: "🎩문화" },
-  { value: "HISTORY", label: "🏛️역사" },
-  { value: "ETC", label: "👀기타" },
-] as const;
-
-export default function StoryAdd() {
+const SpotStoryAdd = () => {
   const {
     setButtonStyle,
     setShowCloseButton,
     setShowBackButton,
     setOnClosePress,
   } = useHeaderButtonStore();
-  const { selectedSpotTitle, newSpotName } = useStoryAddStore();
-  const [content, setContent] = useState<string>("");
-  const [selectedConcept, setSelectedConcept] = useState<StoryConcept | null>(
-    null
-  );
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const router = useRouter();
+
+  const {
+    handleRemoveImage,
+    handleAdd,
+    handlePickImage,
+    selectedConcept,
+    setSelectedConcept,
+    content,
+    setContent,
+    selectedImages,
+    handleMapButton,
+  } = useStoryAdd();
+
+  const { setStoryAddStep, setNewSpotName, setStoryLocation } =
+    useStoryAddStore();
+  const newSpotName = useStoryAddStore((state) => state.newSpotName);
 
   useEffect(() => {
     setButtonStyle("NONE");
     setShowCloseButton(true);
     setShowBackButton(false);
     setOnClosePress(() => {
-      router.replace("/story");
+      setNewSpotName(undefined);
+      setStoryLocation(undefined);
+      setStoryAddStep("none");
     });
   }, [setShowCloseButton]);
-
-  const handleMapButton = () => {
-    router.push("/story/spotLocationSelected");
-  };
-
-  const handlePickImage = async () => {
-    if (selectedImages.length >= 3) {
-      Alert.alert("사진은 최대 3장까지 등록 가능합니다.");
-      return;
-    }
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: false,
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        setSelectedImages([...selectedImages, result.assets[0].uri]);
-      }
-    } catch (error) {
-      Alert.alert("오류", "이미지를 불러오는 중 문제가 발생했습니다.");
-    }
-  };
-
-  const handleRemoveImage = (index: number) => {
-    setSelectedImages(selectedImages.filter((_, i) => i !== index));
-  };
-
-  const handleAdd = async () => {
-    if (!content || !newSpotName || !selectedConcept) {
-      Alert.alert("하나라도 빠지면 안해주지롱");
-      return;
-    }
-
-    const { user } = useAuthStore.getState();
-    const { storyLocation } = useStoryAddStore.getState();
-
-    if (!user || !storyLocation) {
-      Alert.alert("정보를 불러오지못했습니다.");
-      return;
-    }
-
-    try {
-      const createRequestData: CreateStoryRequest = {
-        authorId: user.memberId,
-        authorName: user.nickname,
-        authorProfileUrl: user.profileUrl,
-        authorProfileUpdatedAt: user.updatedAt.toISOString(),
-        latitude: storyLocation.latitude,
-        longitude: storyLocation.longitude,
-        title: newSpotName,
-        content: content,
-        storyConcept: selectedConcept,
-        locale: "KO",
-      };
-      await getcreateStory(createRequestData, selectedImages);
-      router.replace("/story");
-    } catch (error) {
-      throw error;
-    }
-  };
 
   return (
     <Container>
@@ -132,7 +64,7 @@ export default function StoryAdd() {
           <MapButtonWrapper onPress={handleMapButton}>
             <MapText>
               <MapPin size={24} />
-              <LocationText>{newSpotName || selectedSpotTitle}</LocationText>
+              <LocationText>{newSpotName}</LocationText>
             </MapText>
             <ChevronRight size={20} />
           </MapButtonWrapper>
@@ -197,7 +129,7 @@ export default function StoryAdd() {
       </ButtonWrapper>
     </Container>
   );
-}
+};
 
 const Container = styled.SafeAreaView`
   flex: 1;
@@ -347,3 +279,5 @@ const ButtonWrapper = styled.View`
   justify-content: center;
   align-items: center;
 `;
+
+export default SpotStoryAdd;
