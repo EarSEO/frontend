@@ -88,7 +88,7 @@ const CurationBottomSheet = () => {
 
   return (
     <>
-      {selectedSight && curationSightList ? (
+      {selectedSight && sightDetail ? (
         <SightDetailCard
           selectedSight={selectedSight}
           sightDetail={sightDetail}
@@ -98,6 +98,7 @@ const CurationBottomSheet = () => {
           handleHeaderClosePress={() => {
             setCurationSightList(undefined);
             deselectSight();
+            
           }}
           handleHeaderBackPress={deselectSight}
         />

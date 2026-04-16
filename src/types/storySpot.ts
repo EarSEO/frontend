@@ -3,26 +3,21 @@ export interface GetLocationSpotBriefInfoResponse {
   titles?: string[];
 }
 
-export interface StoryAuthorResponse {
-  storyAuthorId: number;
-  nickname?: string;
-  profileUrl?: string;
-}
+// export interface StoryAuthorResponse {
+//   storyAuthorId: number;
+//   nickname?: string;
+//   profileUrl?: string;
+// }
 
-export interface StoryData {
-  stories: StoryItems[];
-  number: number;
-  size: number;
-  isFirst: boolean;
-  isLast: boolean;
-  hasNext: boolean;
-  hasPrevious: boolean;
-}
-
-export interface GetSpotBriefInfoRequest {
-  longitude: number;
-  latitude: number;
-}
+// export interface StoryData {
+//   stories: StoryItems[];
+//   number: number;
+//   size: number;
+//   isFirst: boolean;
+//   isLast: boolean;
+//   hasNext: boolean;
+//   hasPrevious: boolean;
+// }
 
 export interface CreateStoryRequest {
   authorId: number;
@@ -39,7 +34,7 @@ export interface CreateStoryRequest {
 
 export interface CreateStoryResponse {
   storyId: number;
-  storySpotId: number;
+  storySpot?: number;
   createdAt: string;
 }
 
@@ -58,7 +53,7 @@ export interface storySpots {
   longitude: number;
   latitude: number;
   storySpotId: number;
-  distance?: number;
+  distance: number;
   title?: string;
 }
 
@@ -85,7 +80,7 @@ export interface SpotsItemInMap {
 
 //공통
 export interface StoryAuthor {
-  storyAuthorId?: number;
+  storyAuthorId: number;
   nickname?: string;
   profileUrl?: string;
 }
@@ -120,7 +115,7 @@ export interface StoryListItem {
 
 //getSpotInfo 스팟 마커 리스트
 export interface GetSpotRequest {
-  storySpotId: number | undefined;
+  storySpotId: number;
   query: {
     query: {
       longitude: number | undefined;
@@ -141,21 +136,22 @@ export interface SpotInfo {
   briefSpotInfo: BriefSpotInfo;
   spotTitleList: SpotTitleList;
   distance: number;
-  storyItems: StoryItems[];
+  stories: Stories[];
   summaries: StorySummary[];
 }
 
 export interface BriefSpotInfo {
-  longitude?: number;
-  latitude?: number;
-  storySpotId?: number;
+  longitude: number;
+  latitude: number;
+  storySpotId: number;
 }
 
 export interface SpotTitleList {
   titles?: string[];
 }
 
-export interface StoryItems {
+export interface Stories {
+  storyId: number;
   storyAuthor?: StoryAuthor;
   title?: string;
   content?: string;
@@ -168,7 +164,7 @@ export interface StoryItems {
 }
 
 export interface StorySummary {
-  storySpotSummaryId?: number;
+  storySpotSummaryId: number;
   storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
   docentUrl?: string;
   title?: string;

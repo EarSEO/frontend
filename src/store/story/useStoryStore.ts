@@ -2,18 +2,14 @@ import { create } from "zustand";
 
 import {
   BriefSpotInfo,
-  GetSearchTitleRequest,
-  SearchSpotInfoResponse,
   SpotInfo,
   SpotsItemInMap,
   SpotTitleList,
-  StoryItems,
+  Stories,
   StoryListItem,
   storySpots,
   StorySummary,
 } from "@/types/storySpot";
-
-import { getSearchStory } from "@/api/getStoryApi";
 
 interface StoryStore {
   isLoading: boolean;
@@ -26,17 +22,16 @@ interface StoryStore {
 
   selectedStorySpot: (selectedSpotStoryInfo: SpotInfo[]) => void;
 
-  setSearchStory: (
-    param: GetSearchTitleRequest
-  ) => Promise<SearchSpotInfoResponse | undefined>;
   selectedSpotStoryInfo: SpotInfo[];
-  searchedStoryInfo?: storySpots[];
 
-  storyItems?: StoryItems[];
+  stories?: Stories[];
   briefSpotInfo?: BriefSpotInfo;
   spotTitleList?: SpotTitleList;
   distance?: number;
   summaries?: StorySummary[];
+
+  searchedSpot?: storySpots;
+  setSearchedSpot: (searchedSpot?: storySpots) => void;
 
   setLoading: (loading: boolean) => void;
 }
@@ -51,13 +46,12 @@ const initialState = {
 
   selectedStorySpot: undefined,
   selectedSpotStoryInfo: [],
+  searchedSpot: undefined,
 
   spotLists: [],
   storyLists: [],
 
   isLoading: true,
-
-  searchedStoryInfo: undefined,
 };
 
 export const useStoryStore = create<StoryStore>((set, get) => ({
@@ -92,42 +86,30 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
         spotTitleList: undefined,
         distance: undefined,
         summaries: undefined,
-        storyItems: undefined,
+        stories: undefined,
       });
       return;
     }
 
     set({
-      selectedSpotStoryInfo,
+      selectedSpotStoryInfo: selectedSpotStoryInfo,
       briefSpotInfo: selectedSpotInfo.briefSpotInfo,
       spotTitleList: selectedSpotInfo.spotTitleList,
       distance: selectedSpotInfo.distance,
       summaries: selectedSpotInfo.summaries,
-      storyItems: selectedSpotInfo.storyItems?.map((storyItem) => ({
+      stories: selectedSpotInfo.stories?.map((storyItem) => ({
         ...storyItem,
         createdAt: formatDateArray(storyItem.createdAt),
       })),
     });
   },
 
-  //스토리 검색
-  setSearchStory: async (
-    param: GetSearchTitleRequest
-  ): Promise<SearchSpotInfoResponse | undefined> => {
-    try {
-      const response: SearchSpotInfoResponse = await getSearchStory(param);
-      set({
-        searchedStoryInfo: response.storySpots,
-      });
-      return response;
-    } catch (error) {
-      set({ searchedStoryInfo: undefined });
-      return undefined;
+  setSearchedSpot: (searchedSpot?: storySpots) => {
+    if (!searchedSpot) {
+      set({ searchedSpot: undefined });
+    } else {
+      set({ searchedSpot: searchedSpot });
     }
-  },
-
-  resetSearchStory: () => {
-    set({ searchedStoryInfo: undefined });
   },
 
   setLoading: (loading) => set({ isLoading: loading }),

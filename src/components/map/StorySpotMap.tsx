@@ -18,22 +18,22 @@ import { useLocation } from "@/hooks/useLocation";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
-import { MapSpotInfoItem } from "@/types/storySpot";
+import { SpotsItemInMap } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
 
-import {useLocationStore} from "@/store/useLocationStore";
+import { useLocationStore } from "@/store/useLocationStore";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
 
 interface StorySpotMapProps {
   animatedPosition?: SharedValue<number>;
-  storyMarkers?: MapSpotInfoItem[];
+  storyMarkers?: SpotsItemInMap[];
   sightMarkers?: SightInfo[];
   selectedStoryMarkerId?: number | null;
-  selectedSightMarkerId?: string | null;
-  onStoryMarkerPress?: (spot: MapSpotInfoItem) => void;
+  selectedSightMarkerId?: number | null;
+  onStoryMarkerPress?: (spot: SpotsItemInMap) => void;
   onSightMarkerPress?: (sight: SightInfo) => void;
   scrollEnabled?: boolean;
   zoomEnabled?: boolean;
@@ -71,7 +71,7 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
     ref
   ) => {
     const mapRef = useRef<MapView>(null);
-    const location = useLocationStore(state => state.location);
+    const location = useLocationStore((state) => state.location);
 
     useImperativeHandle(ref, () => ({
       getBoundaries: async () => {

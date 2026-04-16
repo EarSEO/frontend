@@ -10,7 +10,7 @@ import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
   const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
-  const storyInfo = useStoryStore((state) => state.storyItems);
+  const storyItems = useStoryStore((state) => state.stories);
   const spotTitleList = useStoryStore((state) => state.spotTitleList);
 
   //spot names
@@ -41,7 +41,7 @@ const StorySpotHeader = () => {
         </Description>
       </DescriptionWrapper>
       <ContentWrapper>
-        {storyInfo?.map((story, index) => (
+        {storyItems?.map((story, index) => (
           <StoryCard
             key={`${story}-${index}`}
             storyId={briefSpotInfo?.storySpotId}

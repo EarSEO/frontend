@@ -24,7 +24,6 @@ import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
-import { StoryAddButton } from "../story/StoryAddButton";
 import SightInfo from "./SightInfo";
 import SightStory from "./SightStory";
 
@@ -78,7 +77,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   useEffect(() => {
     if (!selectedSight) return;
     const sightLocation = {
-      storyId: selectedSight,
+      storySpotId: selectedSight.id,
       longitude: selectedSight.longitude,
       latitude: selectedSight.latitude,
     };
@@ -116,10 +115,10 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
               e.stopPropagation();
               if (isInCart) {
-                removeRouteCartItem(String(selectedSight.id));
+                removeRouteCartItem(selectedSight.id);
               } else {
                 insertRouteCartItem({
-                  sightId: String(sightDetail?.id ?? selectedSight.id),
+                  sightId: sightDetail?.id ?? selectedSight.id,
                   theme: sightDetail?.theme ?? "",
                   title: sightDetail?.title ?? "",
                   address: sightDetail?.address ?? "",
@@ -205,9 +204,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
           ) : (
             <>
               <SightStory />
-              <StoryButtonWrapper>
-                <StoryAddButton />
-              </StoryButtonWrapper>
+              <StoryButtonWrapper></StoryButtonWrapper>
             </>
           )}
         </ContentContainer>
@@ -308,4 +305,13 @@ const ContentContainer = styled.View`
   flex: 1;
 `;
 
-const StoryButtonWrapper = styled.View``;
+const StoryButtonWrapper = styled.View`
+  position: absolute;
+  bottom: 150px;
+  right: 30px;
+
+  width: 24px;
+  height: 24px;
+
+  align-items: center;
+`;

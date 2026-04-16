@@ -1,37 +1,37 @@
 import { useCallback, useState } from "react";
 
+import { Keyboard } from "react-native";
 import { BoundingBox } from "react-native-maps";
 
-import { useBaseMap } from "@/hooks/useBaseMap";
-
 import {
+  GetSearchTitleRequest,
   GetSpotInMapRequest,
   GetStoryInMapRequest,
-  SpotInfo,
   SpotsItemInMap,
   SpotsListInMap,
   StoryInMapResponse,
-  StoryListItem,
+  storySpots,
 } from "@/types/storySpot";
 
+import { KOREA_GEOM } from "@/constants/geometry";
+
 import {
+  getSearchStory,
   getSpotInfo,
   getSpotListInMap,
   getStoryListInMap,
 } from "@/api/getStoryApi";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
+import { useLocationStore } from "@/store/useLocationStore";
 
 export const useStorySpotMap = () => {
-  const {
-    setSearchStory,
-    setSpotListInMap,
-    selectedStorySpot,
-    setStoryListInMap,
-  } = useStoryStore();
+  const { setSpotListInMap, selectedStorySpot, setStoryListInMap } =
+    useStoryStore();
 
-  const [selectedMarkerId, setSelectedMarkerId] = useState<
-    number | undefined
-  >();
+  const location = useLocationStore((state) => state.location);
+
+  const [searchResults, setSearchResults] = useState<storySpots[]>([]);
 
   //지도상에 있는 마커들의 위치 정보 가져오기
   const fetchSpotMarkerInMap = useCallback(
@@ -132,62 +132,58 @@ export const useStorySpotMap = () => {
     [selectedStorySpot]
   );
 
-  //
-  // = useCallback((story: MapSpotInfoItem) => {
-  // const storyRequest = {
-  //   storySpotId: story.storySpotId,
-  //   query: {
-  //     query: {
-  //       longitude: story.longitude,
-  //       latitude: story.latitude,
-  //       locale: "KO" as const,
-  //       page: 0,
-  //       size: 1000,
-  //       sort: "createdAt,desc" as const,
-  //     },
-  //   },
-  // };
-  // }, []);
+  // 스팟 검색만
+  const OnSpotSearch = useCallback(
+    (spotTitle: string) => {
+      if (!spotTitle.trim()) {
+        setSearchResults([]);
+        return;
+      } else {
+        fetchSearchedSpotInfo(spotTitle, {
+          longitude: location.longitude,
+          latitude: location.latitude,
+        });
+      }
+    },
+    [location.longitude, location.latitude]
+  );
 
-  // //이야기 검색 시
-  // const handleSearch = async () => {
-  //   Keyboard.dismiss();
-  //   try {
-  //     const searchParams: GetSearchTitleRequest = {
-  //       keyword: inputSpotName,
-  //       longitude: storyLocation.longitude,
-  //       latitude: storyLocation.latitude,
-  //       minLongitude: KOREA_GEOM.LOGITUDE.MIN,
-  //       minLatitude: KOREA_GEOM.LATITUDE.MIN,
-  //       maxLongitude: KOREA_GEOM.LOGITUDE.MAX,
-  //       maxLatitude: KOREA_GEOM.LATITUDE.MAX,
-  //       limit: "10",
-  //     };
-  //     await setSearchStory(searchParams);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
-  function formatDateArray(dateArray: number[] | string | undefined): string {
-    if (typeof dateArray === "string") return dateArray;
-    if (!dateArray || !Array.isArray(dateArray)) return "";
-
-    const [year, month, day, hour, minute] = dateArray;
-    return `${year}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")} ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-  }
+  //검색한 스팟 선택 시
+  const fetchSearchedSpotInfo = async (
+    keyword: string,
+    currentLocation: { longitude: number; latitude: number }
+  ) => {
+    Keyboard.dismiss();
+    try {
+      const searchParams: GetSearchTitleRequest = {
+        keyword: keyword,
+        longitude: currentLocation.longitude,
+        latitude: currentLocation.latitude,
+        minLongitude: KOREA_GEOM.LOGITUDE.MIN,
+        minLatitude: KOREA_GEOM.LATITUDE.MIN,
+        maxLongitude: KOREA_GEOM.LOGITUDE.MAX,
+        maxLatitude: KOREA_GEOM.LATITUDE.MAX,
+        limit: "10",
+      };
+      const searchedSpot = await getSearchStory(searchParams);
+      setSearchResults(searchedSpot.storySpots);
+    } catch (error) {
+      throw error;
+    }
+  };
 
   return {
-    selectedMarkerId,
+    // selectedMarkerId,
+    searchResults,
 
     //액션
     fetchSpotDetail,
     fetchStoryListInMap,
     fetchSpotMarkerInMap,
+    fetchSearchedSpotInfo,
 
     //상태
-
     fetchStorySpotInBoundingBox,
-    setSearchStory,
+    OnSpotSearch,
   };
 };
