@@ -35,8 +35,6 @@ export const useStoryAdd = () => {
     useStoryAddStore();
   const { setSearchedSpot } = useStoryStore();
   //핀 위치 위경도로 변경
-  const { setCenterPinVisibility } = useBaseMapStore();
-  const { setMapHeaderContent } = useMapHeaderStore();
 
   //검색한 장소 선택 시
   const searchedSpot = useStoryStore((state) => state.searchedSpot);
@@ -48,13 +46,10 @@ export const useStoryAdd = () => {
   );
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const newSpotName = useStoryAddStore((state) => state.newSpotName);
-  const markedLocation = useStoryAddStore((state) => state.markedLocation);
+  const addStoryLocation = useStoryAddStore((state) => state.addStoryLocation);
 
   //storyAdd 버튼 클릭 시
   const handleStoryAddButton = useCallback(() => {
-    setCenterPinVisibility(true);
-    setMapHeaderContent(undefined);
-
     if (
       briefSpotInfo?.longitude !== undefined &&
       briefSpotInfo?.latitude !== undefined
@@ -81,14 +76,12 @@ export const useStoryAdd = () => {
       setStoryAddStep("location");
     }
   }, [
-    mapType,
     briefSpotInfo?.latitude,
     briefSpotInfo?.longitude,
     selectedSight,
     setStoryAddStep,
     setStoryLocation,
-    setCenterPinVisibility,
-    setMapHeaderContent,
+    setNewSpotName,
   ]);
 
   //selectedSpot값(location에서 검색하고 선택 된 값) 있으면 조회해서 이름 띄워주기
@@ -153,7 +146,7 @@ export const useStoryAdd = () => {
     setStoryLocation(undefined);
   }, [setStoryAddStep]);
 
-  //스토리 추가
+  //스토리 추가 버튼 클릭
   const handleAdd = useCallback(async () => {
     if (!content || !newSpotName || !selectedConcept) {
       Alert.alert("모든 항목을 입력해주세요.");
@@ -166,7 +159,7 @@ export const useStoryAdd = () => {
       Alert.alert("(유저)정보를 불러오지못했습니다.");
       return;
     }
-    if (!markedLocation) {
+    if (!addStoryLocation) {
       Alert.alert("(위치)정보를 불러오지못했습니다.");
       return;
     }
@@ -176,8 +169,8 @@ export const useStoryAdd = () => {
         authorName: user.nickname,
         authorProfileUrl: user.profileUrl,
         authorProfileUpdatedAt: user.updatedAt.toISOString(),
-        latitude: markedLocation.latitude,
-        longitude: markedLocation.longitude,
+        latitude: addStoryLocation.latitude,
+        longitude: addStoryLocation.longitude,
         title: newSpotName,
         content: content,
         storyConcept: selectedConcept,
@@ -185,18 +178,17 @@ export const useStoryAdd = () => {
       };
       await getcreateStory(createRequestData, selectedImages);
       setStoryAddStep("none");
-      setCenterPinVisibility(false);
     } catch (error) {
       throw error;
     }
-  }, [markedLocation, newSpotName, content, selectedConcept]);
+  }, [addStoryLocation, newSpotName, content, selectedConcept]);
 
   return {
     handleStoryAddButton,
     fetchAddSpotInfo,
     handleNewSpotInfo,
 
-    markedLocation,
+    addStoryLocation,
     setNewSpotName,
     setStoryLocation,
 

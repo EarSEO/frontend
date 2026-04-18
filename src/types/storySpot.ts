@@ -1,5 +1,5 @@
 export interface GetLocationSpotBriefInfoResponse {
-  spotId?: number;
+  spotId: number;
   titles?: string[];
 }
 

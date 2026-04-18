@@ -34,11 +34,11 @@ export const getSpotInfo = async (param: GetSpotRequest): Promise<SpotInfo> => {
 //스팟 선택(storyId) -> 관련스팟 제목
 
 //스팟 선택(위치정보) -> 관련 스팟 제목,id 가져오기 (좌표기반이야기 스팟 정보 조회)
-export const getStorySpotBriefInfo = async (param: LatLng) => {
+export const getStorySpotInfoBrief = async (param: LatLng) => {
   try {
     const response = await api.get<
       BaseResponse<GetLocationSpotBriefInfoResponse>
-    >(`${API_ENDPOINTS.STORY.SPOT_BRIEF_INFO}`, { params: param });
+    >(`${API_ENDPOINTS.STORY.SPOT_INFO_BRIEF}`, { params: param });
     return response.data.data;
   } catch (error) {
     throw error;

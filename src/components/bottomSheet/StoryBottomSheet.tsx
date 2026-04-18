@@ -8,7 +8,9 @@ import { theme } from "@/styles/theme";
 
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
+import { useBaseMapStore } from "@/store/useBaseMapStore";
 import { useBottomSheetStore } from "@/store/useBottomSheetStore";
+import { useMapHeaderStore } from "@/store/useMapHeaderStore";
 
 import Button from "../common/Button";
 import MainStoryHeader from "../story/MainStoryHeader";
@@ -28,6 +30,9 @@ const StoryBottomSheet = () => {
 
   const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
 
+  const { setCenterPinVisibility } = useBaseMapStore();
+  const { setMapHeaderContent } = useMapHeaderStore();
+
   useEffect(() => {
     let button;
     switch (storyAddStep) {
@@ -39,6 +44,8 @@ const StoryBottomSheet = () => {
         );
         break;
       case "location":
+        setCenterPinVisibility(true);
+        setMapHeaderContent(undefined);
         button = (
           <ButtonWrapper>
             <Button
@@ -51,6 +58,7 @@ const StoryBottomSheet = () => {
         );
         break;
       case "name":
+        setMapHeaderContent(undefined);
         button = (
           <ButtonWrapper>
             <Button

@@ -2,7 +2,7 @@ import { LatLng } from "react-native-maps/src/sharedTypes";
 
 import { create } from "zustand";
 
-import { SpotInfo, storySpots } from "@/types/storySpot";
+import { storySpots } from "@/types/storySpot";
 
 export type StoryAddStep = "none" | "location" | "name" | "storyAdd";
 
@@ -10,8 +10,8 @@ interface storyAddStore {
   newSpotName?: string;
   setNewSpotName: (newSpotName?: string) => void;
 
-  markedLocation?: LatLng;
-  setStoryLocation: (markedLocation?: LatLng) => void;
+  addStoryLocation?: LatLng;
+  setStoryLocation: (addStoryLocation?: LatLng) => void;
 
   storyAddStep: StoryAddStep;
   setStoryAddStep: (step: StoryAddStep) => void;
@@ -29,7 +29,7 @@ export const useStoryAddStore = create<storyAddStore>((set, get) => ({
   newSpotName: undefined,
   selectedSpotTitle: undefined,
   storyAddStep: "none",
-  markedLocation: undefined,
+  addStoryLocation: undefined,
 
   //이야기 등록 시 새로운 스토리 이름 저장
   setNewSpotName: (newSpotName?: string) => {
@@ -40,11 +40,11 @@ export const useStoryAddStore = create<storyAddStore>((set, get) => ({
     }
   },
 
-  setStoryLocation: (markedLocation?: LatLng) => {
-    if (!markedLocation) {
-      set({ markedLocation: undefined });
+  setStoryLocation: (addStoryLocation?: LatLng) => {
+    if (!addStoryLocation) {
+      set({ addStoryLocation: undefined });
     } else {
-      set({ markedLocation: markedLocation });
+      set({ addStoryLocation: addStoryLocation });
     }
   },
 

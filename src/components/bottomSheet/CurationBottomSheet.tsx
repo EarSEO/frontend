@@ -13,9 +13,11 @@ import {
   RouteCartItem,
   useRouteCartStore,
 } from "@/store/route/useRouteCartStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 
 import SightDetailCard from "../sight/SightDetailCard";
+import StoryBottomSheet from "./StoryBottomSheet";
 
 const CurationBottomSheet = () => {
   const { fetchSightDetail } = useSightMap();
@@ -86,38 +88,51 @@ const CurationBottomSheet = () => {
     };
   }, [curationSightList, selectedSight]);
 
+  const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
+  const { setStoryLocation } = useStoryAddStore();
+
+  if (selectedSight && storyAddStep === "storyAdd") {
+    return <StoryBottomSheet />;
+  }
+
+  if (selectedSight && sightDetail) {
+    return (
+      <SightDetailCard
+        selectedSight={selectedSight}
+        sightDetail={sightDetail}
+        isDetailLoading={isDetailLoading}
+        isInCart={isInCart}
+        onToggleRoute={handleToggleRoute}
+        handleHeaderClosePress={() => {
+          setCurationSightList(undefined);
+          deselectSight();
+        }}
+        handleHeaderBackPress={() => {
+          deselectSight();
+          setStoryLocation(undefined);
+        }}
+      />
+    );
+  }
+
+  if (curationSightList !== undefined) {
+    return (
+      <CurationDetail
+        curationSightList={curationSightList}
+        selectedCurationTitle={selectedCurationTitle}
+        selectedCurationDescription={selectedCurationDescription}
+        handleCardPress={fetchSightDetail}
+        handleHeaderBackPress={() => setCurationSightList(undefined)}
+      />
+    );
+  }
+
   return (
-    <>
-      {selectedSight && sightDetail ? (
-        <SightDetailCard
-          selectedSight={selectedSight}
-          sightDetail={sightDetail}
-          isDetailLoading={isDetailLoading}
-          isInCart={isInCart}
-          onToggleRoute={handleToggleRoute}
-          handleHeaderClosePress={() => {
-            setCurationSightList(undefined);
-            deselectSight();
-            
-          }}
-          handleHeaderBackPress={deselectSight}
-        />
-      ) : curationSightList !== undefined ? (
-        <CurationDetail
-          curationSightList={curationSightList}
-          selectedCurationTitle={selectedCurationTitle}
-          selectedCurationDescription={selectedCurationDescription}
-          handleCardPress={fetchSightDetail}
-          handleHeaderBackPress={() => setCurationSightList(undefined)}
-        />
-      ) : (
-        <CurationList
-          curations={curations}
-          isLoading={isCurationLoading}
-          onCurationSelect={fetchCurationDetail}
-        />
-      )}
-    </>
+    <CurationList
+      curations={curations}
+      isLoading={isCurationLoading}
+      onCurationSelect={fetchCurationDetail}
+    />
   );
 };
 

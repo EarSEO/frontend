@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
 
   STORY: {
     SPOT_INFO: (storySpotId: number) => `/api/story/spot/${storySpotId}/info`,
-    SPOT_BRIEF_INFO: "/api/story/spot/info/brief",
+    SPOT_INFO_BRIEF: "/api/story/spot/info/brief",
     CREATE: "/api/user/story/create",
     DOCENT_SCRIPT: "/api/story/docent",
     SEARCH: "/api/story/search/title",

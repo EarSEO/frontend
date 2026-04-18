@@ -2,12 +2,13 @@ import { useCallback, useState } from "react";
 
 import { Keyboard } from "react-native";
 import { BoundingBox } from "react-native-maps";
+import { LatLng } from "react-native-maps/src/sharedTypes";
 
 import {
+  BriefSpotInfo,
   GetSearchTitleRequest,
   GetSpotInMapRequest,
   GetStoryInMapRequest,
-  SpotsItemInMap,
   SpotsListInMap,
   StoryInMapResponse,
   storySpots,
@@ -20,8 +21,8 @@ import {
   getSpotInfo,
   getSpotListInMap,
   getStoryListInMap,
+  getStorySpotInfoBrief,
 } from "@/api/getStoryApi";
-import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useLocationStore } from "@/store/useLocationStore";
 
@@ -107,21 +108,21 @@ export const useStorySpotMap = () => {
 
   // 스토리 마커 선택 시
   const fetchSpotDetail = useCallback(
-    async (spotInfo: SpotsItemInMap) => {
-      try {
-        const spotRequest = {
-          storySpotId: spotInfo.storySpotId,
+    async (spotInfo: BriefSpotInfo) => {
+      const spotRequest = {
+        storySpotId: spotInfo.storySpotId,
+        query: {
           query: {
-            query: {
-              longitude: spotInfo.longitude,
-              latitude: spotInfo.latitude,
-              locale: "KO" as const,
-              page: 0,
-              size: 1000,
-              sort: "createdAt,desc" as const,
-            },
+            longitude: spotInfo.longitude,
+            latitude: spotInfo.latitude,
+            locale: "KO" as const,
+            page: 0,
+            size: 1000,
+            sort: "createdAt,desc" as const,
           },
-        };
+        },
+      };
+      try {
         const spotDeatil = await getSpotInfo(spotRequest);
         selectedStorySpot([spotDeatil]);
         return spotDeatil;
@@ -130,6 +131,26 @@ export const useStorySpotMap = () => {
       }
     },
     [selectedStorySpot]
+  );
+
+  //sight -> storySpotId 조회
+  const fetchStorySpotId = useCallback(
+    async (location: LatLng) => {
+      try {
+        const res = await getStorySpotInfoBrief(location);
+        if (location && res) {
+          const sightStoryInfo = {
+            longitude: location.longitude,
+            latitude: location.latitude,
+            storySpotId: res.spotId,
+          };
+          fetchSpotDetail(sightStoryInfo);
+        } else return;
+      } catch (error) {
+        console.error("fetchStorySpotId에러");
+      }
+    },
+    [location, fetchSpotDetail]
   );
 
   // 스팟 검색만
@@ -181,6 +202,7 @@ export const useStorySpotMap = () => {
     fetchStoryListInMap,
     fetchSpotMarkerInMap,
     fetchSearchedSpotInfo,
+    fetchStorySpotId,
 
     //상태
     fetchStorySpotInBoundingBox,

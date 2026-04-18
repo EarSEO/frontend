@@ -1,50 +1,25 @@
-import { useEffect } from "react";
-
 import styled from "styled-components/native";
 
 import { useSightMap } from "@/hooks/sight/useSightMap";
-import { useStoryAdd } from "@/hooks/story/useStoryAdd";
 
 import { useSightStore } from "@/store/sight/useSightStore";
-import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 
-import { StoryAddButton } from "../story/StoryAddButton";
 import StoryCard from "../story/StoryCard";
 
 const SightStory = () => {
-  const { sightStoryDetails } = useSightMap();
-  const { briefSpotInfo } = useStoryStore();
-  const { isLoading } = useSightStore();
+  const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
   const sightStoryId = briefSpotInfo?.storySpotId;
-
-  const { handleStoryAddButton } = useStoryAdd();
-  const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
-  const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
-
-  useEffect(() => {
-    const button =
-      storyAddStep == "none" ? (
-        <AddButtonWrapper>
-          <StoryAddButton onPressButton={handleStoryAddButton} />
-        </AddButtonWrapper>
-      ) : (
-        <></>
-      );
-    setBottomSheetAbsoluteBottom(button);
-    return () => {
-      setBottomSheetAbsoluteBottom(undefined);
-    };
-  }, [storyAddStep]);
+  const storyItems = useStoryStore((state) => state.stories);
+  const { isLoading } = useSightStore();
 
   return (
     <Container>
-      {sightStoryDetails ? (
+      {storyItems ? (
         <StoryContentContainer>
           {isLoading ? <InfoText>이야기 불러오는 중...</InfoText> : null}
           <StoryWrapper>
-            {sightStoryDetails?.map((story, index) => (
+            {storyItems?.map((story, index) => (
               <StoryCard
                 key={`${story.createdAt}-${index}`}
                 storyId={sightStoryId}
@@ -79,10 +54,4 @@ const StoryWrapper = styled.Pressable``;
 const InfoText = styled.Text`
   padding: 20px;
   text-align: center;
-`;
-
-const AddButtonWrapper = styled.View`
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
 `;

@@ -7,7 +7,7 @@ import {
   SearchSightParams,
   SightInfo,
 } from "@/types/sight";
-import { BriefSpotInfo, GetSpotRequest, Stories } from "@/types/storySpot";
+import { BriefSpotInfo, GetSpotRequest } from "@/types/storySpot";
 
 import { getSpotInfo } from "@/api/getStoryApi";
 import { getSearchSight } from "@/api/sight/getSearchSight";
@@ -32,7 +32,7 @@ export const useSightMap = () => {
     clearSelection,
   } = useSightStore();
 
-  const { briefSpotInfo } = useStoryStore();
+  const { selectedStorySpot } = useStoryStore();
 
   // 검색 관련 상태
   const [searchResults, setSearchResults] = useState<SightInfo[]>([]);
@@ -42,9 +42,6 @@ export const useSightMap = () => {
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const searchDebounceTimer = useRef<NodeJS.Timeout | null>(null);
-
-  // 관광지 내 이야기 상태
-  const [sightStoryDetails, setSightstoryDetails] = useState<Stories[]>();
 
   // 영역 내 관광지 조회 (기존 코드 유지)
   const fetchSightsInBounds = useCallback(
@@ -56,7 +53,7 @@ export const useSightMap = () => {
         )
           return;
         setLoading(true);
-        setError(null);
+        setError(undefined);
         const result = await getSightsInRectangle(bounds);
         setSights(result);
       } catch (err) {
@@ -206,46 +203,44 @@ export const useSightMap = () => {
     clearSelection();
   }, [clearSelection]);
 
-  //sight 이야기 조회
-  const fetchStoryDetail = useCallback(
-    async (spotInfo: BriefSpotInfo) => {
-      if (!spotInfo) {
-        setLoading(true);
-        return;
-      }
-
-      const req: GetSpotRequest = {
-        storySpotId: spotInfo?.storySpotId,
-        query: {
-          query: {
-            longitude: spotInfo.longitude,
-            latitude: spotInfo.latitude,
-            locale: "KO" as const,
-            page: 0,
-            size: 1000,
-            sort: "createdAt,desc" as const,
-          },
-        },
-      };
-      try {
-        const res = await getSpotInfo(req);
-        setSightstoryDetails(res.stories);
-      } catch (e) {
-        setSightstoryDetails([]);
-      } finally {
-        setLoading(false);
-      }
-
-      setLoading(true);
-    },
-    [briefSpotInfo, selectedSight]
-  );
+  // //sight 이야기 조회
+  // const fetchStoryDetail = useCallback(
+  //   async (spotInfo: BriefSpotInfo) => {
+  //     if (!spotInfo) {
+  //       setLoading(true);
+  //       return;
+  //     }
+  //     try {
+  //       const req: GetSpotRequest = {
+  //         storySpotId: spotInfo?.storySpotId,
+  //         query: {
+  //           query: {
+  //             longitude: spotInfo.longitude,
+  //             latitude: spotInfo.latitude,
+  //             locale: "KO" as const,
+  //             page: 0,
+  //             size: 1000,
+  //             sort: "createdAt,desc" as const,
+  //           },
+  //         },
+  //       };
+  //       const res = await getSpotInfo(req);
+  //       console.log("관광지 이야기 성공", req.storySpotId);
+  //       selectedStorySpot([res]);
+  //     } catch (e) {
+  //       console.error("관광지 이야기 조회 실패", e);
+  //       selectedStorySpot([]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   },
+  //   [, selectedStorySpot, setLoading]
+  // );
 
   return {
     // 상태
     sights,
     selectedSight,
-    sightStoryDetails,
     sightDetail,
     isLoading,
     isDetailLoading,
@@ -262,7 +257,7 @@ export const useSightMap = () => {
     fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,
-    fetchStoryDetail,
+    // fetchStoryDetail,
 
     // 검색 액션
     searchSightsInBounds,

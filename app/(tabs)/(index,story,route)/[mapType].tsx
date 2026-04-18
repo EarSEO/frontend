@@ -113,13 +113,11 @@ function MapTabScreen() {
         case "name":
           setSnapPoints(["45%"]);
           setTimeout(() => bottomSheetRef.current?.snapToIndex(0), 20);
-          setMapHeaderContent(undefined);
           setSpotListInMap([]);
           break;
         case "storyAdd":
-          setSnapPoints(["100%"]);
-          setTimeout(() => bottomSheetRef.current?.snapToIndex(0), 20);
-          setMapHeaderContent(undefined);
+          setSnapPoints(["45%", "100%"]);
+          setTimeout(() => bottomSheetRef.current?.snapToIndex(1), 20);
           setSpotListInMap([]);
           break;
       }
@@ -145,6 +143,7 @@ function MapTabScreen() {
       setStoryAddStep("none");
       setNewSpotName(undefined);
       setStoryLocation(undefined);
+      setNewSpotName(undefined);
     };
   }, [mapType]);
 

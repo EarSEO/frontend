@@ -6,7 +6,8 @@ import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import styled from "styled-components/native";
 
 import { useBookmark } from "@/hooks/sight/useBookmark";
-import { useSightMap } from "@/hooks/sight/useSightMap";
+import { useStoryAdd } from "@/hooks/story/useStoryAdd";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { SightDetailCardProps } from "@/types/sight";
@@ -18,12 +19,15 @@ import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useBookmarkStore } from "@/store/useBookmarkStore";
+import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
+import { StoryAddButton } from "../story/StoryAddButton";
 import SightInfo from "./SightInfo";
 import SightStory from "./SightStory";
 
@@ -41,8 +45,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
-  const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
-  const { fetchStoryDetail } = useSightMap();
+  const { fetchStorySpotId } = useStorySpotMap();
   const { userBookmarkList } = useBookmarkStore();
 
   const { insertBookmark, removeBookmark } = useBookmark();
@@ -73,16 +76,35 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
     setOnClosePress,
   ]);
 
+  const { handleStoryAddButton } = useStoryAdd();
+  const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
+
+  const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
+
+  useEffect(() => {
+    const button =
+      activeTab === "sightStory" ? (
+        <AddButtonWrapper>
+          <StoryAddButton onPressButton={handleStoryAddButton} />
+        </AddButtonWrapper>
+      ) : (
+        <></>
+      );
+    setBottomSheetAbsoluteBottom(button);
+    return () => {
+      setBottomSheetAbsoluteBottom(undefined);
+    };
+  }, [activeTab]);
+
   //sight 조회 시 srotyId 저장
   useEffect(() => {
     if (!selectedSight) return;
     const sightLocation = {
-      storySpotId: selectedSight.id,
       longitude: selectedSight.longitude,
       latitude: selectedSight.latitude,
     };
-    fetchStoryDetail(sightLocation);
-  }, [briefSpotInfo, selectedSight?.latitude, selectedSight?.longitude]);
+    fetchStorySpotId(sightLocation);
+  }, [fetchStorySpotId, selectedSight?.latitude, selectedSight?.longitude]);
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
     const position = e.nativeEvent.position;
@@ -314,4 +336,10 @@ const StoryButtonWrapper = styled.View`
   height: 24px;
 
   align-items: center;
+`;
+
+const AddButtonWrapper = styled.View`
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 `;

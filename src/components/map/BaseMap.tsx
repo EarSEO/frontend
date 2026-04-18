@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import { LayoutChangeEvent } from "react-native/Libraries/Types/CoreEventTypes";
-import MapView, {
+import {
   MapPressEvent,
   Marker,
   MarkerPressEvent,
@@ -35,7 +34,6 @@ import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 import { useBaseMapStore } from "@/store/useBaseMapStore";
 import { useLocationStore } from "@/store/useLocationStore";
-import { LatLng } from "react-native-maps/src/sharedTypes";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
@@ -128,8 +126,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
     };
   });
 
-  //test
-  const markedLocation = useStoryAddStore((state) => state.markedLocation);
+  //MapPin store에 저장
   const handleCenterPinRegion = useCallback(
     (region: Region) => {
       setStoryLocation({
@@ -212,7 +209,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
         }}
         onPress={(e: MapPressEvent) => {
           e.stopPropagation();
-          selectSight(null);
+          selectSight(undefined);
           selectedStorySpot([]);
         }}
         followsUserLocation={isMapFollowingUser}
@@ -266,10 +263,10 @@ const BaseMap: React.FC<BaseMapProps> = ({
               });
               selectSight(sight);
             }}
-            onDeselect={() => selectSight(null)}
+            onDeselect={() => selectSight(undefined)}
           />
         ))}
-        {spotLists?.map((spots) => (
+        {spotLists.map((spots) => (
           <Marker
             key={spots.storySpotId}
             coordinate={{
@@ -287,13 +284,6 @@ const BaseMap: React.FC<BaseMapProps> = ({
             }}
           />
         ))}
-        {markedLocation && (
-          <Marker
-            key={markedLocation?.latitude}
-            coordinate={markedLocation}
-            pinColor="green"
-          />
-        )}
       </AnimatedClusterMapView>
 
       {centerPinVisibility && (

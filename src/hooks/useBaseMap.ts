@@ -1,31 +1,33 @@
-import {useCallback, useEffect} from "react";
+import { useCallback, useEffect } from "react";
 
-import {GestureResponderEvent} from "react-native";
-import {BoundingBox, Details, LatLng, Region} from "react-native-maps";
+import { GestureResponderEvent } from "react-native";
+import { BoundingBox, Details, LatLng, Region } from "react-native-maps";
+import { Marker } from "react-native-svg";
 
-import {SNAP_POINT_TYPE} from "@gorhom/bottom-sheet";
+import { SNAP_POINT_TYPE } from "@gorhom/bottom-sheet";
+import * as Location from "expo-location";
 
-import {useBaseMapStore} from "@/store/useBaseMapStore";
-import {useBottomSheetStore} from "@/store/useBottomSheetStore";
-import {useLocationStore} from "@/store/useLocationStore";
+import { useBaseMapStore } from "@/store/useBaseMapStore";
+import { useBottomSheetStore } from "@/store/useBottomSheetStore";
+import { useLocationStore } from "@/store/useLocationStore";
 
 export const useBaseMap = () => {
-  const {setIsMapFollowingUser, setLocationButtonVisible} = useBaseMapStore();
+  const { setIsMapFollowingUser, setLocationButtonVisible } = useBaseMapStore();
 
   const getCurMapRef = useCallback(() => {
-      return useBaseMapStore.getState().mapRef;
+    return useBaseMapStore.getState().mapRef;
   }, []);
 
   const moveToLocation = useCallback((latLng: LatLng) => {
     const mapRef = getCurMapRef();
-    mapRef?.current?.animateCamera({center: latLng});
+    mapRef?.current?.animateCamera({ center: latLng });
   }, []);
 
   const moveToRegion = useCallback(async (region: Region, duration = 300) => {
     const mapRef = getCurMapRef();
     if (!mapRef?.current) return;
     setIsMapFollowingUser(false);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     mapRef.current.animateToRegion(region, duration);
   }, []);
 
@@ -39,7 +41,7 @@ export const useBaseMap = () => {
     const mapRef = getCurMapRef();
     if (!mapRef?.current || points.length === 0) return;
     mapRef.current.fitToCoordinates(points, {
-      edgePadding: {top: 100, right: 15, bottom: 15, left: 15},
+      edgePadding: { top: 100, right: 15, bottom: 15, left: 15 },
       animated: true,
     });
   }, []);
@@ -47,50 +49,66 @@ export const useBaseMap = () => {
   const moveToCurrentLocation = useCallback(async (duration: number = 300) => {
     const mapRef = getCurMapRef();
     const location = useLocationStore.getState().location;
-    mapRef?.current?.animateCamera({
-      center: location
-    }, {duration});
+    mapRef?.current?.animateCamera(
+      {
+        center: location,
+      },
+      { duration }
+    );
   }, []);
 
   const setCameraFollow = useCallback((shouldFollow: boolean) => {
-    if(shouldFollow) {
+    if (shouldFollow) {
       useBaseMapStore.getState().setIsMapFollowingUser(true);
       moveToCurrentLocation();
-    }
-    else {
+    } else {
       useBaseMapStore.getState().setIsMapFollowingUser(false);
     }
   }, []);
 
-  const onPressLocateButton = useCallback((event: GestureResponderEvent) => {
-    event.stopPropagation();
-    const shouldFollow = !useBaseMapStore.getState().isMapFollowingUser;
-    setCameraFollow(shouldFollow);
-  }, [moveToCurrentLocation]);
+  const onPressLocateButton = useCallback(
+    (event: GestureResponderEvent) => {
+      event.stopPropagation();
+      const shouldFollow = !useBaseMapStore.getState().isMapFollowingUser;
+      setCameraFollow(shouldFollow);
+    },
+    [moveToCurrentLocation]
+  );
 
   const onRegionChange = useCallback((region: Region) => {
     const boundingBox = getCurMapRef()?.current?.boundingBoxForRegion(region);
-    if(!boundingBox) return;
+    if (!boundingBox) return;
     useBaseMapStore.getState().setCurrentMapBoundingBox(boundingBox);
   }, []);
 
   // 지도의 RegionChangeComplete 이벤트 기준 마커 로드
   // @ts-ignore
-  const onRegionChangeCompleteWithRegion = useCallback((region: Region, details: Details, markers: Marker[] | undefined, delay = 300) => {
-    useBaseMapStore.getState().startRegionChangeDebounce(async () => {
-      const regionChangeCompleteMethod = useBaseMapStore.getState().regionChangeCompleteMethod;
-      const boundingBox = getCurMapRef()?.current?.boundingBoxForRegion(region);
-      if (boundingBox && regionChangeCompleteMethod) {
-        regionChangeCompleteMethod(boundingBox);
-        useBaseMapStore.getState().setCurrentMapBoundingBox(boundingBox);
-      }
-    }, delay);
-  }, []);
+  const onRegionChangeCompleteWithRegion = useCallback(
+    (
+      region: Region,
+      details: Details,
+      markers: Marker[] | undefined,
+      delay = 300
+    ) => {
+      useBaseMapStore.getState().startRegionChangeDebounce(async () => {
+        const regionChangeCompleteMethod =
+          useBaseMapStore.getState().regionChangeCompleteMethod;
+        const boundingBox =
+          getCurMapRef()?.current?.boundingBoxForRegion(region);
+        if (boundingBox && regionChangeCompleteMethod) {
+          regionChangeCompleteMethod(boundingBox);
+          useBaseMapStore.getState().setCurrentMapBoundingBox(boundingBox);
+        }
+      }, delay);
+    },
+    []
+  );
 
   // 현재 지도의 MapBoundary 기준 마커 로드
   const onRegionChangeCompleteWithBoundingBox = useCallback((delay = 300) => {
     useBaseMapStore.getState().startRegionChangeDebounce(async () => {
-      const regionChangeCompleteMethod = useBaseMapStore.getState().regionChangeCompleteMethod;
+      const regionChangeCompleteMethod =
+        useBaseMapStore.getState().regionChangeCompleteMethod;
       const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
       console.log("mapBoundaries", mapBoundaries);
       if (mapBoundaries && regionChangeCompleteMethod) {
@@ -102,7 +120,8 @@ export const useBaseMap = () => {
 
   // 초기 마커 로드
   const loadMarkerFromStore = useCallback(async () => {
-    const regionChangeCompleteMethod = useBaseMapStore.getState().regionChangeCompleteMethod;
+    const regionChangeCompleteMethod =
+      useBaseMapStore.getState().regionChangeCompleteMethod;
     const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
     if (mapBoundaries && regionChangeCompleteMethod) {
       regionChangeCompleteMethod(mapBoundaries);
@@ -110,37 +129,55 @@ export const useBaseMap = () => {
     }
   }, []);
 
-  const {setOnBottomSheetChange, setOnBottomSheetAnimate} = useBottomSheetStore();
+  const { setOnBottomSheetChange, setOnBottomSheetAnimate } =
+    useBottomSheetStore();
   const initBaseMapBottomSheetCallbacks = useCallback(() => {
-    setOnBottomSheetChange((index: number, position: number, type: SNAP_POINT_TYPE) => { // 간헐적으로 이벤트가 발생하지 않는 이슈 있음
+    setOnBottomSheetChange(
+      (index: number, position: number, type: SNAP_POINT_TYPE) => {
+        // 간헐적으로 이벤트가 발생하지 않는 이슈 있음
+        if (useBaseMapStore.getState().isMapFollowingUser) {
+          setIsMapFollowingUser(false);
+        }
+        if (index > 1) {
+          setLocationButtonVisible(false);
+        } else {
+          setLocationButtonVisible(true);
+        }
+        onRegionChangeCompleteWithBoundingBox();
+      }
+    );
+    setOnBottomSheetAnimate((fromIndex, toIndex) => {
+      // 간헐적으로 index가 반대로 찍히는 이슈 있음
       if (useBaseMapStore.getState().isMapFollowingUser) {
         setIsMapFollowingUser(false);
       }
-      if(index > 1) {
-        setLocationButtonVisible(false);
-      }
-      else {
-        setLocationButtonVisible(true);
-      }
-      onRegionChangeCompleteWithBoundingBox();
-    })
-    setOnBottomSheetAnimate((fromIndex, toIndex) => { // 간헐적으로 index가 반대로 찍히는 이슈 있음
-      if (useBaseMapStore.getState().isMapFollowingUser) {
-        setIsMapFollowingUser(false);
-      }
-      if(toIndex > 1) {
+      if (toIndex > 1) {
         setLocationButtonVisible(false);
         return;
       }
       setLocationButtonVisible(true);
       onRegionChangeCompleteWithBoundingBox();
-    })
+    });
   }, []);
+
+  //위,경도 주소로 반환
+  const getAddressFromRegion = async (region: Region) => {
+    const result = await Location.reverseGeocodeAsync({
+      latitude: region.latitude,
+      longitude: region.longitude,
+    });
+
+    if (result.length > 0) {
+      const addr = result[0];
+
+      return `${addr.region} ${addr.city} ${addr.district} ${addr.street}`;
+    }
+  };
 
   useEffect(() => {
     return () => {
       useBaseMapStore.getState().clearRegionChangeDebound();
-    }
+    };
   }, []);
 
   return {
@@ -156,8 +193,9 @@ export const useBaseMap = () => {
     onRegionChangeCompleteWithBoundingBox,
     loadMarkerFromStore,
     initBaseMapBottomSheetCallbacks,
+    getAddressFromRegion,
   };
-}
+};
 
 const regionToBoundingBox = (region: Region): BoundingBox => {
   return {
@@ -173,7 +211,7 @@ const regionToBoundingBox = (region: Region): BoundingBox => {
 };
 
 const boundingBoxToRegion = (boundingBox: BoundingBox): Region => {
-  const {northEast, southWest} = boundingBox;
+  const { northEast, southWest } = boundingBox;
 
   return {
     latitude: (northEast.latitude + southWest.latitude) / 2,
