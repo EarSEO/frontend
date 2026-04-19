@@ -5,8 +5,8 @@ import {
   getBookmarkInfo,
   getDeleteBookmark,
 } from "@/api/sight/getSightBookMark";
+import { useBookmarkStore } from "@/store/common/useBookmarkStore";
 import { useAuthStore } from "@/store/profile/useAuthStore";
-import { useBookmarkStore } from "@/store/useBookmarkStore";
 
 export const useBookmark = () => {
   const { setUserBookmarkList, setAddBookmark, setRemoveBookmark } =

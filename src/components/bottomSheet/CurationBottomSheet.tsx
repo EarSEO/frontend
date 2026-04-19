@@ -9,12 +9,12 @@ import { useSightMap } from "@/hooks/sight/useSightMap";
 
 import { theme } from "@/styles/theme";
 
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
 import {
   RouteCartItem,
   useRouteCartStore,
 } from "@/store/route/useRouteCartStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
 
 import SightDetailCard from "../sight/SightDetailCard";
 import StoryBottomSheet from "./StoryBottomSheet";

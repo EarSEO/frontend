@@ -21,19 +21,19 @@ import styled from "styled-components/native";
 
 import ClusterMapView from "@/components/map/clustering/ClusteredMapView";
 
+import { useBaseMap } from "@/hooks/map/useBaseMap";
 import { useSightMap } from "@/hooks/sight/useSightMap";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
-import { useBaseMap } from "@/hooks/useBaseMap";
 
 import { theme } from "@/styles/theme";
 import MapPin from "@/assets/icons/map/MapPin.svg";
 
+import { useLocationStore } from "@/store/common/useLocationStore";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
 import { useRouteStore } from "@/store/route/useRouteStore";
 import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBaseMapStore } from "@/store/useBaseMapStore";
-import { useLocationStore } from "@/store/useLocationStore";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;

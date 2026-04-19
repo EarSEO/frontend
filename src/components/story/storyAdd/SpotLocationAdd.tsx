@@ -10,8 +10,8 @@ import { theme } from "@/styles/theme";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 
-import Input from "../common/Input";
-import LocationLabel from "../common/LocationLabel";
+import Input from "../../common/Input";
+import LocationLabel from "../../common/LocationLabel";
 
 const SpotLocationAdd = () => {
   const { searchResults, OnSpotSearch } = useStorySpotMap();

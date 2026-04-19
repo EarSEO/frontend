@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
-import { useRequireLogin } from "@/hooks/useRequireLogin";
+import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 

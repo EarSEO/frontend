@@ -4,17 +4,17 @@ import { LatLng } from "react-native-maps";
 
 import styled from "styled-components/native";
 
+import { useLocation } from "@/hooks/common/useLocation";
+import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
-import { useLocation } from "@/hooks/useLocation";
-import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { CurationSightList, SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
+import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
-import { useLocationStore } from "@/store/useLocationStore";
 
 import HeaderButton from "../common/HeaderButton";
 import SightCard from "../common/SightCard";

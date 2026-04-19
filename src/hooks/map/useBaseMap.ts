@@ -7,9 +7,9 @@ import { Marker } from "react-native-svg";
 import { SNAP_POINT_TYPE } from "@gorhom/bottom-sheet";
 import * as Location from "expo-location";
 
-import { useBaseMapStore } from "@/store/useBaseMapStore";
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
-import { useLocationStore } from "@/store/useLocationStore";
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
 
 export const useBaseMap = () => {
   const { setIsMapFollowingUser, setLocationButtonVisible } = useBaseMapStore();

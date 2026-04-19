@@ -5,10 +5,10 @@ import { useRouter } from "expo-router";
 import { CurationItem, CurationSightList } from "@/types/sight";
 
 import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
+import { useLocationStore } from "@/store/common/useLocationStore";
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
-import { useLocationStore } from "@/store/useLocationStore";
 
-import { useRequireLogin } from "../useRequireLogin";
+import { useRequireLogin } from "../common/useRequireLogin";
 
 export const useCurationDetail = () => {
   const location = useLocationStore((state) => state.location);

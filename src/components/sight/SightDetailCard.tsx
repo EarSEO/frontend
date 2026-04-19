@@ -5,10 +5,10 @@ import PagerView from "react-native-pager-view";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import styled from "styled-components/native";
 
+import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 import { useBookmark } from "@/hooks/sight/useBookmark";
 import { useStoryAdd } from "@/hooks/story/useStoryAdd";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
-import { useRequireLogin } from "@/hooks/useRequireLogin";
 
 import { SightDetailCardProps } from "@/types/sight";
 
@@ -18,12 +18,11 @@ import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
+import { useBookmarkStore } from "@/store/common/useBookmarkStore";
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
-import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBookmarkStore } from "@/store/useBookmarkStore";
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";

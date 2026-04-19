@@ -14,14 +14,14 @@ import Animated, {
 
 import { Ionicons } from "@expo/vector-icons";
 
-import { useLocation } from "@/hooks/useLocation";
+import { useLocation } from "@/hooks/common/useLocation";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
-import {useLocationStore} from "@/store/useLocationStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;
@@ -58,10 +58,10 @@ const Map = forwardRef<MapRef, MapProps>(
       rotateEnabled = true,
       pitchEnabled = true,
     },
-    ref,
+    ref
   ) => {
     const mapRef = useRef<MapView>(null);
-    const location = useLocationStore(state => state.location);
+    const location = useLocationStore((state) => state.location);
 
     useImperativeHandle(ref, () => ({
       getBoundaries: async () => {
@@ -83,7 +83,10 @@ const Map = forwardRef<MapRef, MapProps>(
     }));
 
     const moveToCurrentLocation = useCallback(async () => {
-      mapRef.current?.animateToRegion({...location, latitudeDelta: 0.01, longitudeDelta: 0.01}, 300);
+      mapRef.current?.animateToRegion(
+        { ...location, latitudeDelta: 0.01, longitudeDelta: 0.01 },
+        300
+      );
     }, [location]);
 
     const handleRegionChangeComplete = useCallback(async () => {
@@ -162,7 +165,7 @@ const Map = forwardRef<MapRef, MapProps>(
         </AnimatedTouchable>
       </>
     );
-  },
+  }
 );
 
 Map.displayName = "Map";

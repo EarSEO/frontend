@@ -13,17 +13,17 @@ import BaseMap from "@/components/map/BaseMap";
 import MapHeader from "@/components/map/header/MapHeader";
 import MapSearchBar from "@/components/map/header/MapSearchBar";
 
+import { useBaseMap } from "@/hooks/map/useBaseMap";
 import { useSightMap } from "@/hooks/sight/useSightMap";
 import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
-import { useBaseMap } from "@/hooks/useBaseMap";
 
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
+import { useMapHeaderStore } from "@/store/map/useMapHeaderStore";
 import { useRouteStore } from "@/store/route/useRouteStore";
 import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBaseMapStore } from "@/store/useBaseMapStore";
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
-import { useMapHeaderStore } from "@/store/useMapHeaderStore";
 
 function MapTabScreen() {
   const { mapType } = useGlobalSearchParams();

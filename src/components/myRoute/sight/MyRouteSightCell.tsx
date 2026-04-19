@@ -12,7 +12,7 @@ import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetS
 import { RouteCartItem } from "@/store/route/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
 import View = Animated.View;
-import { useLocationStore } from "@/store/useLocationStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
 
 interface MyRouteSightCellProps {
   routeCartItem: RouteCartItem;

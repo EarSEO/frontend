@@ -6,19 +6,19 @@ import { useStoryAdd } from "@/hooks/story/useStoryAdd";
 
 import { theme } from "@/styles/theme";
 
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
+import { useMapHeaderStore } from "@/store/map/useMapHeaderStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBaseMapStore } from "@/store/useBaseMapStore";
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
-import { useMapHeaderStore } from "@/store/useMapHeaderStore";
 
 import Button from "../common/Button";
 import MainStoryHeader from "../story/MainStoryHeader";
+import SpotLocationAdd from "../story/storyAdd/SpotLocationAdd";
+import SpotNameAdd from "../story/storyAdd/SpotNameAdd";
+import SpotStoryAdd from "../story/storyAdd/SpotStoryAdd";
 import { StoryAddButton } from "../story/StoryAddButton";
 import StorySpotHeader from "../story/StorySpotHeader";
-import SpotLocationAdd from "../storyAdd/SpotLocationAdd";
-import SpotNameAdd from "../storyAdd/SpotNameAdd";
-import SpotStoryAdd from "../storyAdd/SpotStoryAdd";
 
 const StoryBottomSheet = () => {
   const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);

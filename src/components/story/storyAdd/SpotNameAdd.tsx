@@ -9,7 +9,7 @@ import { theme } from "@/styles/theme";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 
-import Input from "../common/Input";
+import Input from "../../common/Input";
 
 const SpotNameAdd = () => {
   const spotTitleList = useStoryStore((state) => state.spotTitleList);

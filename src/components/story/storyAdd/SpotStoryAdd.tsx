@@ -11,8 +11,8 @@ import { CONCEPTS, StoryConcept, useStoryAdd } from "@/hooks/story/useStoryAdd";
 
 import { theme } from "@/styles/theme";
 
+import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
 
 const SpotStoryAdd = () => {
   const {

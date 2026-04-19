@@ -14,7 +14,7 @@ import Animated, {
 
 import { Ionicons } from "@expo/vector-icons";
 
-import { useLocation } from "@/hooks/useLocation";
+import { useLocation } from "@/hooks/common/useLocation";
 
 import { MapRef } from "@/types/map";
 import { SightInfo } from "@/types/sight";
@@ -22,7 +22,7 @@ import { SpotsItemInMap } from "@/types/storySpot";
 
 import { theme } from "@/styles/theme";
 
-import { useLocationStore } from "@/store/useLocationStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
 
 const LOCATION_BUTTON_SIZE = 48;
 const LOCATION_BUTTON_MARGIN = 16;

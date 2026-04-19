@@ -23,8 +23,8 @@ import {
   getStoryListInMap,
   getStorySpotInfoBrief,
 } from "@/api/getStoryApi";
+import { useLocationStore } from "@/store/common/useLocationStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useLocationStore } from "@/store/useLocationStore";
 
 export const useStorySpotMap = () => {
   const { setSpotListInMap, selectedStorySpot, setStoryListInMap } =

@@ -8,12 +8,12 @@ import { useGlobalSearchParams } from "expo-router";
 import { CreateStoryRequest } from "@/types/storySpot";
 
 import { getcreateStory } from "@/api/story/getStoryAddApi";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
+import { useMapHeaderStore } from "@/store/map/useMapHeaderStore";
 import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBaseMapStore } from "@/store/useBaseMapStore";
-import { useMapHeaderStore } from "@/store/useMapHeaderStore";
 
 export type StoryConcept = "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
 export const CONCEPTS = [

@@ -2,15 +2,13 @@ import React from "react";
 
 import styled from "styled-components/native";
 
-import {useMapHeaderStore} from "@/store/useMapHeaderStore";
+import { useMapHeaderStore } from "@/store/map/useMapHeaderStore";
 
 const MapHeader: React.FC = () => {
-  const mapHeaderContent = useMapHeaderStore(state => state.mapHeaderContent);
+  const mapHeaderContent = useMapHeaderStore((state) => state.mapHeaderContent);
   return (
     <OverlayWrapper pointerEvents="box-none">
-      <HeaderContainer>
-        {mapHeaderContent}
-      </HeaderContainer>
+      <HeaderContainer>{mapHeaderContent}</HeaderContainer>
     </OverlayWrapper>
   );
 };

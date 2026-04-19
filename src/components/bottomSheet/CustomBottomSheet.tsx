@@ -8,7 +8,7 @@ import { BottomSheetProps } from "@/types/bottomSheet";
 
 import { theme } from "@/styles/theme";
 
-import { useBottomSheetStore } from "@/store/useBottomSheetStore";
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
 
 const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
