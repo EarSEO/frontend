@@ -7,13 +7,10 @@ import {
   SearchSightParams,
   SightInfo,
 } from "@/types/sight";
-import { BriefSpotInfo, GetSpotRequest } from "@/types/storySpot";
 
-import { getSpotInfo } from "@/api/getStoryApi";
 import { getSearchSight } from "@/api/sight/getSearchSight";
 import { getSightDetail, getSightsInRectangle } from "@/api/sight/getSight";
 import { useSightStore } from "@/store/sight/useSightStore";
-import { useStoryStore } from "@/store/story/useStoryStore";
 
 export const useSightMap = () => {
   const {
@@ -31,8 +28,6 @@ export const useSightMap = () => {
     setError,
     clearSelection,
   } = useSightStore();
-
-  const { selectedStorySpot } = useStoryStore();
 
   // 검색 관련 상태
   const [searchResults, setSearchResults] = useState<SightInfo[]>([]);

@@ -4,7 +4,6 @@ import { LatLng } from "react-native-maps";
 
 import styled from "styled-components/native";
 
-import { useLocation } from "@/hooks/common/useLocation";
 import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
 
@@ -62,7 +61,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   //나의 경로에 sight 추가하는 핸들러
   const handleAddSightToMy = useCallback(
     (
-      sightId: string,
+      sightId: number,
       sightTitle: string,
       sightTheme: string,
       sightAddress: string,
@@ -93,7 +92,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   //sight 클릭 시 관광지 상세로 이동하는 핸들러
   const handleMoveToSightDetail = useCallback(
     (
-      sightId: string,
+      sightId: number,
       sightTitle: string,
       sightGeohash: string,
       sightLocation: LatLng

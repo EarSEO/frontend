@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 
+import styled from "styled-components/native";
+
 import Button from "@/components/common/Button";
 import CurationDetail from "@/components/curation/CurationDetail";
 import CurationList from "@/components/curation/CurationList";
@@ -10,6 +12,7 @@ import { useSightMap } from "@/hooks/sight/useSightMap";
 import { theme } from "@/styles/theme";
 
 import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useNavigationBarStore } from "@/store/common/useNavigationBarStore";
 import {
   RouteCartItem,
   useRouteCartStore,
@@ -72,12 +75,14 @@ const CurationBottomSheet = () => {
   useEffect(() => {
     const button =
       curationSightList !== undefined && selectedSight == null ? (
-        <Button
-          text="이 경로로 여행을 떠나보세요."
-          fontSize={theme.typography.fontSize.sm}
-          width="100%"
-          onPress={handleAddSightListToMy}
-        />
+        <ButtonWrapper>
+          <Button
+            text="이 경로로 여행을 떠나보세요."
+            fontSize={theme.typography.fontSize.sm}
+            width="100%"
+            onPress={handleAddSightListToMy}
+          />
+        </ButtonWrapper>
       ) : (
         <></>
       );
@@ -87,6 +92,18 @@ const CurationBottomSheet = () => {
       setBottomSheetAbsoluteBottom(undefined);
     };
   }, [curationSightList, selectedSight]);
+
+  const { setNavigationBarHidden } = useNavigationBarStore();
+
+  useEffect(() => {
+    if (selectedSight && sightDetail) {
+      setNavigationBarHidden(true);
+    } else if (curationSightList !== undefined) {
+      setNavigationBarHidden(true);
+    } else {
+      setNavigationBarHidden(false);
+    }
+  }, [setNavigationBarHidden, selectedSight, sightDetail, curationSightList]);
 
   const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
   const { setStoryLocation } = useStoryAddStore();
@@ -106,6 +123,7 @@ const CurationBottomSheet = () => {
         handleHeaderClosePress={() => {
           setCurationSightList(undefined);
           deselectSight();
+          setNavigationBarHidden(false);
         }}
         handleHeaderBackPress={() => {
           deselectSight();
@@ -122,7 +140,10 @@ const CurationBottomSheet = () => {
         selectedCurationTitle={selectedCurationTitle}
         selectedCurationDescription={selectedCurationDescription}
         handleCardPress={fetchSightDetail}
-        handleHeaderBackPress={() => setCurationSightList(undefined)}
+        handleHeaderBackPress={() => {
+          setCurationSightList(undefined);
+          setNavigationBarHidden(false);
+        }}
       />
     );
   }
@@ -137,3 +158,7 @@ const CurationBottomSheet = () => {
 };
 
 export default CurationBottomSheet;
+
+const ButtonWrapper = styled.View`
+  margin-bottom: 50px;
+`;

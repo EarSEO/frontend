@@ -7,6 +7,7 @@ import { useStoryAdd } from "@/hooks/story/useStoryAdd";
 import { theme } from "@/styles/theme";
 
 import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useNavigationBarStore } from "@/store/common/useNavigationBarStore";
 import { useBaseMapStore } from "@/store/map/useBaseMapStore";
 import { useMapHeaderStore } from "@/store/map/useMapHeaderStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
@@ -32,6 +33,15 @@ const StoryBottomSheet = () => {
 
   const { setCenterPinVisibility } = useBaseMapStore();
   const { setMapHeaderContent } = useMapHeaderStore();
+
+  const { setNavigationBarHidden } = useNavigationBarStore();
+  useEffect(() => {
+    if (storyAddStep !== "none") {
+      setNavigationBarHidden(true);
+    } else {
+      setNavigationBarHidden(false);
+    }
+  }, [storyAddStep, setNavigationBarHidden]);
 
   useEffect(() => {
     let button;

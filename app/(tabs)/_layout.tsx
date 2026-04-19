@@ -6,6 +6,8 @@ import MyRouteIcon from "@/components/icons/tabs/MyRouteIcon";
 
 import { theme } from "@/styles/theme";
 
+import { useNavigationBarStore } from "@/store/common/useNavigationBarStore";
+
 export default function TabLayout() {
   const pathname = usePathname();
   const currentMapType = pathname.startsWith("/sight")
@@ -15,20 +17,23 @@ export default function TabLayout() {
       : pathname.startsWith("/story")
         ? "story"
         : null;
+  const { isNavigationBarHidden } = useNavigationBarStore();
   return (
     <Tabs
       backBehavior="history"
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          paddingTop: 15,
-          paddingHorizontal: 10,
-          borderTopWidth: 1,
-          position: "static",
-          overflow: "hidden",
-          borderTopColor: theme.colors.grey.neutral200,
-          backgroundColor: theme.colors.white,
-        },
+        tabBarStyle: isNavigationBarHidden
+          ? { display: "none" }
+          : {
+              paddingTop: 15,
+              paddingHorizontal: 10,
+              borderTopWidth: 1,
+              position: "static",
+              overflow: "hidden",
+              borderTopColor: theme.colors.grey.neutral200,
+              backgroundColor: theme.colors.white,
+            },
       }}
     >
       <Tabs.Screen
