@@ -58,6 +58,11 @@ export const API_ENDPOINTS = {
     EDIT_PROFILE: "/api/user/member/profile",
     CHANGE_PASSWORD: "/api/user/member/password",
   },
+
+  NOTICE: {
+    LIST: "/api/core/notice",
+    DETAIL: (noticeId: number) => `/api/core/notice/${noticeId}`,
+  },
 };
 
 export default API_ENDPOINTS;
