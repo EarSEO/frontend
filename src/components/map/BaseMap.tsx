@@ -68,7 +68,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
     initBaseMapBottomSheetCallbacks,
     onRegionChangeCompleteWithBoundingBox,
   } = useBaseMap();
-  const { setIsMapFollowingUser, setCenterPinPoint } = useBaseMapStore();
+  const { setIsMapFollowingUser, getAddressByCoordinate } = useBaseMapStore();
   const mapRef = useBaseMapStore((state) => state.mapRef);
   const enableCluster = useBaseMapStore((state) => state.enableCluster);
   const mapMovable = useBaseMapStore((state) => state.mapMovable);
@@ -92,7 +92,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
   const spotLists = useStoryStore((state) => state.spotLists);
   const { selectedStorySpot } = useStoryStore();
   const { fetchSpotDetail } = useStorySpotMap();
-  const { setStoryLocation } = useStoryAddStore();
+  const { setStoryLocation, setPinAddress } = useStoryAddStore();
   const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
   const setSpotListInMap = useStoryStore((state) => state.setSpotListInMap);
 
@@ -128,21 +128,27 @@ const BaseMap: React.FC<BaseMapProps> = ({
 
   //MapPin store에 저장
   const handleCenterPinRegion = useCallback(
-    (region: Region) => {
-      setStoryLocation({
+    async (region: Region) => {
+      const coordinate = {
         latitude: region.latitude,
         longitude: region.longitude,
-      });
+      };
+      setStoryLocation(coordinate);
+      const address = await getAddressByCoordinate(coordinate);
+      if (!address) return;
+      setPinAddress(address);
     },
-    [setStoryLocation]
+    [setStoryLocation, getAddressByCoordinate]
   );
 
   const handleRegionChangeComplete = useCallback(
     (region: Region, details: any) => {
       onRegionChangeCompleteWithRegion(region, details, undefined);
-      handleCenterPinRegion(region);
+      if (storyAddStep == "location") {
+        handleCenterPinRegion(region);
+      }
     },
-    [onRegionChangeCompleteWithRegion, handleCenterPinRegion]
+    [onRegionChangeCompleteWithRegion, storyAddStep, handleCenterPinRegion]
   );
 
   useEffect(() => {

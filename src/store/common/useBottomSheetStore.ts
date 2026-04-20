@@ -16,6 +16,9 @@ interface BottomSheetStore {
     ) => void
   ) => void;
 
+  isBottomSheetDragg: boolean;
+  setIsBottomSheetDragg: (isBottomSheetDragg: boolean) => void;
+
   onBottomSheetAnimate:
     | ((fromIndex: number, toIndex: number) => void)
     | undefined;
@@ -24,7 +27,11 @@ interface BottomSheetStore {
   ) => void;
 
   snapPoints: (string | number)[];
-  setSnapPoints: (snapPoints?: (string | number)[]) => void;
+  index: number;
+  setBottomSheetLayout: (params: {
+    snapPoints: (string | number)[];
+    index: number;
+  }) => void;
 
   bottomSheetContent: React.ReactNode;
   setBottomSheetContent: (content: React.ReactNode) => void;
@@ -38,6 +45,10 @@ interface BottomSheetStore {
 export const useBottomSheetStore = create<BottomSheetStore>()(
   devtools(
     (set, get) => ({
+      isBottomSheetDragg: true,
+      setIsBottomSheetDragg: (isBottomSheetDragg: boolean) => {
+        set({ isBottomSheetDragg }, false, "setIsBottomSheetDragg");
+      },
       onBottomSheetChange: undefined,
       setOnBottomSheetChange: (onBottomSheetChange) => {
         set({ onBottomSheetChange });
@@ -48,9 +59,20 @@ export const useBottomSheetStore = create<BottomSheetStore>()(
         set({ onBottomSheetAnimate });
       },
 
-      snapPoints: undefined,
-      setSnapPoints: (snapPoints?: (string | number)[]) => {
-        set({ snapPoints: snapPoints }, false, "setSnapPoints");
+      snapPoints: ["45%", "75%", "100%"],
+      index: 0,
+      setBottomSheetLayout: ({ snapPoints, index }) => {
+        const maxIndex = snapPoints.length - 1;
+        const safeIndex = Math.max(-1, Math.min(index, maxIndex));
+
+        set(
+          {
+            snapPoints,
+            index: safeIndex,
+          },
+          false,
+          "setBottomSheetLayout"
+        );
       },
 
       bottomSheetContent: undefined,
@@ -65,6 +87,7 @@ export const useBottomSheetStore = create<BottomSheetStore>()(
         set({ bottomSheetAbsoluteBottom });
       },
     }),
+
     {
       name: "BottomSheetStore",
     }

@@ -12,14 +12,11 @@ import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
 
 const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef,
-  children,
   animatedPosition,
-  snapPoints,
   keyboardBehavior = "interactive",
   initialIndex,
 }) => {
   const content = useBottomSheetStore((state) => state.bottomSheetContent);
-  const storeSnapPoints = useBottomSheetStore((state) => state.snapPoints);
   const bottomSheetAbsoluteBottom = useBottomSheetStore(
     (state) => state.bottomSheetAbsoluteBottom
   );
@@ -29,14 +26,17 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   const onBottomSheetAnimate = useBottomSheetStore(
     (state) => state.onBottomSheetAnimate
   );
+  const isBottomSheetDragg = useBottomSheetStore(
+    (state) => state.isBottomSheetDragg
+  );
+  const storeSnapPoints = useBottomSheetStore((state) => state.snapPoints);
+  const index = useBottomSheetStore((state) => state.index);
   return (
     <>
       <BottomSheet
         ref={bottomSheetRef}
-        snapPoints={
-          snapPoints || storeSnapPoints || ["15%", "45%", "80%", "100%"]
-        }
-        index={initialIndex ?? 1}
+        snapPoints={storeSnapPoints || ["45%"]}
+        index={index ?? 0}
         enablePanDownToClose={false}
         enableOverDrag={false}
         animatedPosition={animatedPosition}
@@ -45,6 +45,8 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
         keyboardBehavior={keyboardBehavior}
         keyboardBlurBehavior="restore"
         enableDynamicSizing={false}
+        enableHandlePanningGesture={isBottomSheetDragg}
+        enableContentPanningGesture={isBottomSheetDragg}
         handleIndicatorStyle={{
           backgroundColor: theme.colors.grey.neutral300,
           height: 4,
@@ -69,7 +71,7 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
           showsVerticalScrollIndicator={true}
           keyboardShouldPersistTaps="handled"
         >
-          {children ?? content ?? <Text>컨텐츠가 없습니다</Text>}
+          {content ?? <Text>컨텐츠가 없습니다</Text>}
         </BottomSheetScrollView>
       </BottomSheet>
       <View

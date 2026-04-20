@@ -6,7 +6,6 @@ import MapView, {
   LatLng,
   Region,
 } from "react-native-maps";
-import { Point } from "react-native-maps/src/sharedTypes";
 
 import { devtools } from "@csark0812/zustand-expo-devtools";
 import { create } from "zustand";
@@ -48,11 +47,7 @@ interface BaseMapStore {
   startRegionChangeDebounce: (callback: () => void, delay: number) => void;
   clearRegionChangeDebound: () => void;
 
-  centerPinPoint: Point | undefined;
-  setCenterPinPoint: (centerPinPoint: Point) => void;
-  getCenterPinCoordinate: () => Promise<LatLng | undefined>;
-  getCenterPinAddress: () => Promise<Address | undefined>;
-
+  getAddressByCoordinate: (coordinate: LatLng) => Promise<Address | undefined>;
   centerPinVisibility: boolean;
   setCenterPinVisibility: (visible: boolean) => void;
 }
@@ -130,22 +125,10 @@ export const useBaseMapStore = create<BaseMapStore>()(
         }
       },
 
-      centerPinPoint: undefined,
-      setCenterPinPoint: (centerPinPoint) => {
-        set({ centerPinPoint }, false, "setCenterPinPoint");
-      },
-      //화면의 x,y좌표 -> 위경도로 반환
-      getCenterPinCoordinate: async () => {
-        const centerPinPoint = get().centerPinPoint;
+      getAddressByCoordinate: async (coordinate: LatLng) => {
         const mapRef = get().mapRef;
-        if (!mapRef || !centerPinPoint) return undefined;
-        return mapRef.current?.coordinateForPoint(centerPinPoint);
-      },
-      getCenterPinAddress: async () => {
-        const coordinate = await get().getCenterPinCoordinate();
-        const mapRef = get().mapRef;
-        if (!mapRef || !coordinate) return undefined;
-        return mapRef.current?.addressForCoordinate(coordinate);
+        if (!mapRef?.current || !coordinate) return undefined;
+        return await mapRef.current?.addressForCoordinate(coordinate);
       },
 
       centerPinVisibility: false,

@@ -3,13 +3,10 @@ import { useCallback, useState } from "react";
 import { Alert } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { useGlobalSearchParams } from "expo-router";
 
 import { CreateStoryRequest } from "@/types/storySpot";
 
 import { getcreateStory } from "@/api/story/getStoryAddApi";
-import { useBaseMapStore } from "@/store/map/useBaseMapStore";
-import { useMapHeaderStore } from "@/store/map/useMapHeaderStore";
 import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
@@ -25,8 +22,6 @@ export const CONCEPTS = [
 ] as const;
 
 export const useStoryAdd = () => {
-  const { mapType } = useGlobalSearchParams();
-
   const { selectedSight } = useSightStore();
 
   const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
@@ -47,19 +42,22 @@ export const useStoryAdd = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const newSpotName = useStoryAddStore((state) => state.newSpotName);
   const addStoryLocation = useStoryAddStore((state) => state.addStoryLocation);
+  const spotTitleList = useStoryStore((state) => state.spotTitleList);
 
   //storyAdd 버튼 클릭 시
   const handleStoryAddButton = useCallback(() => {
     if (
       briefSpotInfo?.longitude !== undefined &&
-      briefSpotInfo?.latitude !== undefined
+      briefSpotInfo?.latitude !== undefined &&
+      spotTitleList?.titles
     ) {
       const spotLocation = {
         latitude: briefSpotInfo.latitude,
         longitude: briefSpotInfo.longitude,
       };
       setStoryLocation(spotLocation);
-      setStoryAddStep("name");
+      setNewSpotName(spotTitleList.titles[0]);
+      setStoryAddStep("storyAdd");
     } else if (
       selectedSight?.latitude !== undefined &&
       selectedSight?.longitude !== undefined &&
@@ -82,24 +80,12 @@ export const useStoryAdd = () => {
     setStoryAddStep,
     setStoryLocation,
     setNewSpotName,
+    spotTitleList,
   ]);
 
-  //selectedSpot값(location에서 검색하고 선택 된 값) 있으면 조회해서 이름 띄워주기
-  // 이경로에서 이름 입력하시겠습니까 클릭 시 ->  기존spot은 spotTitleList에서 title 조회, new는 state에서 값 조회
   const fetchAddSpotInfo = useCallback(async () => {
-    if (searchedSpot) {
-      const location = {
-        latitude: searchedSpot.latitude,
-        longitude: searchedSpot.longitude,
-      };
-      setStoryLocation(location);
-      setNewSpotName(searchedSpot.title);
-      setStoryAddStep("name");
-      setSearchedSpot(undefined);
-    } else if (!searchedSpot) {
-      setStoryAddStep("name");
-    }
-  }, [searchedSpot, setStoryAddStep]);
+    setStoryAddStep("storyAdd");
+  }, [setStoryAddStep]);
 
   //새로운 이름 저장
   const handleNewSpotInfo = useCallback(() => {

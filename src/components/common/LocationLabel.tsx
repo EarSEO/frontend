@@ -16,7 +16,7 @@ export interface LocationLabelProps {
   spotType?: SpotType;
   locationTitle?: string;
   address?: string;
-  distance: number;
+  distance?: number;
   locationtheme?: string;
   isSelected?: boolean;
   onPress?: () => void;
@@ -65,7 +65,9 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
           </TopRow>
           <BottomRow>
             <Address>{address}</Address>
-            <Distance>{distanceToString(distance)}</Distance>
+            <Distance>
+              {distance != null ? distanceToString(distance) : null}
+            </Distance>
           </BottomRow>
         </ContentWrapper>
       </LabelContainer>

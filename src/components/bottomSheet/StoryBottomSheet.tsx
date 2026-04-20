@@ -25,14 +25,11 @@ const StoryBottomSheet = () => {
   const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
   const selectedSpotSpotId = briefSpotInfo?.storySpotId;
 
-  const { handleStoryAddButton, fetchAddSpotInfo, handleNewSpotInfo } =
-    useStoryAdd();
+  const { handleStoryAddButton, fetchAddSpotInfo } = useStoryAdd();
   const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
 
   const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
 
-  const { setCenterPinVisibility } = useBaseMapStore();
-  const { setMapHeaderContent } = useMapHeaderStore();
 
   const { setNavigationBarHidden } = useNavigationBarStore();
   useEffect(() => {
@@ -54,26 +51,11 @@ const StoryBottomSheet = () => {
         );
         break;
       case "location":
-        setCenterPinVisibility(true);
-        setMapHeaderContent(undefined);
         button = (
           <ButtonWrapper>
             <Button
               text="이 위치에서 이야기 등록하기"
               onPress={fetchAddSpotInfo}
-              width="90%"
-              fontSize={theme.typography.fontSize.sm}
-            />
-          </ButtonWrapper>
-        );
-        break;
-      case "name":
-        setMapHeaderContent(undefined);
-        button = (
-          <ButtonWrapper>
-            <Button
-              text="Next"
-              onPress={handleNewSpotInfo}
               width="90%"
               fontSize={theme.typography.fontSize.sm}
             />
@@ -89,7 +71,6 @@ const StoryBottomSheet = () => {
     storyAddStep,
     handleStoryAddButton,
     fetchAddSpotInfo,
-    handleNewSpotInfo,
     setBottomSheetAbsoluteBottom,
   ]);
 
