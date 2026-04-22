@@ -15,12 +15,8 @@ interface storyAddStore {
   storyAddStep: StoryAddStep;
   setStoryAddStep: (step: StoryAddStep) => void;
 
-  // setSavedSpot: (selectedSpot?: storySpots) => void;
-  // resetSavedSpot: () => void;
-  // selectedSpot?: storySpots;
-
-  pinAddress?: Address;
-  setPinAddress: (pinAddress: Address) => void;
+  pinAddress?: Address | undefined;
+  setPinAddress: (pinAddress: Address | undefined) => void;
 
   onStoryAdd: boolean;
   setOnStoryAdd: (onStoryAdd: boolean) => void;
@@ -51,16 +47,9 @@ export const useStoryAddStore = create<storyAddStore>((set, get) => ({
     }
   },
 
-  setPinAddress: (pinAddress: Address) => set({ pinAddress }),
+  setPinAddress: (pinAddress: Address | undefined) => set({ pinAddress }),
 
   setStoryAddStep: (storyAddStep: StoryAddStep) => set({ storyAddStep }),
-
-  // 기존 이야기 정보저장
-  // setSavedSpot: (selectedSpot?: storySpots) =>
-  //   set({
-  //     selectedSpot,
-  //   }),
-  // resetSavedSpot: () => set({ selectedSpot: undefined }),
 
   onStoryAdd: false,
   setOnStoryAdd: (onStoryAdd: boolean) => {

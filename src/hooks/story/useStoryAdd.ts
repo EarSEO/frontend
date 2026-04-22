@@ -28,11 +28,9 @@ export const useStoryAdd = () => {
 
   const { setStoryAddStep, setNewSpotName, setStoryLocation } =
     useStoryAddStore();
-  const { setSearchedSpot } = useStoryStore();
+  const pinAddress = useStoryAddStore((state) => state.pinAddress?.name);
+  const { setSearchedSpot, setTitleList } = useStoryStore();
   //핀 위치 위경도로 변경
-
-  //검색한 장소 선택 시
-  const searchedSpot = useStoryStore((state) => state.searchedSpot);
 
   //storyAdd
   const [content, setContent] = useState<string>("");
@@ -84,18 +82,14 @@ export const useStoryAdd = () => {
   ]);
 
   const fetchAddSpotInfo = useCallback(async () => {
-    setStoryAddStep("storyAdd");
-  }, [setStoryAddStep]);
-
-  //새로운 이름 저장
-  const handleNewSpotInfo = useCallback(() => {
-    if (!newSpotName) {
-      Alert.alert("스팟 이름을 입력해주세요.");
+    if (!pinAddress) {
+      Alert.alert("지도를 움직여 위치를 지정해주세요.");
       return;
-    } else {
-      setStoryAddStep("storyAdd");
     }
-  }, [setStoryAddStep, newSpotName]);
+    setTitleList(undefined);
+    setStoryAddStep("storyAdd");
+    setNewSpotName(undefined);
+  }, [setStoryAddStep, pinAddress, setTitleList, setNewSpotName]);
 
   //이미지
   const handlePickImage = useCallback(async () => {
@@ -134,11 +128,14 @@ export const useStoryAdd = () => {
 
   //스토리 추가 버튼 클릭
   const handleAdd = useCallback(async () => {
+    console.log("cotent", content);
+    console.log("addStoryLocation", addStoryLocation);
+    console.log("newSpotName", newSpotName);
+    console.log("selectedConcept", selectedConcept);
     if (!content || !newSpotName || !selectedConcept) {
       Alert.alert("모든 항목을 입력해주세요.");
       return;
     }
-
     const { user } = useAuthStore.getState();
 
     if (!user) {
@@ -163,6 +160,8 @@ export const useStoryAdd = () => {
         locale: "KO",
       };
       await getcreateStory(createRequestData, selectedImages);
+      console.log(selectedImages);
+
       setStoryAddStep("none");
     } catch (error) {
       throw error;
@@ -172,7 +171,6 @@ export const useStoryAdd = () => {
   return {
     handleStoryAddButton,
     fetchAddSpotInfo,
-    handleNewSpotInfo,
 
     addStoryLocation,
     setNewSpotName,

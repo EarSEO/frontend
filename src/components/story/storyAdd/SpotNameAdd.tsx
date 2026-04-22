@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import styled from "styled-components/native";
-
-import { useStoryAdd } from "@/hooks/story/useStoryAdd";
 
 import { theme } from "@/styles/theme";
 
@@ -12,17 +10,20 @@ import { useStoryStore } from "@/store/story/useStoryStore";
 import Input from "../../common/Input";
 
 const SpotNameAdd = () => {
-  const spotTitleList = useStoryStore((state) => state.spotTitleList);
+  const spotTitleList = useStoryStore((state) => state.selectedTitleList);
   const newSpotName = useStoryAddStore((state) => state.newSpotName);
   const setNewSpotName = useStoryAddStore((state) => state.setNewSpotName);
 
   const spotNames = spotTitleList?.titles;
 
-  const spotTitles =
-    spotNames
-      ?.slice(0, 3)
-      .map((spotNames) => `📍${spotNames}`)
-      .join(" ") || " ";
+  const spotTitles = spotNames
+    ?.slice(0, 3)
+    .map((spotNames) => `📍${spotNames}`)
+    .join(" ");
+
+  useEffect(() => {
+    console.log(spotNames);
+  });
 
   // useEffect(() => {
   //   if (selectedSpotTitle) {
@@ -38,61 +39,52 @@ const SpotNameAdd = () => {
   return (
     <Container>
       <TitleWrapper>
-        <Title>스팟 이름 지정</Title>
         <SubTitle>선택하신 위치의 스팟이름을 지정해주세요.</SubTitle>
       </TitleWrapper>
 
+      {spotTitles ? <SpotTitlesWrapper>{spotTitles}</SpotTitlesWrapper> : null}
+
       <InputWrapper>
-        <StyledInput
+        <Input
           value={newSpotName}
           onChangeText={handleSpotName}
-          radius={10}
           placeholder={"스팟 이름을 입력해주세요."}
+          style={{ fontSize: theme.typography.fontSize.sm }}
         />
       </InputWrapper>
-
-      <SpotTitlesWrapper>{spotTitles}</SpotTitlesWrapper>
     </Container>
   );
 };
 
 const Container = styled.View`
-  gap: 20px;
+  gap: 10px;
 `;
 
-const TitleWrapper = styled.View`
-  padding-left: 20px;
-  padding-right: 20px;
+const TitleWrapper = styled.View``;
 
-  gap: 5px;
-`;
-
-const Title = styled.Text`
-  font-family: ${theme.typography.fontFamily.medium};
-  font-size: ${theme.typography.fontSize.lg}px;
-  color: ${theme.colors.text.textPrimary};
-`;
 const SubTitle = styled.Text`
-  font-family: ${theme.typography.fontFamily.regular}px;
-  font-size: ${theme.typography.fontSize.sm}px;
+  margin-top: 10px;
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm};
   color: ${theme.colors.text.textPrimary};
+  margin-left: 5px;
 `;
 
 const InputWrapper = styled.View`
-  position: relative;
-`;
-
-const StyledInput = styled(Input)`
-  padding-right: 45px;
-  border-radius: 10px;
-  background-color: ${theme.colors.grey.neutral100};
-  font-size: ${theme.typography.fontSize.sm};
+  width: 340px;
+  height: 45px;
+  border-width: 1px;
+  border-color: ${theme.colors.background.background500};
+  border-radius: ${theme.borderRadius.md}px;
+  padding: 0 16px;
+  justify-content: center;
+  margin-bottom: 10px;
 `;
 
 const SpotTitlesWrapper = styled.Text`
-  margin: 10px;
-  padding-left: 20px;
-  padding-right: 20px;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  flex: 1;
 `;
 
 export default SpotNameAdd;

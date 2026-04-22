@@ -8,12 +8,7 @@ interface InputProps {
   value?: string;
   onChangeText?: (text: string) => void;
   placeholder?: string;
-  backgroundColor?: string;
   placeholderTextColor?: string;
-  radius?: number;
-  width?: number | string;
-  height?: number | string;
-  shadow?: keyof typeof theme.shadows;
   autoFocus?: boolean;
   blurOnSubmit?: boolean;
   onSubmitEditing?: () => void;
@@ -23,6 +18,7 @@ interface InputProps {
   numberOfLines?: number;
   children?: React.ReactNode;
   editable?: boolean;
+  style?: any;
 }
 
 /**
@@ -43,13 +39,8 @@ interface InputProps {
 const Input: React.FC<InputProps> = ({
   value,
   onChangeText,
-  backgroundColor,
   placeholder,
-  radius,
-  placeholderTextColor,
-  width,
-  height,
-  shadow,
+  placeholderTextColor = theme.colors.text.textPrimary,
   autoFocus = false,
   blurOnSubmit = true,
   onSubmitEditing,
@@ -58,22 +49,17 @@ const Input: React.FC<InputProps> = ({
   numberOfLines = 1,
   children,
   editable,
+  style,
   ...rest
 }) => {
-  const shadowStyle = shadow ? theme.shadows[shadow] : {};
   return (
     <StyledInput
       value={value}
       onChangeText={onChangeText}
-      backgroundColor={backgroundColor || theme.colors.white}
       placeholder={placeholder}
-      radius={radius || theme.borderRadius.s}
       placeholderTextColor={
         placeholderTextColor || theme.colors.text.textPrimary
       }
-      width={width || "90%"}
-      height={height || "50px"}
-      style={shadowStyle}
       autoFocus={autoFocus}
       blurOnSubmit={blurOnSubmit}
       onSubmitEditing={onSubmitEditing}
@@ -83,27 +69,20 @@ const Input: React.FC<InputProps> = ({
       textAlignVertical={multiline ? "top" : "center"}
       editable={editable}
       {...rest}
+      style={style}
     >
       {children}
     </StyledInput>
   );
 };
 
-const StyledInput = styled.TextInput<{
-  backgroundColor: string;
-  radius: number;
-  width: number | string;
-  height: number | string;
-  placeholderTextColor: string;
-  autoFocus: boolean;
-  blurOnSubmit?: boolean;
-  multiline?: boolean;
-}>`
-  padding: 12px 16px;
-  background-color: ${(props) => props.backgroundColor};
-  border-radius: ${(props) => props.radius}px;
-  ${(props) => props.multiline && `padding-top: 12px;`}
-  align-self: center;
+const StyledInput = styled.TextInput`
+  flex: 1;
+  padding: 0;
+  margin: 0;
+  color: ${theme.colors.text.textPrimary};
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.sm}px;
 `;
 
 export default Input;

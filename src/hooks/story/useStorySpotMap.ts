@@ -27,8 +27,12 @@ import { useLocationStore } from "@/store/common/useLocationStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
 
 export const useStorySpotMap = () => {
-  const { setSpotListInMap, selectedStorySpot, setStoryListInMap } =
-    useStoryStore();
+  const {
+    setTitleList,
+    setSpotListInMap,
+    selectedStorySpot,
+    setStoryListInMap,
+  } = useStoryStore();
 
   const location = useLocationStore((state) => state.location);
 
@@ -125,6 +129,7 @@ export const useStorySpotMap = () => {
       try {
         const spotDeatil = await getSpotInfo(spotRequest);
         selectedStorySpot([spotDeatil]);
+        setTitleList(spotDeatil.spotTitleList);
         return spotDeatil;
       } catch (error) {
         return undefined;

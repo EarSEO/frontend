@@ -35,6 +35,9 @@ interface StoryStore {
   searchedSpot?: storySpots;
   setSearchedSpot: (searchedSpot?: storySpots) => void;
 
+  selectedTitleList?: SpotTitleList;
+  setTitleList: (selectedTitleList?: SpotTitleList) => void;
+
   setLoading: (loading: boolean) => void;
 }
 
@@ -52,6 +55,8 @@ const initialState = {
 
   spotLists: [],
   storyLists: [],
+
+  selectedTitleList: undefined,
 
   isLoading: true,
 };
@@ -75,6 +80,10 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
     set({
       storyLists: formattedStoryLists,
     });
+  },
+
+  setTitleList: (selectedTitleList: SpotTitleList | undefined) => {
+    set({ selectedTitleList: selectedTitleList });
   },
 
   //선택 된 spot

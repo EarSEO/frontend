@@ -12,7 +12,10 @@ import { CONCEPTS, StoryConcept, useStoryAdd } from "@/hooks/story/useStoryAdd";
 import { theme } from "@/styles/theme";
 
 import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
+import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+
+import SpotNameAdd from "./SpotNameAdd";
 
 const SpotStoryAdd = () => {
   const {
@@ -34,6 +37,11 @@ const SpotStoryAdd = () => {
     handleMapButton,
   } = useStoryAdd();
 
+  const { selectedSight } = useSightStore();
+  const selectedSightName = useSightStore(
+    (state) => state.selectedSight?.title
+  );
+  const pinAddress = useStoryAddStore((state) => state.pinAddress?.name);
   const { setStoryAddStep, setNewSpotName, setStoryLocation } =
     useStoryAddStore();
   const newSpotName = useStoryAddStore((state) => state.newSpotName);
@@ -41,7 +49,7 @@ const SpotStoryAdd = () => {
   useEffect(() => {
     setButtonStyle("NONE");
     setShowCloseButton(true);
-    setShowBackButton(false);
+    setShowBackButton(true);
     setOnClosePress(() => {
       setNewSpotName(undefined);
       setStoryLocation(undefined);
@@ -58,16 +66,23 @@ const SpotStoryAdd = () => {
 
         <StoryAddContainer>
           <TitleWrapper>
-            <Title>Add Story</Title>
+            <Title>이야기 등록</Title>
           </TitleWrapper>
 
           <MapButtonWrapper onPress={handleMapButton}>
             <MapText>
               <MapPin size={24} />
-              <LocationText>{newSpotName}</LocationText>
+              <LocationText>
+                {selectedSight ? selectedSightName : pinAddress}
+              </LocationText>
             </MapText>
             <ChevronRight size={20} />
           </MapButtonWrapper>
+
+          {selectedSight?.title === pinAddress ||
+          selectedSight?.title ? null : (
+            <SpotNameAdd />
+          )}
 
           <StoryConceptWrapper>
             {CONCEPTS.map((concept) => (
@@ -89,11 +104,9 @@ const SpotStoryAdd = () => {
             <Input
               value={content}
               onChangeText={setContent}
-              width={340}
-              height={200}
-              radius={20}
               multiline={true}
               placeholder="여러분의 이야기를 남겨보세요."
+              style={{ fontSize: theme.typography.fontSize.sm }}
             />
           </InputWrapper>
 
@@ -134,13 +147,12 @@ const SpotStoryAdd = () => {
 const Container = styled.SafeAreaView`
   flex: 1;
   gap: 10px;
-  background-color: ${theme.colors.background.background300};
 `;
 const ScrollContainer = styled.ScrollView`
   flex: 1;
 `;
 const Header = styled.View`
-  margin-bottom: 60px;
+  margin-bottom: 70px;
 `;
 
 const StoryAddContainer = styled.View`
@@ -172,7 +184,9 @@ const ConceptButton = styled.Pressable<{ selected: boolean }>`
   border-radius: 20px;
   padding: 5px 10px;
   border-color: ${({ selected }) =>
-    selected ? theme.colors.main.primary : theme.colors.grey.neutral200};
+    selected
+      ? theme.colors.main.primary
+      : theme.colors.background.background500};
   background-color: ${({ selected }) =>
     selected ? theme.colors.background.background500 : theme.colors.white};
 `;
@@ -185,22 +199,22 @@ const ButtonText = styled.Text<{ selected: boolean }>`
 `;
 
 const MapButtonWrapper = styled.Pressable`
-  border-radius: ${theme.borderRadius.lg}px;
+  border-radius: ${theme.borderRadius.md}px;
   border-width: 1px;
   padding: 16px;
-  border-color: ${theme.colors.grey.neutral200};
+  border-color: ${theme.colors.background.background500};
   gap: 5px;
   flex-direction: row;
   justify-content: space-between;
   width: 340px;
-  height: 55px;
+  height: 50px;
   align-self: center;
   background-color: ${theme.colors.white};
 `;
 
 const MapText = styled.View`
   flex-direction: row;
-  gap: 5px;
+  gap: 10px;
 `;
 
 const LocationText = styled.Text`
@@ -210,7 +224,13 @@ const LocationText = styled.Text`
 `;
 
 const InputWrapper = styled.View`
-  padding: 10px;
+  width: 340px;
+  height: 200px;
+  border-width: 1px;
+  border-color: ${theme.colors.background.background500};
+  border-radius: ${theme.borderRadius.md}px;
+  background-color: ${theme.colors.white};
+  padding: 16px;
 `;
 
 const ImageAddWrapper = styled.View`
