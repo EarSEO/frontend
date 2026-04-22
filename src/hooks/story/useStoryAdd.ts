@@ -128,10 +128,6 @@ export const useStoryAdd = () => {
 
   //스토리 추가 버튼 클릭
   const handleAdd = useCallback(async () => {
-    console.log("cotent", content);
-    console.log("addStoryLocation", addStoryLocation);
-    console.log("newSpotName", newSpotName);
-    console.log("selectedConcept", selectedConcept);
     if (!content || !newSpotName || !selectedConcept) {
       Alert.alert("모든 항목을 입력해주세요.");
       return;
@@ -160,7 +156,6 @@ export const useStoryAdd = () => {
         locale: "KO",
       };
       await getcreateStory(createRequestData, selectedImages);
-      console.log(selectedImages);
 
       setStoryAddStep("none");
     } catch (error) {
