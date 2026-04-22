@@ -272,24 +272,25 @@ const BaseMap: React.FC<BaseMapProps> = ({
             onDeselect={() => selectSight(undefined)}
           />
         ))}
-        {spotLists.map((spots) => (
-          <Marker
-            key={spots.storySpotId}
-            coordinate={{
-              latitude: spots.latitude,
-              longitude: spots.longitude,
-            }}
-            pinColor={
-              briefSpotInfo?.storySpotId === spots.storySpotId
-                ? "#FF6B6B"
-                : theme.colors.main.primary
-            }
-            onPress={(e) => {
-              e.stopPropagation();
-              fetchSpotDetail(spots);
-            }}
-          />
-        ))}
+        {storyAddStep === "none" &&
+          spotLists.map((spots) => (
+            <Marker
+              key={spots.storySpotId}
+              coordinate={{
+                latitude: spots.latitude,
+                longitude: spots.longitude,
+              }}
+              pinColor={
+                briefSpotInfo?.storySpotId === spots.storySpotId
+                  ? "#FF6B6B"
+                  : theme.colors.main.primary
+              }
+              onPress={(e) => {
+                e.stopPropagation();
+                fetchSpotDetail(spots);
+              }}
+            />
+          ))}
       </AnimatedClusterMapView>
 
       {centerPinVisibility && (

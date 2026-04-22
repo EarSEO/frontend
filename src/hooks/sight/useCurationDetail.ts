@@ -2,11 +2,12 @@ import { useCallback, useState } from "react";
 
 import { useRouter } from "expo-router";
 
-import { CurationItem, CurationSightList } from "@/types/sight";
+import { CurationItem } from "@/types/sight";
 
 import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
 import { useLocationStore } from "@/store/common/useLocationStore";
 import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useSightStore } from "@/store/sight/useSightStore";
 
 import { useRequireLogin } from "../common/useRequireLogin";
 
@@ -20,9 +21,7 @@ export const useCurationDetail = () => {
   const [isCurationLoading, setIsCurationLoading] = useState(false);
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
 
-  const [curationSightList, setCurationSightList] = useState<
-    CurationSightList[] | undefined
-  >();
+  const { setCurationSightList, curationSightList } = useSightStore();
   const [selectedCurationTitle, setSelectedCurationTitle] = useState<
     string | undefined
   >("");
@@ -108,6 +107,5 @@ export const useCurationDetail = () => {
     selectedCurationDescription,
     handleAddSightListToMy,
     isInCart,
-    setCurationSightList,
   };
 };

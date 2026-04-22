@@ -21,9 +21,11 @@ import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 
 import SightDetailCard from "../sight/SightDetailCard";
 import StoryBottomSheet from "./StoryBottomSheet";
+import { useSightStore } from "@/store/sight/useSightStore";
 
 const CurationBottomSheet = () => {
   const { fetchSightDetail } = useSightMap();
+  const { setCurationSightList } = useSightStore();
   const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
 
   const {
@@ -35,7 +37,6 @@ const CurationBottomSheet = () => {
     selectedCurationTitle,
     selectedCurationDescription,
     handleAddSightListToMy,
-    setCurationSightList,
   } = useCurationDetail();
 
   const { deselectSight, selectedSight, sightDetail, isDetailLoading } =
@@ -121,8 +122,8 @@ const CurationBottomSheet = () => {
         isInCart={isInCart}
         onToggleRoute={handleToggleRoute}
         handleHeaderClosePress={() => {
-          setCurationSightList(undefined);
           deselectSight();
+          setCurationSightList(undefined);
           setNavigationBarHidden(false);
         }}
         handleHeaderBackPress={() => {
@@ -133,7 +134,7 @@ const CurationBottomSheet = () => {
     );
   }
 
-  if (curationSightList !== undefined) {
+  if (curationSightList && curationSightList.length > 0) {
     return (
       <CurationDetail
         curationSightList={curationSightList}

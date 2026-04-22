@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { SightDetailInfo, SightInfo } from "@/types/sight";
+import { CurationSightList, SightDetailInfo, SightInfo } from "@/types/sight";
 import {
   BriefSpotInfo,
   SpotTitleList,
@@ -15,6 +15,7 @@ interface SightState {
   isLoading: boolean;
   isDetailLoading: boolean;
   error: string | undefined;
+  curationSightList: CurationSightList[] | undefined;
 
   stories?: Stories[];
   briefSpotInfo?: BriefSpotInfo;
@@ -30,6 +31,9 @@ interface SightState {
   setError: (error: string | undefined) => void;
   clearSelection: () => void;
   reset: () => void;
+  setCurationSightList: (
+    curationSightList: CurationSightList[] | undefined
+  ) => void;
 }
 
 const initialState = {
@@ -39,6 +43,7 @@ const initialState = {
   isLoading: false,
   isDetailLoading: false,
   error: undefined,
+  curationSightList: undefined,
 };
 
 export const useSightStore = create<SightState>((set) => ({
@@ -67,4 +72,8 @@ export const useSightStore = create<SightState>((set) => ({
     }),
 
   reset: () => set(initialState),
+
+  //curationList
+  setCurationSightList: (curationSightList: CurationSightList[] | undefined) =>
+    set({ curationSightList: curationSightList }),
 }));
