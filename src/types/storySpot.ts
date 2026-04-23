@@ -17,6 +17,7 @@ export interface GetMapStoryResponse {
 }
 
 export interface StoryItem {
+  storyId?: number;
   storyAuthor?: {
     storyAuthorId?: number;
     nickname?: string;
@@ -28,6 +29,7 @@ export interface StoryItem {
   locale?: "KO" | "EN";
   storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
   likeCount?: number;
+  isLiked?: boolean;
   createdAt?: string;
   updatedAt?: string;
   imageUrls?: string[];
@@ -55,12 +57,14 @@ export interface StoryAuthorResponse {
 }
 
 export interface StoryInfoResponse {
+  storyId?: number;
   storyAuthor?: StoryAuthorResponse;
   title?: string;
   content?: string;
   locale?: "KO" | "EN";
   storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
   likeCount?: number;
+  isLiked?: boolean;
   createdAt?: string;
   updatedAt?: string;
   imageUrls?: string[];
@@ -86,10 +90,10 @@ export interface GetStoryRequest {
       page?: number;
       size?: number;
       sort?:
-        | "createdAt,desc"
-        | "createdAt,asc"
-        | "likeCount,desc"
-        | "likeCount,asc";
+      | "createdAt,desc"
+      | "createdAt,asc"
+      | "likeCount,desc"
+      | "likeCount,asc";
     };
   };
 }

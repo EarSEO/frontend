@@ -1,5 +1,8 @@
 import { create } from "zustand";
 
+import { useLikedStory } from "@/hooks/story/useLikedStory";
+
+import { ToggleLikeResponse } from "@/types/myStory";
 import {
   GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
@@ -26,6 +29,7 @@ import {
   getStorySpotBriefInfo,
   getStorySpotListInMap,
 } from "@/api/getStoryApi";
+import { toggleStoryLike as toggleStoryLikeApi } from "@/api/story/getMyStoryApi";
 
 interface StoryStore {
   storyItems?: StoryItem[];
@@ -41,6 +45,8 @@ interface StoryStore {
   spotLocationInMap?: MapSpotInfoItem[];
   isLoading: boolean;
   loading: boolean;
+  toggleStoryLike: (storyId: number) => Promise<void>;
+  toggleStoryListLike: (storyId: number) => Promise<void>;
 
   navigateStorySpotId: number | null;
   setNavigateStorySpotId: (storySpotId: number) => void;
@@ -99,6 +105,8 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
         summaries: response.summaries,
         storyItems: response.stories?.map((storyItem) => ({
           ...storyItem,
+          storyId: storyItem.storyId,
+          isLiked: storyItem.isLiked,
           createdAt: formatDateArray(storyItem.createdAt),
         })),
       });
@@ -202,6 +210,94 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   clearNavigateStorySpotId: () => set({ navigateStorySpotId: null }),
   setStoryLoading: (loading: boolean) => {
     set({ isLoading: loading });
+  },
+
+  toggleStoryLike: async (storyId: number) => {
+    const currentItems = get().storyItems;
+    if (!currentItems) return;
+
+    const current = currentItems.find((s) => s.storyId === storyId);
+    if (!current) return;
+
+    const prevIsLiked = !!current.isLiked;
+    const prevCount = current.likeCount ?? 0;
+    const nextIsLiked = !prevIsLiked;
+    const nextCount = prevIsLiked ? Math.max(0, prevCount - 1) : prevCount + 1;
+
+    set({
+      storyItems: currentItems.map((st) =>
+        st.storyId === storyId
+          ? { ...st, isLiked: nextIsLiked, likeCount: nextCount }
+          : st
+      ),
+    });
+
+    try {
+      const res = (await toggleStoryLikeApi(storyId)) as ToggleLikeResponse;
+
+      set((s) => ({
+        storyItems: s.storyItems?.map((st) =>
+          st.storyId === storyId
+            ? { ...st, isLiked: res.isLiked, likeCount: res.likeCount }
+            : st
+        ),
+      }));
+
+      useLikedStory.getState().syncLikeState(storyId, res.isLiked, res.likeCount);
+    } catch (e) {
+      set((s) => ({
+        storyItems: s.storyItems?.map((st) =>
+          st.storyId === storyId
+            ? { ...st, isLiked: prevIsLiked, likeCount: prevCount }
+            : st
+        ),
+      }));
+      console.error("이야기 탭 좋아요 토글 실패:", e);
+    }
+  },
+
+  toggleStoryListLike: async (storyId: number) => {
+    const currentItems = get().storyListInMap;
+    if (!currentItems) return;
+
+    const current = currentItems.find((s) => s.storyId === storyId);
+    if (!current) return;
+
+    const prevIsLiked = !!current.isLiked;
+    const prevCount = current.likeCount ?? 0;
+    const nextIsLiked = !prevIsLiked;
+    const nextCount = prevIsLiked ? Math.max(0, prevCount - 1) : prevCount + 1;
+
+    set({
+      storyListInMap: currentItems.map((st) =>
+        st.storyId === storyId
+          ? { ...st, isLiked: nextIsLiked, likeCount: nextCount }
+          : st
+      ),
+    });
+
+    try {
+      const res = (await toggleStoryLikeApi(storyId)) as ToggleLikeResponse;
+
+      set((s) => ({
+        storyListInMap: s.storyListInMap?.map((st) =>
+          st.storyId === storyId
+            ? { ...st, isLiked: res.isLiked, likeCount: res.likeCount }
+            : st
+        ),
+      }));
+
+      useLikedStory.getState().syncLikeState(storyId, res.isLiked, res.likeCount);
+    } catch (e) {
+      set((s) => ({
+        storyListInMap: s.storyListInMap?.map((st) =>
+          st.storyId === storyId
+            ? { ...st, isLiked: prevIsLiked, likeCount: prevCount }
+            : st
+        ),
+      }));
+      console.error("메인 이야기 좋아요 토글 실패:", e);
+    }
   },
 }));
 

@@ -27,6 +27,7 @@ interface StoryCardProps {
   isLiked?: boolean;
   imageUrls?: string[];
   authorId?: number;
+  onToggleLike?: (storyId: number) => Promise<void>;
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({
@@ -41,14 +42,19 @@ const StoryCard: React.FC<StoryCardProps> = ({
   isLiked,
   imageUrls,
   authorId,
+  onToggleLike,
 }) => {
   const { isLogined } = useAuthStore();
   const [numberOfLines, setNumberOfLines] = useState(3);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const toggleLike = useMyStory((s) => s.toggleLike);
-  const isLoading = useMyStory((s) => s.isLoading);
+  // const toggleLike = useMyStory((s) => s.toggleLike);
+  // const isLoading = useMyStory((s) => s.isLoading);
+  const myStoryToggleLike = useMyStory((s) => s.toggleLike);
+  const myStoryIsLoading = useMyStory((s) => s.isLoading);
+
+  const handleToggle = onToggleLike ?? myStoryToggleLike;
 
   const moreButtonRef = useRef<View>(null);
 
@@ -178,8 +184,8 @@ const StoryCard: React.FC<StoryCardProps> = ({
                   storyId={storyId}
                   likeCount={likeCount ?? 0}
                   isLiked={!!isLiked}
-                  onToggle={toggleLike}
-                  disabled={isLoading}
+                  onToggle={handleToggle}
+                  disabled={onToggleLike ? false : myStoryIsLoading}
                 />
               ) : null}
             </HeartIconSection>

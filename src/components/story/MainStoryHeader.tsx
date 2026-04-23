@@ -6,7 +6,7 @@ import Divider from "./Divider";
 import StoryCard from "./StoryCard";
 
 const MainStoryHeader = () => {
-  const { storyListInMap } = useStoryStore();
+  const { storyListInMap, toggleStoryListLike } = useStoryStore();
 
   return (
     <HeaderContainer>
@@ -18,15 +18,19 @@ const MainStoryHeader = () => {
       <ContentWrapper>
         {storyListInMap?.map((mapStory, index) => (
           <StoryCard
-            key={`${mapStory.createdAt}-${index}`}
-            storyId={mapStory.storyAuthor?.storyAuthorId}
+            key={`${mapStory.storyId ?? mapStory.createdAt}-${index}`}
+            storyId={mapStory.storyId}
+            authorId={mapStory.storyAuthor?.storyAuthorId}
+            profileUrl={mapStory.storyAuthor?.profileUrl}
             userNickName={mapStory.storyAuthor?.nickname}
             stroySpotName={mapStory.title}
             storyConcept={mapStory.storyConcept}
             content={mapStory.content}
             imageUrls={mapStory.imageUrls}
             likeCount={mapStory.likeCount}
+            isLiked={mapStory.isLiked}
             createdAt={mapStory.createdAt}
+            onToggleLike={toggleStoryListLike}
           />
         ))}
       </ContentWrapper>

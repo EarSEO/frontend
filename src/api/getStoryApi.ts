@@ -1,4 +1,5 @@
 import { BaseResponse } from "@/types/auth";
+import { ToggleLikeResponse } from "@/types/myStory";
 import {
   GetLocationSpotBriefInfoResponse,
   GetMapStoriesRequest,
@@ -79,6 +80,18 @@ export const getStoryListInMap = async (param: GetMapStoriesRequest) => {
     const response = await api.get<BaseResponse<GetMapStoryResponse>>(
       `${API_ENDPOINTS.STORY.STORY_LIST_IN_MAP}`,
       { params: param }
+    );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 이야기 좋아요 토글
+export const toggleStoryLike = async (storyId: number): Promise<ToggleLikeResponse> => {
+  try {
+    const response = await api.post<BaseResponse<ToggleLikeResponse>>(
+      API_ENDPOINTS.STORY.TOGGLE_LIKE(storyId)
     );
     return response.data.data;
   } catch (error) {

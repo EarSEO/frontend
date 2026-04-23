@@ -9,7 +9,7 @@ import StoryCard from "./StoryCard";
 import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
-  const { storyItems, spotTitleList } = useStoryStore();
+  const { storyItems, spotTitleList, toggleStoryLike } = useStoryStore();
 
   const spotNames = spotTitleList?.titles;
   const mainTitle = spotNames?.[spotNames.length - 1] || "제목 없음";
@@ -39,15 +39,19 @@ const StorySpotHeader = () => {
       <ContentWrapper>
         {storyItems?.map((storyItem, index) => (
           <StoryCard
-            key={`${storyItem.createdAt}-${index}`}
-            storyId={storyItem?.storyAuthor?.storyAuthorId}
+            key={`${storyItem.storyId ?? storyItem.createdAt}-${index}`}
+            storyId={storyItem.storyId}
+            authorId={storyItem.storyAuthor?.storyAuthorId}
+            profileUrl={storyItem.storyAuthor?.profileUrl}
             userNickName={storyItem.storyAuthor?.nickname}
             stroySpotName={storyItem.title}
             storyConcept={storyItem.storyConcept}
             content={storyItem.content}
             imageUrls={storyItem.imageUrls}
             likeCount={storyItem.likeCount}
+            isLiked={storyItem.isLiked}
             createdAt={storyItem.createdAt}
+            onToggleLike={toggleStoryLike}
           />
         ))}
       </ContentWrapper>
