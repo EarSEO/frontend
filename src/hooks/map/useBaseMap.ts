@@ -110,7 +110,6 @@ export const useBaseMap = () => {
       const regionChangeCompleteMethod =
         useBaseMapStore.getState().regionChangeCompleteMethod;
       const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
-      console.log("mapBoundaries", mapBoundaries);
       if (mapBoundaries && regionChangeCompleteMethod) {
         regionChangeCompleteMethod(mapBoundaries);
         useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);

@@ -7,15 +7,12 @@ import {
   SpotTitleList,
   Stories,
   StoryListItem,
-  storySpots,
   StorySummary,
 } from "@/types/storySpot";
 
 import { formatDateArray } from "@/util/dateUtil";
 
 interface StoryStore {
-  isLoading: boolean;
-
   setSpotListInMap: (spotLists: SpotsItemInMap[]) => void;
   spotLists: SpotsItemInMap[];
 
@@ -32,12 +29,10 @@ interface StoryStore {
   distance?: number;
   summaries?: StorySummary[];
 
-  searchedSpot?: storySpots;
-  setSearchedSpot: (searchedSpot?: storySpots) => void;
-
   selectedTitleList?: SpotTitleList;
   setTitleList: (selectedTitleList?: SpotTitleList) => void;
 
+  isLoading: boolean;
   setLoading: (loading: boolean) => void;
 }
 
@@ -51,7 +46,6 @@ const initialState = {
 
   selectedStorySpot: undefined,
   selectedSpotStoryInfo: [],
-  searchedSpot: undefined,
 
   spotLists: [],
   storyLists: [],
@@ -113,14 +107,6 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
         createdAt: formatDateArray(storyItem.createdAt),
       })),
     });
-  },
-
-  setSearchedSpot: (searchedSpot?: storySpots) => {
-    if (!searchedSpot) {
-      set({ searchedSpot: undefined });
-    } else {
-      set({ searchedSpot: searchedSpot });
-    }
   },
 
   setLoading: (loading) => set({ isLoading: loading }),

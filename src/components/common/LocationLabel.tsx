@@ -10,10 +10,10 @@ import { theme } from "@/styles/theme";
 
 import { distanceToString } from "@/util/locationUtil";
 
-export type SpotType = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
+export type LocationType = "SIGHT" | "STORY" | "HOT_SPOT" | "BOOKMARK";
 
 export interface LocationLabelProps {
-  spotType?: SpotType;
+  locationType?: LocationType;
   locationTitle?: string;
   address?: string;
   distance?: number;
@@ -23,7 +23,7 @@ export interface LocationLabelProps {
 }
 
 const LocationLabel: React.FC<LocationLabelProps> = ({
-  spotType,
+  locationType,
   locationTitle,
   address,
   distance,
@@ -35,7 +35,7 @@ const LocationLabel: React.FC<LocationLabelProps> = ({
 
   const getIconName = () => {
     const iconProps = { size: 20, color: theme.colors.text.textPrimary };
-    switch (spotType) {
+    switch (locationType) {
       case "BOOKMARK":
         return <Bookmark {...iconProps} />;
       case "SIGHT":

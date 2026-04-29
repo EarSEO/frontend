@@ -11,7 +11,7 @@ import * as TaskManager from "expo-task-manager";
 import * as Updates from "expo-updates";
 import { ThemeProvider } from "styled-components";
 
-import { useLocation } from "@/hooks/useLocation";
+import { useLocation } from "@/hooks/common/useLocation";
 
 import { theme } from "@/styles/theme";
 import { GEOFENCE_TASK } from "@/constants/taskManagerTaskKeys";
@@ -21,8 +21,8 @@ import {
   isGeofenceActive,
 } from "@/services/geofence/geofenceService";
 import { setAudioModeDuckOthers } from "@/store/docent/useAudioPlayerStore";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
 import { useRouteStore } from "@/store/route/useRouteStore";
-import { useBaseMapStore } from "@/store/useBaseMapStore";
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
@@ -125,7 +125,12 @@ export default function RootLayout() {
               headerShown: false,
               contentStyle: { backgroundColor: "white" },
             }}
-          />
+          >
+            <Stack.Screen
+              name="searchScreen"
+              options={{ headerShown: false }}
+            />
+          </Stack>
         </GestureHandlerRootView>
       </ThemeProvider>
     </SafeAreaProvider>

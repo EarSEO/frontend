@@ -8,6 +8,7 @@ import { useGlobalSearchParams } from "expo-router";
 import CurationBottomSheet from "@/components/bottomSheet/CurationBottomSheet";
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import RouteBottomSheet from "@/components/bottomSheet/RouteBottomSheet";
+import StoryAddBottomSheet from "@/components/bottomSheet/StoryAddBottomSheet";
 import StoryBottomSheet from "@/components/bottomSheet/StoryBottomSheet";
 import BaseMap from "@/components/map/BaseMap";
 import MapHeader from "@/components/map/header/MapHeader";
@@ -44,9 +45,8 @@ function MapTabScreen() {
   const { setSights } = useSightStore();
   //story
   const { fetchStorySpotInBoundingBox } = useStorySpotMap();
-  const { selectedStorySpot, setSpotListInMap, setSearchedSpot } =
-    useStoryStore();
-  const { setNewSpotName, setStoryLocation } = useStoryAddStore();
+  const { selectedStorySpot, setSpotListInMap } = useStoryStore();
+
   const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
   //route
   const { setPathVisibility } = useRouteStore();
@@ -65,23 +65,21 @@ function MapTabScreen() {
     if (!mapType) return;
     if (mapType === "route") {
       //TODO 경로 지도용 요소 추가
-      setBottomSheetLayout({
-        snapPoints: ["45%", "75%", "100%"],
-        index: 0,
-      });
-      setIsBottomSheetDragg(true);
+      // setBottomSheetLayout({
+      //   snapPoints: ["45%", "75%", "100%"],
+      //   index: 0,
+      // });
       setSights([]);
       setEnableCluster(false);
       setPathVisibility(true);
       setSpotListInMap([]);
       setBottomSheetContent(<RouteBottomSheet />);
     } else if (mapType === "sight") {
-      //TODO 관광지 지도용 요소 추가
-      setBottomSheetLayout({
-        snapPoints: ["45%", "75%", "100%"],
-        index: 0,
-      });
-      setIsBottomSheetDragg(true);
+      // //TODO 관광지 지도용 요소 추가
+      // setBottomSheetLayout({
+      //   snapPoints: ["45%", "75%", "100%"],
+      //   index: 0,
+      // });
       setMapHeaderContent(
         <MapSearchBar
           placeHolder={"관광지 검색.."}
@@ -98,12 +96,48 @@ function MapTabScreen() {
 
     if (mapType === "story") {
       setBottomSheetContent(<StoryBottomSheet />);
+      if (storyAddStep === "none") {
+        setCenterPinVisibility(false);
+        setMapHeaderContent(
+          <MapSearchBar
+            placeHolder={"이야기 검색.."}
+            onPressMapSearchBar={() => {
+              console.log("story map search bar pressed");
+            }}
+          />
+        );
+        setRegionChangeCompleteMethod(fetchStorySpotInBoundingBox);
+      }
+      if (storyAddStep === "location") {
+        setCenterPinVisibility(true);
+        setIsBottomSheetDragg(false);
+        setBottomSheetLayout({
+          snapPoints: ["30%"],
+          index: 0,
+        });
+      }
+
+      if (storyAddStep === "storyAdd") {
+        setCenterPinVisibility(false);
+        setIsBottomSheetDragg(true);
+        setBottomSheetLayout({
+          snapPoints: ["100%"],
+          index: 0,
+        });
+        setBottomSheetContent(<StoryAddBottomSheet />);
+      }
     }
 
-    setTimeout(() => onRegionChangeCompleteWithBoundingBox(), 100);
+    const timer = setTimeout(() => {
+      onRegionChangeCompleteWithBoundingBox();
+    }, 100);
 
     return () => {
       // store 기반 공유 컴포넌트 데이터 초기화
+      setBottomSheetLayout({
+        snapPoints: ["45%", "75%", "100%"],
+        index: 0,
+      });
       setMapHeaderContent(undefined);
       setMapMovable(true);
       setEnableCluster(true);
@@ -112,55 +146,10 @@ function MapTabScreen() {
       setSights([]);
       setBottomSheetContent(undefined);
       selectedStorySpot([]);
-      setSearchedSpot(undefined);
-      setSpotListInMap([]);
-      setCenterPinVisibility(false);
-      setNewSpotName(undefined);
-      setStoryLocation(undefined);
-      setNewSpotName(undefined);
       setIsBottomSheetDragg(true);
+      setCenterPinVisibility(false);
+      clearTimeout(timer);
     };
-  }, [mapType]);
-
-  useEffect(() => {
-    if (mapType !== "story") return;
-    switch (storyAddStep) {
-      case "none":
-        //TODO 이야기 지도용 요소 추가
-        setBottomSheetLayout({
-          snapPoints: ["45%", "75%", "100%"],
-          index: 0,
-        });
-        setIsBottomSheetDragg(true);
-        setMapHeaderContent(
-          <MapSearchBar
-            placeHolder={"이야기 검색.."}
-            onPressMapSearchBar={() => {
-              //TODO 스팟 검색 모달
-              console.log("story map search bar pressed");
-            }}
-          />
-        );
-        setRegionChangeCompleteMethod(fetchStorySpotInBoundingBox);
-        break;
-      case "location":
-        setCenterPinVisibility(true);
-        setBottomSheetLayout({
-          snapPoints: ["30%"],
-          index: 0,
-        });
-        setIsBottomSheetDragg(false);
-        setSpotListInMap([]);
-        break;
-      case "storyAdd":
-        setBottomSheetLayout({
-          snapPoints: ["100%"],
-          index: 0,
-        });
-        setIsBottomSheetDragg(true);
-        setSpotListInMap([]);
-        break;
-    }
   }, [mapType, storyAddStep]);
 
   return (

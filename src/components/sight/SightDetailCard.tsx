@@ -27,7 +27,7 @@ import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
 import { StoryAddButton } from "../story/StoryAddButton";
-import SightInfo from "./SightInfo";
+import SightDetail from "./SightInfo";
 import SightStory from "./SightStory";
 
 type TabType = "sightInfo" | "sightStory";
@@ -113,12 +113,13 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   if (!selectedSight) return null;
 
   const isBookmark =
-    userBookmarkList?.bookmarks.some((b) => b.sightId === selectedSight.id) ??
-    false;
+    userBookmarkList?.bookmarks.some(
+      (b) => b.sightId === selectedSight.sightId
+    ) ?? false;
 
   const isInCart =
     routeCartItems.filter((routeCartItem) => {
-      return routeCartItem.sightId === selectedSight.id;
+      return routeCartItem.sightId === selectedSight.sightId;
     }).length > 0;
 
   return (
@@ -136,10 +137,10 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
               e.stopPropagation();
               if (isInCart) {
-                removeRouteCartItem(selectedSight.id);
+                removeRouteCartItem(selectedSight.sightId);
               } else {
                 insertRouteCartItem({
-                  sightId: sightDetail?.id ?? selectedSight.id,
+                  sightId: sightDetail?.id ?? selectedSight.sightId,
                   theme: sightDetail?.theme ?? "",
                   title: sightDetail?.title ?? "",
                   address: sightDetail?.address ?? "",
@@ -166,9 +167,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
               if (!requireLogin()) return;
 
               if (isBookmark) {
-                removeBookmark(selectedSight.id);
+                removeBookmark(selectedSight.sightId);
               } else {
-                insertBookmark(selectedSight.id);
+                insertBookmark(selectedSight.sightId);
               }
             }}
           >
@@ -218,7 +219,7 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
         <ContentContainer>
           {activeTab === "sightInfo" ? (
-            <SightInfo
+            <SightDetail
               isDetailLoading={isDetailLoading}
               sightDetail={sightDetail}
             />

@@ -21,13 +21,6 @@ const SpotNameAdd = () => {
     .map((spotNames) => `📍${spotNames}`)
     .join(" ");
 
-  // useEffect(() => {
-  //   if (selectedSpotTitle) {
-  //     setInputSpotName(selectedSpotTitle);
-  //     setNewSpotName(selectedSpotTitle);
-  //   }
-  // }, [setInputSpotName]);
-
   const handleSpotName = (text: string) => {
     setNewSpotName(text);
   };

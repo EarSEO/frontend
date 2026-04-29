@@ -17,11 +17,11 @@ import {
   RouteCartItem,
   useRouteCartStore,
 } from "@/store/route/useRouteCartStore";
+import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 
 import SightDetailCard from "../sight/SightDetailCard";
 import StoryBottomSheet from "./StoryBottomSheet";
-import { useSightStore } from "@/store/sight/useSightStore";
 
 const CurationBottomSheet = () => {
   const { fetchSightDetail } = useSightMap();
@@ -45,17 +45,17 @@ const CurationBottomSheet = () => {
   const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
     useRouteCartStore();
   const isInCart = routeCartItems.some(
-    (item) => item.sightId === selectedSight?.id
+    (item) => item.sightId === selectedSight?.sightId
   );
 
   const handleToggleRoute = () => {
     if (!sightDetail || !selectedSight) return;
 
     if (isInCart) {
-      removeRouteCartItem(selectedSight.id);
+      removeRouteCartItem(selectedSight.sightId);
     } else {
       const cartItem: RouteCartItem = {
-        sightId: selectedSight.id,
+        sightId: selectedSight.sightId,
         theme: sightDetail.theme,
         title: sightDetail.title,
         address: sightDetail.address,

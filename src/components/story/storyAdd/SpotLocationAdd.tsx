@@ -45,7 +45,10 @@ const SpotLocationAdd = () => {
       <Content>
         {pinAddress ? (
           <LocationLabelWrapper>
-            <LocationLabel spotType={"HOT_SPOT"} locationTitle={nameAddress} />
+            <LocationLabel
+              locationType={"HOT_SPOT"}
+              locationTitle={nameAddress}
+            />
           </LocationLabelWrapper>
         ) : (
           <NoResultText>지도를 움직여 스팟을 지정해주세요. </NoResultText>

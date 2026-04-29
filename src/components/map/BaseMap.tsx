@@ -251,13 +251,13 @@ const BaseMap: React.FC<BaseMapProps> = ({
         )}
         {sights.map((sight) => (
           <Marker
-            key={sight.id}
+            key={sight.sightId}
             coordinate={{
               latitude: sight.latitude,
               longitude: sight.longitude,
             }}
             pinColor={
-              selectedSight?.id === sight.id
+              selectedSight?.sightId === sight.sightId
                 ? "#FF6B6B"
                 : theme.colors.main.primary
             }

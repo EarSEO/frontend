@@ -22,12 +22,12 @@ import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 import Divider from "../story/Divider";
 
-interface SightInfo {
+interface SightDetail {
   isDetailLoading: boolean;
   sightDetail: SightDetailInfo | null;
 }
 
-const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
+const SightInfo: React.FC<SightDetail> = ({ isDetailLoading, sightDetail }) => {
   const checkData = (data: string | undefined | null) => {
     const normalized = normalizeHtmlBreaks(data);
     return normalized && normalized.trim() !== ""

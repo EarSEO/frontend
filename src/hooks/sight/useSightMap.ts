@@ -2,13 +2,8 @@ import { useCallback, useRef, useState } from "react";
 
 import { BoundingBox } from "react-native-maps";
 
-import {
-  RectangleBoundsParams,
-  SearchSightParams,
-  SightInfo,
-} from "@/types/sight";
+import { RectangleBoundsParams, SightInfo } from "@/types/sight";
 
-import { getSearchSight } from "@/api/sight/getSearchSight";
 import { getSightDetail, getSightsInRectangle } from "@/api/sight/getSight";
 import { useSightStore } from "@/store/sight/useSightStore";
 
@@ -29,14 +24,8 @@ export const useSightMap = () => {
     clearSelection,
   } = useSightStore();
 
-  // 검색 관련 상태
-  const [searchResults, setSearchResults] = useState<SightInfo[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
-  const searchDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   // 영역 내 관광지 조회 (기존 코드 유지)
   const fetchSightsInBounds = useCallback(
@@ -87,85 +76,6 @@ export const useSightMap = () => {
     [fetchSightsInBounds]
   );
 
-  // 관광지 검색
-  const searchSightsInBounds = useCallback(
-    async (
-      keyword: string,
-      currentLocation: { longitude: number; latitude: number },
-      bounds: RectangleBoundsParams,
-      limit: number = 20
-    ) => {
-      if (!keyword.trim()) {
-        setSearchResults([]);
-        return;
-      }
-
-      try {
-        setIsSearching(true);
-        setSearchError(null);
-
-        const params: SearchSightParams = {
-          keyword,
-          longitude: currentLocation.longitude,
-          latitude: currentLocation.latitude,
-          minLongitude: bounds.minLongitude,
-          minLatitude: bounds.minLatitude,
-          maxLongitude: bounds.maxLongitude,
-          maxLatitude: bounds.maxLatitude,
-          limit: limit,
-        };
-
-        const results = await getSearchSight(params);
-        const mapped: SightInfo[] = results.map((item: any) => ({
-          id: item.sightId, // ← sightId 를 id 로 변환
-          title: item.title,
-          longitude: item.longitude,
-          latitude: item.latitude,
-          geoHash: item.geoHash ?? "",
-        }));
-
-        setSearchResults(mapped);
-      } catch (err) {
-        console.error("관광지 검색 실패:", err);
-        setSearchError("검색에 실패했습니다.");
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    },
-    []
-  );
-
-  // 디바운스 적용된 검색 (입력 중 실시간 검색용)
-  const searchSightsDebounced = useCallback(
-    (
-      keyword: string,
-      currentLocation: { longitude: number; latitude: number },
-      bounds: RectangleBoundsParams,
-      delay = 500
-    ) => {
-      if (searchDebounceTimer.current) {
-        clearTimeout(searchDebounceTimer.current);
-      }
-
-      if (!keyword.trim()) {
-        setSearchResults([]);
-        return;
-      }
-
-      searchDebounceTimer.current = setTimeout(() => {
-        searchSightsInBounds(keyword, currentLocation, bounds);
-      }, delay);
-    },
-    [searchSightsInBounds]
-  );
-
-  // 검색 결과 초기화
-  const clearSearchResults = useCallback(() => {
-    setSearchResults([]);
-    setSearchError(null);
-  }, []);
-
   // 관광지 상세 조회 (기존 코드 유지)
   const fetchSightDetail = useCallback(
     async (
@@ -177,7 +87,7 @@ export const useSightMap = () => {
         setDetailLoading(true);
 
         const detail = await getSightDetail({
-          id: sight.id,
+          id: sight.sightId,
           longitude: currentLocation.longitude,
           latitude: currentLocation.latitude,
         });
@@ -198,40 +108,6 @@ export const useSightMap = () => {
     clearSelection();
   }, [clearSelection]);
 
-  // //sight 이야기 조회
-  // const fetchStoryDetail = useCallback(
-  //   async (spotInfo: BriefSpotInfo) => {
-  //     if (!spotInfo) {
-  //       setLoading(true);
-  //       return;
-  //     }
-  //     try {
-  //       const req: GetSpotRequest = {
-  //         storySpotId: spotInfo?.storySpotId,
-  //         query: {
-  //           query: {
-  //             longitude: spotInfo.longitude,
-  //             latitude: spotInfo.latitude,
-  //             locale: "KO" as const,
-  //             page: 0,
-  //             size: 1000,
-  //             sort: "createdAt,desc" as const,
-  //           },
-  //         },
-  //       };
-  //       const res = await getSpotInfo(req);
-  //       console.log("관광지 이야기 성공", req.storySpotId);
-  //       selectedStorySpot([res]);
-  //     } catch (e) {
-  //       console.error("관광지 이야기 조회 실패", e);
-  //       selectedStorySpot([]);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   },
-  //   [, selectedStorySpot, setLoading]
-  // );
-
   return {
     // 상태
     sights,
@@ -241,22 +117,11 @@ export const useSightMap = () => {
     isDetailLoading,
     error,
 
-    // 검색 상태
-    searchResults,
-    isSearching,
-    searchError,
-
     // 액션
     fetchSightsInBounds,
     fetchSightInBoundingBox,
     fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,
-    // fetchStoryDetail,
-
-    // 검색 액션
-    searchSightsInBounds,
-    searchSightsDebounced,
-    clearSearchResults,
   };
 };

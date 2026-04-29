@@ -1,28 +1,32 @@
 import React from "react";
 
-import {NativeSyntheticEvent, NativeTouchEvent} from "react-native";
+import { NativeSyntheticEvent, NativeTouchEvent } from "react-native";
 
-import {Ionicons} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import styled from "styled-components/native";
 
-import {theme} from "@/styles/theme";
+import { theme } from "@/styles/theme";
 
 interface MapSearchBarProps {
   placeHolder: string;
   onPressMapSearchBar?: () => void;
 }
 
-const MapSearchBar = ({placeHolder, onPressMapSearchBar}: MapSearchBarProps) => {
+const MapSearchBar = ({
+  placeHolder,
+  onPressMapSearchBar,
+}: MapSearchBarProps) => {
   return (
     <SearchInputWrapper
       onPress={(e: NativeSyntheticEvent<NativeTouchEvent>) => {
+        router.push("/searchScreen");
         e.stopPropagation();
-        if(onPressMapSearchBar)
-          onPressMapSearchBar();
+        if (onPressMapSearchBar) onPressMapSearchBar();
       }}
     >
       <Ionicons name="search" size={20} color="#888" />
-      <SearchInput style={{color: theme.colors.grey.neutral400}}>
+      <SearchInput style={{ color: theme.colors.grey.neutral400 }}>
         {placeHolder}
       </SearchInput>
     </SearchInputWrapper>

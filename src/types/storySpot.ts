@@ -46,7 +46,7 @@ export interface GetSearchTitleRequest {
   minLatitude: number;
   maxLongitude: number;
   maxLatitude: number;
-  limit?: string;
+  limit?: number;
 }
 
 export interface storySpots {

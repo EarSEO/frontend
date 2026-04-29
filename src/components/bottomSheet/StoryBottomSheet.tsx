@@ -30,15 +30,14 @@ const StoryBottomSheet = () => {
 
   const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
 
-
   const { setNavigationBarHidden } = useNavigationBarStore();
-  useEffect(() => {
-    if (storyAddStep !== "none") {
-      setNavigationBarHidden(true);
-    } else {
-      setNavigationBarHidden(false);
-    }
-  }, [storyAddStep, setNavigationBarHidden]);
+  // useEffect(() => {
+  //   if (storyAddStep !== "none") {
+  //     setNavigationBarHidden(true);
+  //   } else {
+  //     setNavigationBarHidden(false);
+  //   }
+  // }, [storyAddStep, setNavigationBarHidden]);
 
   useEffect(() => {
     let button;
@@ -82,7 +81,6 @@ const StoryBottomSheet = () => {
         </StoryContainer>
       )}
       {storyAddStep === "location" && <SpotLocationAdd />}
-      {storyAddStep === "name" && <SpotNameAdd />}
       {storyAddStep === "storyAdd" && <SpotStoryAdd />}
     </Container>
   );
