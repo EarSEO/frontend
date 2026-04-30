@@ -98,7 +98,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
       sightLocation: LatLng
     ) => {
       const sight = {
-        id: sightId,
+        sightId: sightId,
         title: sightTitle,
         longitude: sightLocation.longitude,
         latitude: sightLocation.latitude,

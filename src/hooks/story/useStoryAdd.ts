@@ -29,7 +29,7 @@ export const useStoryAdd = () => {
   const { setStoryAddStep, setNewSpotName, setStoryLocation } =
     useStoryAddStore();
   const pinAddress = useStoryAddStore((state) => state.pinAddress?.name);
-  const { setSearchedSpot, setTitleList } = useStoryStore();
+  const { setTitleList } = useStoryStore();
   //핀 위치 위경도로 변경
 
   //storyAdd
@@ -170,8 +170,6 @@ export const useStoryAdd = () => {
     addStoryLocation,
     setNewSpotName,
     setStoryLocation,
-
-    setSearchedSpot,
 
     //create
     handleRemoveImage,

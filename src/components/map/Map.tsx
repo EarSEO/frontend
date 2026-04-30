@@ -29,7 +29,7 @@ const LOCATION_BUTTON_MARGIN = 16;
 interface MapProps {
   animatedPosition?: SharedValue<number>;
   markers?: SightInfo[];
-  selectedMarkerId?: string | null;
+  selectedMarkerId?: number | null;
   onMarkerPress?: (sight: SightInfo) => void;
   scrollEnabled?: boolean;
   zoomEnabled?: boolean;
@@ -137,14 +137,14 @@ const Map = forwardRef<MapRef, MapProps>(
         >
           {markers?.map((sight) => (
             <Marker
-              key={sight.id}
+              key={sight.sightId}
               coordinate={{
                 latitude: sight.latitude,
                 longitude: sight.longitude,
               }}
               title={sight.title}
               pinColor={
-                selectedMarkerId === sight.id
+                selectedMarkerId === sight.sightId
                   ? theme.colors.main.primary
                   : "#FF6B6B"
               }

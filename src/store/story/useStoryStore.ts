@@ -13,6 +13,10 @@ import {
 import { formatDateArray } from "@/util/dateUtil";
 
 interface StoryStore {
+  navigateStorySpotId: number | null;
+  setNavigateStorySpotId: (storySpotId: number) => void;
+  clearNavigateStorySpotId: () => void;
+
   setSpotListInMap: (spotLists: SpotsItemInMap[]) => void;
   spotLists: SpotsItemInMap[];
 
@@ -110,4 +114,14 @@ export const useStoryStore = create<StoryStore>((set, get) => ({
   },
 
   setLoading: (loading) => set({ isLoading: loading }),
+
+  navigateStorySpotId: null,
+
+  setNavigateStorySpotId: (storySpotId: number) =>
+    set({ navigateStorySpotId: storySpotId }),
+
+  clearNavigateStorySpotId: () => set({ navigateStorySpotId: null }),
+  setStoryLoading: (loading: boolean) => {
+    set({ isLoading: loading });
+  },
 }));

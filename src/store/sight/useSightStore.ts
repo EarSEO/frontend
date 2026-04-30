@@ -23,6 +23,8 @@ interface SightState {
   distance?: number;
   summaries?: StorySummary[];
 
+  navigateSightId: number | null;
+
   setSights: (sights: SightInfo[]) => void;
   selectSight: (sight: SightInfo | undefined) => void;
   setSightDetail: (detail: SightDetailInfo | undefined) => void;
@@ -34,6 +36,9 @@ interface SightState {
   setCurationSightList: (
     curationSightList: CurationSightList[] | undefined
   ) => void;
+
+  setNavigateSightId: (sightId: number) => void;
+  clearNavigateSightId: () => void;
 }
 
 const initialState = {
@@ -44,6 +49,7 @@ const initialState = {
   isDetailLoading: false,
   error: undefined,
   curationSightList: undefined,
+  navigateSightId: null,
 };
 
 export const useSightStore = create<SightState>((set) => ({
@@ -76,4 +82,8 @@ export const useSightStore = create<SightState>((set) => ({
   //curationList
   setCurationSightList: (curationSightList: CurationSightList[] | undefined) =>
     set({ curationSightList: curationSightList }),
+
+  setNavigateSightId: (sightId) => set({ navigateSightId: sightId }),
+
+  clearNavigateSightId: () => set({ navigateSightId: null }),
 }));

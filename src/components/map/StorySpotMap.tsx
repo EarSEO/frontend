@@ -174,14 +174,14 @@ const StorySpotMap = forwardRef<MapRef, StorySpotMapProps>(
           ))}
           {sightMarkers?.map((sight) => (
             <Marker
-              key={sight.id}
+              key={sight.sightId}
               coordinate={{
                 latitude: sight.latitude,
                 longitude: sight.longitude,
               }}
               title={sight.title}
               pinColor={
-                selectedSightMarkerId === sight.id
+                selectedSightMarkerId === sight.sightId
                   ? theme.colors.main.primary
                   : "#FF6B6B"
               }

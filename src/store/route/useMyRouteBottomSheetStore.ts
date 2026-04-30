@@ -15,9 +15,9 @@ interface MyRouteBottomSheetStore {
   setPreTourDelete: () => void;
   setOnTour: () => void;
 
-  deleteList: string[];
-  addDeleteList: (itemId: string) => void;
-  removeDeleteList: (itemId: string) => void;
+  deleteList: number[];
+  addDeleteList: (itemId: number) => void;
+  removeDeleteList: (itemId: number) => void;
   applyDeleteList: () => void;
 }
 
@@ -57,16 +57,16 @@ export const useMyRouteBottomSheetStore = create<MyRouteBottomSheetStore>(
         } as LatLng,
         placeIds: useRouteCartStore
           .getState()
-          .routeCartItems.map((routCartItem) => routCartItem.sightId),
+          .routeCartItems.map((routCartItem) => String(routCartItem.sightId)),
       });
     },
     deleteList: [],
-    addDeleteList: (itemId: string): void => {
+    addDeleteList: (itemId: number): void => {
       set({
         deleteList: [...get().deleteList, itemId],
       });
     },
-    removeDeleteList: (itemId: string): void => {
+    removeDeleteList: (itemId: number): void => {
       set({
         deleteList: get().deleteList.filter((listItemId) => {
           return itemId !== listItemId;

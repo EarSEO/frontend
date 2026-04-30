@@ -10,6 +10,7 @@ import Input from "@/components/common/Input";
 
 import { useAppleLogin } from "@/hooks/profile/useAppleLogin";
 import { useBookmark } from "@/hooks/sight/useBookmark";
+import { useGoogleLogin } from "@/hooks/useGoogleLogin";
 
 import { theme } from "@/styles/theme";
 import AppleLogo from "@/assets/icons/apple-logo.svg";
@@ -29,6 +30,11 @@ export default function Login() {
     isLoading: isAppleLoading,
     error: appleError,
   } = useAppleLogin();
+  const {
+    handleGoogleLogin,
+    isLoading: isGoogleLoading,
+    error: googleError,
+  } = useGoogleLogin();
   const isIOS = Platform.OS === "ios";
 
   const handleLogin = async () => {
@@ -100,7 +106,7 @@ export default function Login() {
       </ButtonArea>
 
       <SocialLoginArea>
-        <SocialButton onPress={() => console.log("Google login")}>
+        <SocialButton onPress={handleGoogleLogin} disabled={isGoogleLoading}>
           <GoogleLogo width={40} height={40} />
         </SocialButton>
         {isIOS && (
@@ -110,6 +116,7 @@ export default function Login() {
         )}
       </SocialLoginArea>
       {appleError && <ErrorText>{appleError}</ErrorText>}
+      {googleError && <ErrorText>{googleError}</ErrorText>}
     </Container>
   );
 }

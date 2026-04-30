@@ -110,11 +110,11 @@ function LoggedInView({
           <MyStoryIcon width={24} height={24} color={theme.colors.white} />
           <TabLabel>내 이야기</TabLabel>
         </TabButton>
-        <TabButton onPress={() => console.log("북마크")}>
+        <TabButton onPress={() => router.push("/myPage/bookmark" as any)}>
           <BookmarkIcon width={24} height={24} color={theme.colors.white} />
           <TabLabel>북마크</TabLabel>
         </TabButton>
-        <TabButton onPress={() => console.log("지난 여행")}>
+        <TabButton onPress={() => router.push("/myPage/pastTrip" as any)}>
           <LastTripIcon width={24} height={24} color={theme.colors.white} />
           <TabLabel>지난 여행</TabLabel>
         </TabButton>
