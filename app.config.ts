@@ -63,7 +63,7 @@ export default {
         "expo-build-properties",
         {
           ios: {
-            deploymentTarget: "12.0",
+            deploymentTarget: "15.1",
           },
         },
       ],

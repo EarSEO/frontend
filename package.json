@@ -37,6 +37,7 @@
     "eas-cli": "^16.28.0",
     "expo": "~54.0.29",
     "expo-apple-authentication": "~8.0.8",
+    "expo-application": "~7.0.8",
     "expo-audio": "~1.1.0",
     "expo-auth-session": "~7.0.10",
     "expo-build-properties": "~1.0.10",
