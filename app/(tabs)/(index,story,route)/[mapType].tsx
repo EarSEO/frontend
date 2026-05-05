@@ -8,7 +8,6 @@ import { useGlobalSearchParams } from "expo-router";
 import CurationBottomSheet from "@/components/bottomSheet/CurationBottomSheet";
 import CustomBottomSheet from "@/components/bottomSheet/CustomBottomSheet";
 import RouteBottomSheet from "@/components/bottomSheet/RouteBottomSheet";
-import StoryAddBottomSheet from "@/components/bottomSheet/StoryAddBottomSheet";
 import StoryBottomSheet from "@/components/bottomSheet/StoryBottomSheet";
 import BaseMap from "@/components/map/BaseMap";
 import MapHeader from "@/components/map/header/MapHeader";
@@ -46,7 +45,7 @@ function MapTabScreen() {
   //story
   const { fetchStorySpotInBoundingBox } = useStorySpotMap();
   const { selectedStorySpot, setSpotListInMap } = useStoryStore();
-
+  const { setNewSpotName } = useStoryAddStore();
   const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
   //route
   const { setPathVisibility } = useRouteStore();
@@ -75,11 +74,11 @@ function MapTabScreen() {
       setSpotListInMap([]);
       setBottomSheetContent(<RouteBottomSheet />);
     } else if (mapType === "sight") {
-      // //TODO 관광지 지도용 요소 추가
-      // setBottomSheetLayout({
-      //   snapPoints: ["45%", "75%", "100%"],
-      //   index: 0,
-      // });
+      //TODO 관광지 지도용 요소 추가
+      setBottomSheetLayout({
+        snapPoints: ["15%", "45%", "75%", "100%"],
+        index: 1,
+      });
       setMapHeaderContent(
         <MapSearchBar
           placeHolder={"관광지 검색.."}
@@ -97,6 +96,10 @@ function MapTabScreen() {
     if (mapType === "story") {
       setBottomSheetContent(<StoryBottomSheet />);
       if (storyAddStep === "none") {
+        setBottomSheetLayout({
+          snapPoints: ["15%", "45%", "75%", "100%"],
+          index: 1,
+        });
         setCenterPinVisibility(false);
         setMapHeaderContent(
           <MapSearchBar
@@ -124,7 +127,6 @@ function MapTabScreen() {
           snapPoints: ["100%"],
           index: 0,
         });
-        setBottomSheetContent(<StoryAddBottomSheet />);
       }
     }
 
@@ -135,8 +137,8 @@ function MapTabScreen() {
     return () => {
       // store 기반 공유 컴포넌트 데이터 초기화
       setBottomSheetLayout({
-        snapPoints: ["45%", "75%", "100%"],
-        index: 0,
+        snapPoints: ["15%", "45%", "75%", "100%"],
+        index: 1,
       });
       setMapHeaderContent(undefined);
       setMapMovable(true);
@@ -149,6 +151,7 @@ function MapTabScreen() {
       setIsBottomSheetDragg(true);
       setCenterPinVisibility(false);
       clearTimeout(timer);
+      setNewSpotName(undefined);
     };
   }, [mapType, storyAddStep]);
 
