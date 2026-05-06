@@ -60,14 +60,6 @@ export default {
       "expo-router",
       "expo-apple-authentication",
       [
-        "expo-build-properties",
-        {
-          ios: {
-            deploymentTarget: "15.1",
-          },
-        },
-      ],
-      [
         "expo-splash-screen",
         {
           image: "./src/assets/images/earseo-transparent-icon.png",

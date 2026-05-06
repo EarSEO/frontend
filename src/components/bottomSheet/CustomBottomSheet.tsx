@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { Text, View } from "react-native";
 
@@ -30,13 +30,22 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
     (state) => state.isBottomSheetDragg
   );
   const storeSnapPoints = useBottomSheetStore((state) => state.snapPoints);
-  const index = useBottomSheetStore((state) => state.index);
+  const storeIndex = useBottomSheetStore((state) => state.index);
+  const resolvedSnapPoints = useMemo(
+    () => storeSnapPoints || ["45%", "75%", "100%"],
+    [storeSnapPoints]
+  );
+
+  const safeIndex = Math.min(
+    initialIndex ?? storeIndex ?? 0,
+    resolvedSnapPoints.length - 1
+  );
   return (
     <>
       <BottomSheet
         ref={bottomSheetRef}
-        snapPoints={storeSnapPoints || ["45%"]}
-        index={index ?? 0}
+        snapPoints={storeSnapPoints}
+        index={safeIndex}
         enablePanDownToClose={false}
         enableOverDrag={false}
         animatedPosition={animatedPosition}

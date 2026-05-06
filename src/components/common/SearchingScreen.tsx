@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
 import Input from "@/components/common/Input";
@@ -11,6 +11,7 @@ import { theme } from "@/styles/theme";
 
 import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
 import { useSearchStore } from "@/store/common/useSearchStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 import { getThemeName } from "@/util/themeUtil";
 
 import HeaderButton from "./HeaderButton";
@@ -18,7 +19,6 @@ import LocationLabel from "./LocationLabel";
 
 const SearchingScreen = () => {
   const router = useRouter();
-  const { mapType } = useLocalSearchParams();
 
   const { searchSightsDebounced, searchResults, fetchSearchedLocation } =
     useSearch();
@@ -76,8 +76,6 @@ const SearchingScreen = () => {
                   onPress={() => {
                     setSearchLocation(item);
                     fetchSearchedLocation(item);
-                    console.log(item);
-
                     router.replace({
                       pathname: "/[mapType]",
                       params: {

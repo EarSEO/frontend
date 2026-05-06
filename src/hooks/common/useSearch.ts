@@ -11,6 +11,7 @@ import { KOREA_GEOM } from "@/constants/geometry";
 
 import { getSearchSight, getSearchStory } from "@/api/story/getSearchApi";
 import { useLocationStore } from "@/store/common/useLocationStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 
 import { useSightMap } from "../sight/useSightMap";
 import { useStorySpotMap } from "../story/useStorySpotMap";
@@ -31,6 +32,8 @@ export const useSearch = () => {
 
   const { fetchSpotDetail } = useStorySpotMap();
   const { fetchSightDetail } = useSightMap();
+
+  const { setStoryLocation } = useStoryAddStore();
 
   const fetchSearchResults = useCallback(
     async (keyword: string) => {
@@ -102,6 +105,11 @@ export const useSearch = () => {
           latitude: item.latitude,
           storySpotId: item.storySpotId,
         };
+        const location = {
+          longitude: item.longitude,
+          latitude: item.latitude,
+        };
+        setStoryLocation(location);
         fetchSpotDetail(storyInfo);
       } else if ("sightId" in item) {
         const sightInfo = {
@@ -117,6 +125,7 @@ export const useSearch = () => {
         };
 
         fetchSightDetail(sightInfo, currentLocation);
+        setStoryLocation(currentLocation);
       }
     },
     [fetchSightDetail, fetchSpotDetail]
