@@ -31,15 +31,8 @@ const CustomBottomSheet: React.FC<BottomSheetProps> = ({
   );
   const storeSnapPoints = useBottomSheetStore((state) => state.snapPoints);
   const storeIndex = useBottomSheetStore((state) => state.index);
-  const resolvedSnapPoints = useMemo(
-    () => storeSnapPoints || ["45%", "75%", "100%"],
-    [storeSnapPoints]
-  );
 
-  const safeIndex = Math.min(
-    initialIndex ?? storeIndex ?? 0,
-    resolvedSnapPoints.length - 1
-  );
+  const safeIndex = Math.min(initialIndex ?? storeIndex ?? 1);
   return (
     <>
       <BottomSheet

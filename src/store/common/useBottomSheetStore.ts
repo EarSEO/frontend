@@ -59,8 +59,8 @@ export const useBottomSheetStore = create<BottomSheetStore>()(
         set({ onBottomSheetAnimate });
       },
 
-      snapPoints: ["45%", "75%", "100%"],
-      index: 0,
+      snapPoints: ["15%", "45%", "75%", "100%"],
+      index: 1,
       setBottomSheetLayout: ({ snapPoints, index }) => {
         const maxIndex = snapPoints.length - 1;
         const safeIndex = Math.max(-1, Math.min(index, maxIndex));

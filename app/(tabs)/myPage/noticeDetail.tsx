@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ActivityIndicator, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
@@ -13,72 +14,78 @@ import { theme } from "@/styles/theme";
 import { getNoticeDetail } from "@/api/notice/getNoticeApi";
 
 export default function NoticeDetail() {
-    const router = useRouter();
-    const { noticeId } = useLocalSearchParams<{ noticeId: string }>();
-    const [notice, setNotice] = useState<NoticeDetailType | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { noticeId } = useLocalSearchParams<{ noticeId: string }>();
+  const [notice, setNotice] = useState<NoticeDetailType | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        if (!noticeId) return;
-        const fetch = async () => {
-            try {
-                const data = await getNoticeDetail(Number(noticeId));
-                setNotice(data);
-            } catch (error) {
-                console.error("공지사항 상세 조회 실패:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetch();
-    }, [noticeId]);
+  useEffect(() => {
+    if (!noticeId) return;
+    const fetch = async () => {
+      try {
+        const data = await getNoticeDetail(Number(noticeId));
+        setNotice(data);
+      } catch (error) {
+        console.error("공지사항 상세 조회 실패:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetch();
+  }, [noticeId]);
 
-    if (isLoading) {
-        return (
-            <Container>
-                <Header>
-                    <BackButton onPress={() => router.back()}>
-                        <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
-                    </BackButton>
-                </Header>
-                <LoadingContainer>
-                    <ActivityIndicator />
-                </LoadingContainer>
-            </Container>
-        );
-    }
-
-    if (!notice) {
-        return (
-            <Container>
-                <Header>
-                    <BackButton onPress={() => router.back()}>
-                        <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
-                    </BackButton>
-                </Header>
-                <EmptyContainer>
-                    <EmptyText>공지사항을 찾을 수 없습니다</EmptyText>
-                </EmptyContainer>
-            </Container>
-        );
-    }
-
+  if (isLoading) {
     return (
-        <Container>
-            <Header>
-                <BackButton onPress={() => router.back()}>
-                    <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
-                </BackButton>
-            </Header>
-
-            <ScrollView contentContainerStyle={{ padding: 20 }}>
-                <DateText>{notice.createdAt.replace(/\//g, ".")}</DateText>
-                <TitleText>{notice.noticeTitle}</TitleText>
-                <Divider />
-                <ContentText>{notice.noticeContent}</ContentText>
-            </ScrollView>
-        </Container>
+      <Container>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Header>
+            <BackButton onPress={() => router.back()}>
+              <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
+            </BackButton>
+          </Header>
+          <LoadingContainer>
+            <ActivityIndicator />
+          </LoadingContainer>
+        </SafeAreaView>
+      </Container>
     );
+  }
+
+  if (!notice) {
+    return (
+      <Container>
+        <SafeAreaView style={{ flex: 1 }}>
+          <Header>
+            <BackButton onPress={() => router.back()}>
+              <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
+            </BackButton>
+          </Header>
+          <EmptyContainer>
+            <EmptyText>공지사항을 찾을 수 없습니다</EmptyText>
+          </EmptyContainer>
+        </SafeAreaView>
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Header>
+          <BackButton onPress={() => router.back()}>
+            <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
+          </BackButton>
+        </Header>
+
+        <ScrollView contentContainerStyle={{ padding: 20 }}>
+          <DateText>{notice.createdAt.replace(/\//g, ".")}</DateText>
+          <TitleText>{notice.noticeTitle}</TitleText>
+          <Divider />
+          <ContentText>{notice.noticeContent}</ContentText>
+        </ScrollView>
+      </SafeAreaView>
+    </Container>
+  );
 }
 
 const Container = styled.View`

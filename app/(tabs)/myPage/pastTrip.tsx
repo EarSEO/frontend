@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { ActivityIndicator, Alert, FlatList, Modal } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useRouter } from "expo-router";
 import { Pencil, Trash2 } from "lucide-react-native";
@@ -24,7 +25,8 @@ export default function PastTrip() {
   } = useCompletedRoute();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [editingRoute, setEditingRoute] = useState<CompletedRouteSummary | null>(null);
+  const [editingRoute, setEditingRoute] =
+    useState<CompletedRouteSummary | null>(null);
   const [editName, setEditName] = useState("");
 
   useEffect(() => {
@@ -100,64 +102,66 @@ export default function PastTrip() {
 
   return (
     <Container>
-      <Header>
-        <HeaderTitle>지난 여행</HeaderTitle>
-      </Header>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Header>
+          <HeaderTitle>지난 여행</HeaderTitle>
+        </Header>
 
-      <FlatList
-        data={routes}
-        keyExtractor={(item) => item.routeId.toString()}
-        renderItem={renderItem}
-        refreshing={isLoading && routes.length === 0}
-        onRefresh={() => fetchRoutes(true)}
-        onEndReached={() => {
-          if (hasNext && !isLoading) {
-            fetchRoutes(false);
+        <FlatList
+          data={routes}
+          keyExtractor={(item) => item.routeId.toString()}
+          renderItem={renderItem}
+          refreshing={isLoading && routes.length === 0}
+          onRefresh={() => fetchRoutes(true)}
+          onEndReached={() => {
+            if (hasNext && !isLoading) {
+              fetchRoutes(false);
+            }
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoading && routes.length > 0 ? (
+              <ActivityIndicator style={{ padding: 20 }} />
+            ) : null
           }
-        }}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isLoading && routes.length > 0 ? (
-            <ActivityIndicator style={{ padding: 20 }} />
-          ) : null
-        }
-        ListEmptyComponent={
-          !isLoading ? (
-            <EmptyContainer>
-              <EmptyText>지난 여행이 없습니다</EmptyText>
-            </EmptyContainer>
-          ) : null
-        }
-        contentContainerStyle={{ flexGrow: 1 }}
-      />
+          ListEmptyComponent={
+            !isLoading ? (
+              <EmptyContainer>
+                <EmptyText>지난 여행이 없습니다</EmptyText>
+              </EmptyContainer>
+            ) : null
+          }
+          contentContainerStyle={{ flexGrow: 1 }}
+        />
 
-      <Modal
-        visible={editModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEditModalVisible(false)}
-      >
-        <ModalOverlay>
-          <ModalContent>
-            <ModalTitle>여행 이름 수정</ModalTitle>
-            <ModalInput
-              value={editName}
-              onChangeText={setEditName}
-              placeholder="여행 이름 입력"
-              placeholderTextColor={theme.colors.text.textTertiary}
-              autoFocus
-            />
-            <ModalButtonGroup>
-              <ModalButton onPress={() => setEditModalVisible(false)}>
-                <ModalButtonText>취소</ModalButtonText>
-              </ModalButton>
-              <ModalButton onPress={handleEditSubmit} primary>
-                <ModalButtonText primary>확인</ModalButtonText>
-              </ModalButton>
-            </ModalButtonGroup>
-          </ModalContent>
-        </ModalOverlay>
-      </Modal>
+        <Modal
+          visible={editModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setEditModalVisible(false)}
+        >
+          <ModalOverlay>
+            <ModalContent>
+              <ModalTitle>여행 이름 수정</ModalTitle>
+              <ModalInput
+                value={editName}
+                onChangeText={setEditName}
+                placeholder="여행 이름 입력"
+                placeholderTextColor={theme.colors.text.textTertiary}
+                autoFocus
+              />
+              <ModalButtonGroup>
+                <ModalButton onPress={() => setEditModalVisible(false)}>
+                  <ModalButtonText>취소</ModalButtonText>
+                </ModalButton>
+                <ModalButton onPress={handleEditSubmit} primary>
+                  <ModalButtonText primary>확인</ModalButtonText>
+                </ModalButton>
+              </ModalButtonGroup>
+            </ModalContent>
+          </ModalOverlay>
+        </Modal>
+      </SafeAreaView>
     </Container>
   );
 }

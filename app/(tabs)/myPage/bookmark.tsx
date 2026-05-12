@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { ActivityIndicator, FlatList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useRouter } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
@@ -148,25 +149,27 @@ export default function Bookmark() {
 
   return (
     <Container>
-      <Header>
-        <BackButton onPress={() => router.back()}>
-          <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
-        </BackButton>
-        <HeaderTitle>북마크</HeaderTitle>
-        <HeaderSpacer />
-      </Header>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Header>
+          <BackButton onPress={() => router.back()}>
+            <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
+          </BackButton>
+          <HeaderTitle>북마크</HeaderTitle>
+          <HeaderSpacer />
+        </Header>
 
-      <FlatList
-        data={bookmarkSights}
-        keyExtractor={(item) => String(item.sightId)}
-        renderItem={renderItem}
-        contentContainerStyle={{ padding: 20, gap: 12, flexGrow: 1 }}
-        ListEmptyComponent={
-          <EmptyContainer>
-            <EmptyText>북마크한 관광지가 없습니다</EmptyText>
-          </EmptyContainer>
-        }
-      />
+        <FlatList
+          data={bookmarkSights}
+          keyExtractor={(item) => String(item.sightId)}
+          renderItem={renderItem}
+          contentContainerStyle={{ padding: 20, gap: 12, flexGrow: 1 }}
+          ListEmptyComponent={
+            <EmptyContainer>
+              <EmptyText>북마크한 관광지가 없습니다</EmptyText>
+            </EmptyContainer>
+          }
+        />
+      </SafeAreaView>
     </Container>
   );
 }

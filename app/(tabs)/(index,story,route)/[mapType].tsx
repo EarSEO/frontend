@@ -64,10 +64,10 @@ function MapTabScreen() {
     if (!mapType) return;
     if (mapType === "route") {
       //TODO 경로 지도용 요소 추가
-      // setBottomSheetLayout({
-      //   snapPoints: ["45%", "75%", "100%"],
-      //   index: 0,
-      // });
+      setBottomSheetLayout({
+        snapPoints: ["15%", "45%", "75%", "100%"],
+        index: 1,
+      });
       setSights([]);
       setEnableCluster(false);
       setPathVisibility(true);
