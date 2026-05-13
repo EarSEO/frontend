@@ -39,8 +39,9 @@ const CurationBottomSheet = () => {
     handleAddSightListToMy,
   } = useCurationDetail();
 
-  const { deselectSight, selectedSight, sightDetail, isDetailLoading } =
-    useSightMap();
+  const { deselectSight } = useSightMap();
+  const selectedSight = useSightStore((state) => state.selectedSight);
+  const { sightDetail, isDetailLoading } = useSightStore();
 
   const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
     useRouteCartStore();

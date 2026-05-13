@@ -9,12 +9,7 @@ import { useSightStore } from "@/store/sight/useSightStore";
 
 export const useSightMap = () => {
   const {
-    sights,
-    selectedSight,
-    sightDetail,
-    isLoading,
-    isDetailLoading,
-    error,
+
     setSights,
     selectSight,
     setSightDetail,
@@ -27,7 +22,7 @@ export const useSightMap = () => {
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // 영역 내 관광지 조회 (기존 코드 유지)
+  // 지도 영역 내 관광지마커 조회 (기존 코드 유지)
   const fetchSightsInBounds = useCallback(
     async (bounds: RectangleBoundsParams) => {
       try {
@@ -50,26 +45,19 @@ export const useSightMap = () => {
     [setSights, setLoading, setError]
   );
 
+  //지도에서 bounding한 위치
   const fetchSightInBoundingBox = useCallback(
-    (boundingBox: BoundingBox) => {
-      fetchSightsInBounds({
-        minLatitude: boundingBox.southWest.latitude,
-        minLongitude: boundingBox.southWest.longitude,
-        maxLatitude: boundingBox.northEast.latitude,
-        maxLongitude: boundingBox.northEast.longitude,
-      });
-    },
-    [fetchSightsInBounds]
-  );
-
-  // 디바운스 적용된 조회 (기존 코드 유지)
-  const fetchSightsDebounced = useCallback(
-    (bounds: RectangleBoundsParams, delay = 300) => {
+    (boundingBox: BoundingBox, delay = 300) => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
-
       debounceTimer.current = setTimeout(() => {
+        const bounds: RectangleBoundsParams = {
+          minLatitude: boundingBox.southWest.latitude,
+          minLongitude: boundingBox.southWest.longitude,
+          maxLatitude: boundingBox.northEast.latitude,
+          maxLongitude: boundingBox.northEast.longitude,
+        };
         fetchSightsInBounds(bounds);
       }, delay);
     },
@@ -109,18 +97,9 @@ export const useSightMap = () => {
   }, [clearSelection]);
 
   return {
-    // 상태
-    sights,
-    selectedSight,
-    sightDetail,
-    isLoading,
-    isDetailLoading,
-    error,
-
     // 액션
     fetchSightsInBounds,
     fetchSightInBoundingBox,
-    fetchSightsDebounced,
     fetchSightDetail,
     deselectSight,
   };

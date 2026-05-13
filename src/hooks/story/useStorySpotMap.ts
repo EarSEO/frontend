@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 import { BoundingBox } from "react-native-maps";
 import { LatLng } from "react-native-maps/src/sharedTypes";
 
+import { RectangleBoundsParams } from "@/types/sight";
 import {
   BriefSpotInfo,
   GetSpotInMapRequest,
@@ -27,6 +28,9 @@ export const useStorySpotMap = () => {
     selectedStorySpot,
     setStoryListInMap,
   } = useStoryStore();
+
+  // 디바운스용 타이머 ref
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const location = useLocationStore((state) => state.location);
 
@@ -85,19 +89,20 @@ export const useStorySpotMap = () => {
 
   //지도 bounding 한 위치
   const fetchStorySpotInBoundingBox = useCallback(
-    (boundingBox: BoundingBox) => {
-      fetchSpotMarkerInMap({
-        minLatitude: boundingBox.southWest.latitude,
-        minLongitude: boundingBox.southWest.longitude,
-        maxLatitude: boundingBox.northEast.latitude,
-        maxLongitude: boundingBox.northEast.longitude,
-      });
-      handleRegionChange({
-        minLatitude: boundingBox.southWest.latitude,
-        minLongitude: boundingBox.southWest.longitude,
-        maxLatitude: boundingBox.northEast.latitude,
-        maxLongitude: boundingBox.northEast.longitude,
-      });
+    (boundingBox: BoundingBox, delay = 300) => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+      debounceTimer.current = setTimeout(() => {
+        const bounds: RectangleBoundsParams = {
+          minLatitude: boundingBox.southWest.latitude,
+          minLongitude: boundingBox.southWest.longitude,
+          maxLatitude: boundingBox.northEast.latitude,
+          maxLongitude: boundingBox.northEast.longitude,
+        };
+        fetchSpotMarkerInMap(bounds);
+        handleRegionChange(bounds);
+      }, delay);
     },
     [fetchSpotMarkerInMap, handleRegionChange]
   );
