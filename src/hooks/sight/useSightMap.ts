@@ -5,11 +5,11 @@ import { BoundingBox } from "react-native-maps";
 import { RectangleBoundsParams, SightInfo } from "@/types/sight";
 
 import { getSightDetail, getSightsInRectangle } from "@/api/sight/getSight";
+import { useLocationStore } from "@/store/common/useLocationStore";
 import { useSightStore } from "@/store/sight/useSightStore";
 
 export const useSightMap = () => {
   const {
-
     setSights,
     selectSight,
     setSightDetail,
@@ -18,6 +18,9 @@ export const useSightMap = () => {
     setError,
     clearSelection,
   } = useSightStore();
+
+  //현재 지도 상 위치
+  const location = useLocationStore((state) => state.location);
 
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -66,20 +69,19 @@ export const useSightMap = () => {
 
   // 관광지 상세 조회 (기존 코드 유지)
   const fetchSightDetail = useCallback(
-    async (
-      sight: SightInfo,
-      currentLocation: { longitude: number; latitude: number }
-    ) => {
+    async (sight: SightInfo) => {
       try {
+        if (!location) {
+          return;
+        }
         selectSight(sight);
         setDetailLoading(true);
 
         const detail = await getSightDetail({
-          id: sight.sightId,
-          longitude: currentLocation.longitude,
-          latitude: currentLocation.latitude,
+          id: sight.id,
+          longitude: location.longitude,
+          latitude: location.latitude,
         });
-
         setSightDetail(detail);
       } catch (err) {
         console.error("관광지 상세 조회 실패:", err);
@@ -88,7 +90,7 @@ export const useSightMap = () => {
         setDetailLoading(false);
       }
     },
-    [selectSight, setSightDetail, setDetailLoading, setError]
+    [selectSight, setSightDetail, location, setDetailLoading, setError]
   );
 
   // 마커 선택 해제 (기존 코드 유지)

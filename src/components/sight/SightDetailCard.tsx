@@ -113,13 +113,12 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   if (!selectedSight) return null;
 
   const isBookmark =
-    userBookmarkList?.bookmarks.some(
-      (b) => b.sightId === selectedSight.sightId
-    ) ?? false;
+    userBookmarkList?.bookmarks.some((b) => b.sightId === selectedSight.id) ??
+    false;
 
   const isInCart =
     routeCartItems.filter((routeCartItem) => {
-      return routeCartItem.sightId === selectedSight.sightId;
+      return routeCartItem.sightId === selectedSight.id;
     }).length > 0;
 
   return (
@@ -137,10 +136,10 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
               e.stopPropagation();
               if (isInCart) {
-                removeRouteCartItem(selectedSight.sightId);
+                removeRouteCartItem(selectedSight.id);
               } else {
                 insertRouteCartItem({
-                  sightId: sightDetail?.id ?? selectedSight.sightId,
+                  sightId: sightDetail?.id ?? selectedSight.id,
                   theme: sightDetail?.theme ?? "",
                   title: sightDetail?.title ?? "",
                   address: sightDetail?.address ?? "",
@@ -167,9 +166,9 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
               if (!requireLogin()) return;
 
               if (isBookmark) {
-                removeBookmark(selectedSight.sightId);
+                removeBookmark(selectedSight.id);
               } else {
-                insertBookmark(selectedSight.sightId);
+                insertBookmark(selectedSight.id);
               }
             }}
           >

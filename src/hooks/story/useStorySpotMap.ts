@@ -114,8 +114,8 @@ export const useStorySpotMap = () => {
         storySpotId: spotInfo.storySpotId,
         query: {
           query: {
-            longitude: spotInfo.longitude,
-            latitude: spotInfo.latitude,
+            longitude: location.longitude,
+            latitude: location.latitude,
             locale: "KO" as const,
             page: 0,
             size: 1000,

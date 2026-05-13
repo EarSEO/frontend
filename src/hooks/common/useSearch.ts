@@ -113,7 +113,7 @@ export const useSearch = () => {
         fetchSpotDetail(storyInfo);
       } else if ("sightId" in item) {
         const sightInfo = {
-          sightId: item?.sightId,
+          id: item?.id,
           title: item?.title,
           longitude: item?.longitude,
           latitude: item?.latitude,
@@ -124,7 +124,7 @@ export const useSearch = () => {
           latitude: location.latitude,
         };
 
-        fetchSightDetail(sightInfo, currentLocation);
+        fetchSightDetail(sightInfo);
         setStoryLocation(currentLocation);
       }
     },

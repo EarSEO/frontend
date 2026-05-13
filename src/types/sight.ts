@@ -2,7 +2,7 @@ import { LatLng } from "react-native-maps";
 
 // 관광지 기본 정보 (목록 조회용)
 export interface SightInfo {
-  sightId: number;
+  id: number;
   title: string;
   longitude: number;
   latitude: number;
@@ -83,7 +83,7 @@ export interface SearchSightList {
 }
 
 export interface SearchSight {
-  sightId: number;
+  id: number;
   title: string;
   subTheme: string;
   address: string;

@@ -251,23 +251,19 @@ const BaseMap: React.FC<BaseMapProps> = ({
         )}
         {sights.map((sight) => (
           <Marker
-            key={sight.sightId}
+            key={sight.id}
             coordinate={{
               latitude: sight.latitude,
               longitude: sight.longitude,
             }}
             pinColor={
-              selectedSight?.sightId === sight.sightId
+              selectedSight?.id === sight.id
                 ? "#FF6B6B"
                 : theme.colors.main.primary
             }
             onPress={(e: MarkerPressEvent) => {
               e.stopPropagation();
-              fetchSightDetail(sight, {
-                longitude: sight.longitude,
-                latitude: sight.latitude,
-              });
-              selectSight(sight);
+              fetchSightDetail(sight);
             }}
             onDeselect={() => selectSight(undefined)}
           />

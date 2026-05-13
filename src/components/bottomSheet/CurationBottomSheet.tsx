@@ -46,17 +46,17 @@ const CurationBottomSheet = () => {
   const { insertRouteCartItem, removeRouteCartItem, routeCartItems } =
     useRouteCartStore();
   const isInCart = routeCartItems.some(
-    (item) => item.sightId === selectedSight?.sightId
+    (item) => item.sightId === selectedSight?.id
   );
 
   const handleToggleRoute = () => {
     if (!sightDetail || !selectedSight) return;
 
     if (isInCart) {
-      removeRouteCartItem(selectedSight.sightId);
+      removeRouteCartItem(selectedSight.id);
     } else {
       const cartItem: RouteCartItem = {
-        sightId: selectedSight.sightId,
+        sightId: selectedSight.id,
         theme: sightDetail.theme,
         title: sightDetail.title,
         address: sightDetail.address,
