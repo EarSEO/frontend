@@ -22,6 +22,7 @@ import {
 } from "@/services/geofence/geofenceService";
 import { setAudioModeDuckOthers } from "@/store/docent/useAudioPlayerStore";
 import { useBaseMapStore } from "@/store/map/useBaseMapStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 import { useRouteStore } from "@/store/route/useRouteStore";
 
 SplashScreen.preventAutoHideAsync();
@@ -48,6 +49,12 @@ export default function RootLayout() {
     "Pretendard-Regular": require("../src/assets/fonts/Pretendard-Regular.otf"),
     "Pretendard-Medium": require("../src/assets/fonts/Pretendard-Medium.otf"),
   });
+
+  const loadUser = useAuthStore((s) => s.loadUser);
+
+  useEffect(() => {
+    void loadUser();
+  }, [loadUser]);
 
   // EAS ota Upadte
   useEffect(() => {
