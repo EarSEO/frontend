@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
+import { useGlobalSearchParams } from "expo-router";
 import { Locate, LocateFixed } from "lucide-react-native";
 import styled from "styled-components/native";
 
@@ -70,6 +71,8 @@ const BaseMap: React.FC<BaseMapProps> = ({
   } = useBaseMap();
   const { setIsMapFollowingUser, getAddressByCoordinate } = useBaseMapStore();
   const mapRef = useBaseMapStore((state) => state.mapRef);
+  const { mapType } = useGlobalSearchParams();
+
   const enableCluster = useBaseMapStore((state) => state.enableCluster);
   const mapMovable = useBaseMapStore((state) => state.mapMovable);
   const isMapFollowingUser = useBaseMapStore(
@@ -236,39 +239,42 @@ const BaseMap: React.FC<BaseMapProps> = ({
               lineJoin="round"
               geodesic={true}
             />
-            {routeItems?.map((sight) => (
-              <Marker
-                key={sight.itemId}
-                coordinate={{
-                  latitude: sight.point.latitude,
-                  longitude: sight.point.longitude,
-                }}
-                title={sight.itemName}
-                pinColor={theme.colors.main.primary}
-              />
-            ))}
+            {mapType == "route" &&
+              routeItems?.map((sight) => (
+                <Marker
+                  key={sight.itemId}
+                  coordinate={{
+                    latitude: sight.point.latitude,
+                    longitude: sight.point.longitude,
+                  }}
+                  title={sight.itemName}
+                  pinColor={theme.colors.main.primary}
+                />
+              ))}
           </>
         )}
-        {sights.map((sight) => (
-          <Marker
-            key={sight.id}
-            coordinate={{
-              latitude: sight.latitude,
-              longitude: sight.longitude,
-            }}
-            pinColor={
-              selectedSight?.id === sight.id
-                ? "#FF6B6B"
-                : theme.colors.main.primary
-            }
-            onPress={(e: MarkerPressEvent) => {
-              e.stopPropagation();
-              fetchSightDetail(sight);
-            }}
-            onDeselect={() => selectSight(undefined)}
-          />
-        ))}
-        {storyAddStep === "none" &&
+        {mapType == "sight" &&
+          sights.map((sight) => (
+            <Marker
+              key={sight.id}
+              coordinate={{
+                latitude: sight.latitude,
+                longitude: sight.longitude,
+              }}
+              pinColor={
+                selectedSight?.id === sight.id
+                  ? "#FF6B6B"
+                  : theme.colors.main.primary
+              }
+              onPress={(e: MarkerPressEvent) => {
+                e.stopPropagation();
+                fetchSightDetail(sight);
+              }}
+              onDeselect={() => selectSight(undefined)}
+            />
+          ))}
+        {mapType == "story" &&
+          storyAddStep === "none" &&
           spotLists.map((spots) => (
             <Marker
               key={spots.storySpotId}

@@ -92,13 +92,13 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   //sight 클릭 시 관광지 상세로 이동하는 핸들러
   const handleMoveToSightDetail = useCallback(
     (
-      sightId: number,
+      id: number,
       sightTitle: string,
       sightGeohash: string,
       sightLocation: LatLng
     ) => {
       const sight = {
-        sightId: sightId,
+        id: id,
         title: sightTitle,
         longitude: sightLocation.longitude,
         latitude: sightLocation.latitude,

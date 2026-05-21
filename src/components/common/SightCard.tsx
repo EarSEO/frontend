@@ -101,7 +101,7 @@ const ContentWrapper = styled.View`
 `;
 
 const SightName = styled.Text`
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.md}px;
   color: ${theme.colors.text.textPrimary};
   width: 180px;
   text-overflow: ellipsis;
@@ -109,7 +109,7 @@ const SightName = styled.Text`
 `;
 
 const SightTheme = styled.Text`
-  font-size: ${theme.typography.fontSize.xs};
+  font-size: ${theme.typography.fontSize.xs}px;
   color: ${theme.colors.text.textBlue};
 `;
 

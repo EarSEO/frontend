@@ -55,13 +55,13 @@ const ContentWrapper = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: ${theme.typography.fontSize.md};
+  font-size: ${theme.typography.fontSize.md}px;
   font-family: ${theme.typography.fontFamily.semiBold};
   color: ${theme.colors.text.textWhite};
 `;
 
 const SubTitle = styled.Text`
-  font-size: ${theme.typography.fontSize.xs};
+  font-size: ${theme.typography.fontSize.xs}px;
   font-family: ${theme.typography.fontFamily.medium};
   color: ${theme.colors.text.textWhite};
 `;

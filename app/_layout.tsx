@@ -43,6 +43,7 @@ useBaseMapStore.subscribe((state, prevState) => {
 });
 
 export default function RootLayout() {
+  useLocation();
   const [fontsLoaded] = useFonts({
     "Pretendard-Bold": require("../src/assets/fonts/Pretendard-Bold.otf"),
     "Pretendard-SemiBold": require("../src/assets/fonts/Pretendard-SemiBold.otf"),
