@@ -38,7 +38,7 @@ function MapTabScreen() {
     setCenterPinVisibility,
     setRegionChangeCompleteMethod,
   } = useBaseMapStore();
-  const { onRegionChangeCompleteWithBoundingBox } = useBaseMap();
+  const { loadMarkerFromStore } = useBaseMap();
   //sight
   const { fetchSightInBoundingBox } = useSightMap();
   const { setSights } = useSightStore();
@@ -62,6 +62,7 @@ function MapTabScreen() {
      * TODO issue: param이 변경될때마다 세번씩 호출됨
      */
     if (!mapType) return;
+    setRegionChangeCompleteMethod(undefined);
     if (mapType === "route") {
       //TODO 경로 지도용 요소 추가
       setBottomSheetLayout({
@@ -72,6 +73,7 @@ function MapTabScreen() {
       setEnableCluster(false);
       setPathVisibility(true);
       setSpotListInMap([]);
+      setRegionChangeCompleteMethod(undefined);
       setBottomSheetContent(<RouteBottomSheet />);
     } else if (mapType === "sight") {
       //TODO 관광지 지도용 요소 추가
@@ -90,6 +92,7 @@ function MapTabScreen() {
       );
       setRegionChangeCompleteMethod(fetchSightInBoundingBox);
       //TODO 관광지 큐레이션 바텀시트 추가
+      loadMarkerFromStore();
       setBottomSheetContent(<CurationBottomSheet />);
     }
 
@@ -110,6 +113,7 @@ function MapTabScreen() {
           />
         );
         setRegionChangeCompleteMethod(fetchStorySpotInBoundingBox);
+        loadMarkerFromStore();
       }
       if (storyAddStep === "location") {
         setCenterPinVisibility(true);
@@ -130,10 +134,6 @@ function MapTabScreen() {
       }
     }
 
-    const timer = setTimeout(() => {
-      onRegionChangeCompleteWithBoundingBox();
-    }, 100);
-
     return () => {
       // store 기반 공유 컴포넌트 데이터 초기화
       setBottomSheetLayout({
@@ -143,14 +143,12 @@ function MapTabScreen() {
       setMapHeaderContent(undefined);
       setMapMovable(true);
       setEnableCluster(true);
-      setRegionChangeCompleteMethod(undefined);
       setPathVisibility(false);
       setSights([]);
       setBottomSheetContent(undefined);
       selectedStorySpot([]);
       setIsBottomSheetDragg(true);
       setCenterPinVisibility(false);
-      clearTimeout(timer);
       setNewSpotName(undefined);
     };
   }, [mapType, storyAddStep]);

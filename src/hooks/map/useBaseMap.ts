@@ -6,6 +6,7 @@ import { Marker } from "react-native-svg";
 
 import { SNAP_POINT_TYPE } from "@gorhom/bottom-sheet";
 import * as Location from "expo-location";
+import { useGlobalSearchParams } from "expo-router";
 
 import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
 import { useLocationStore } from "@/store/common/useLocationStore";
@@ -18,11 +19,13 @@ export const useBaseMap = () => {
     return useBaseMapStore.getState().mapRef;
   }, []);
 
+  // 특정 좌표로 카메라 이동O
   const moveToLocation = useCallback((latLng: LatLng) => {
     const mapRef = getCurMapRef();
     mapRef?.current?.animateCamera({ center: latLng });
   }, []);
 
+  //특정 Region으로 이동 (줌 + 위치 포함) , 수동 이동이라 유저 추적 끄기 X
   const moveToRegion = useCallback(async (region: Region, duration = 300) => {
     const mapRef = getCurMapRef();
     if (!mapRef?.current) return;
@@ -31,12 +34,14 @@ export const useBaseMap = () => {
     mapRef.current.animateToRegion(region, duration);
   }, []);
 
+  //현재 화면의 지도 경계 가져오기 ?
   const getBoundaries = useCallback(async () => {
     const mapRef = getCurMapRef();
     if (!mapRef?.current) return null;
     return await mapRef.current.getMapBoundaries();
   }, []);
 
+  //여러 좌표를 화면에 맞게 자동 줌 O
   const fitToPoints = useCallback((points: LatLng[]) => {
     const mapRef = getCurMapRef();
     if (!mapRef?.current || points.length === 0) return;
@@ -46,6 +51,7 @@ export const useBaseMap = () => {
     });
   }, []);
 
+  //현재 위치로 이동 O
   const moveToCurrentLocation = useCallback(async (duration: number = 300) => {
     const mapRef = getCurMapRef();
     const location = useLocationStore.getState().location;
@@ -57,6 +63,7 @@ export const useBaseMap = () => {
     );
   }, []);
 
+  //카메라가 사용자 따라갈지 설정 O
   const setCameraFollow = useCallback((shouldFollow: boolean) => {
     if (shouldFollow) {
       useBaseMapStore.getState().setIsMapFollowingUser(true);
@@ -66,6 +73,7 @@ export const useBaseMap = () => {
     }
   }, []);
 
+  //위치 버튼 클릭 시 실행 O
   const onPressLocateButton = useCallback(
     (event: GestureResponderEvent) => {
       event.stopPropagation();
@@ -75,6 +83,7 @@ export const useBaseMap = () => {
     [moveToCurrentLocation]
   );
 
+  //지도 이동 중 계속 호출됨 o
   const onRegionChange = useCallback((region: Region) => {
     const boundingBox = getCurMapRef()?.current?.boundingBoxForRegion(region);
     if (!boundingBox) return;
@@ -83,6 +92,7 @@ export const useBaseMap = () => {
 
   // 지도의 RegionChangeComplete 이벤트 기준 마커 로드
   // @ts-ignore
+  //지도가 멈추면서 이벤트 인자로 넘겨준 region
   const onRegionChangeCompleteWithRegion = useCallback(
     (
       region: Region,
@@ -101,23 +111,27 @@ export const useBaseMap = () => {
         }
       }, delay);
     },
-    []
+    [getCurMapRef]
   );
 
   // 현재 지도의 MapBoundary 기준 마커 로드
-  const onRegionChangeCompleteWithBoundingBox = useCallback((delay = 300) => {
-    useBaseMapStore.getState().startRegionChangeDebounce(async () => {
-      const regionChangeCompleteMethod =
-        useBaseMapStore.getState().regionChangeCompleteMethod;
-      const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
-      if (mapBoundaries && regionChangeCompleteMethod) {
-        regionChangeCompleteMethod(mapBoundaries);
-        useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
-      }
-    }, delay);
-  }, []);
+  //native 지도 기반
+  const onRegionChangeCompleteWithBoundingBox = useCallback(
+    (delay = 300) => {
+      useBaseMapStore.getState().startRegionChangeDebounce(async () => {
+        const regionChangeCompleteMethod =
+          useBaseMapStore.getState().regionChangeCompleteMethod;
+        const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
+        if (mapBoundaries && regionChangeCompleteMethod) {
+          regionChangeCompleteMethod(mapBoundaries);
+          useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
+        }
+      }, delay);
+    },
+    [getCurMapRef]
+  );
 
-  // 초기 마커 로드
+  // 초기 마커 로드 x
   const loadMarkerFromStore = useCallback(async () => {
     const regionChangeCompleteMethod =
       useBaseMapStore.getState().regionChangeCompleteMethod;
@@ -128,6 +142,7 @@ export const useBaseMap = () => {
     }
   }, []);
 
+  //바텀시트 이벤트 연결
   const { setOnBottomSheetChange, setOnBottomSheetAnimate } =
     useBottomSheetStore();
   const initBaseMapBottomSheetCallbacks = useCallback(() => {

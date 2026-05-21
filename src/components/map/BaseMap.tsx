@@ -129,7 +129,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
     };
   });
 
-  //MapPin store에 저장
+  //MapPin store에 저장(storyAdd)
   const handleCenterPinRegion = useCallback(
     async (region: Region) => {
       const coordinate = {
@@ -144,6 +144,7 @@ const BaseMap: React.FC<BaseMapProps> = ({
     [setStoryLocation, getAddressByCoordinate]
   );
 
+  //centerPin(이야기 추가 시) 위치 정보 반환
   const handleRegionChangeComplete = useCallback(
     (region: Region, details: any) => {
       onRegionChangeCompleteWithRegion(region, details, undefined);
