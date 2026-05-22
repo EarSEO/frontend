@@ -111,25 +111,22 @@ export const useBaseMap = () => {
         }
       }, delay);
     },
-    [getCurMapRef]
+    []
   );
 
   // 현재 지도의 MapBoundary 기준 마커 로드
   //native 지도 기반
-  const onRegionChangeCompleteWithBoundingBox = useCallback(
-    (delay = 300) => {
-      useBaseMapStore.getState().startRegionChangeDebounce(async () => {
-        const regionChangeCompleteMethod =
-          useBaseMapStore.getState().regionChangeCompleteMethod;
-        const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
-        if (mapBoundaries && regionChangeCompleteMethod) {
-          regionChangeCompleteMethod(mapBoundaries);
-          useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
-        }
-      }, delay);
-    },
-    [getCurMapRef]
-  );
+  const onRegionChangeCompleteWithBoundingBox = useCallback((delay = 200) => {
+    useBaseMapStore.getState().startRegionChangeDebounce(async () => {
+      const regionChangeCompleteMethod =
+        useBaseMapStore.getState().regionChangeCompleteMethod;
+      const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
+      if (mapBoundaries && regionChangeCompleteMethod) {
+        regionChangeCompleteMethod(mapBoundaries);
+        useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
+      }
+    }, delay);
+  }, []);
 
   // 초기 마커 로드 x
   const loadMarkerFromStore = useCallback(async () => {
@@ -140,7 +137,7 @@ export const useBaseMap = () => {
       regionChangeCompleteMethod(mapBoundaries);
       useBaseMapStore.getState().setCurrentMapBoundingBox(mapBoundaries);
     }
-  }, []);
+  }, [getCurMapRef]);
 
   //바텀시트 이벤트 연결
   const { setOnBottomSheetChange, setOnBottomSheetAnimate } =

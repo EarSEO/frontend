@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { BoundingBox } from "react-native-maps";
 import { LatLng } from "react-native-maps/src/sharedTypes";
@@ -29,6 +29,8 @@ export const useStorySpotMap = () => {
     setStoryListInMap,
   } = useStoryStore();
 
+  const [isLoading, setIsLoading] = useState<boolean>();
+
   // 디바운스용 타이머 ref
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
@@ -42,7 +44,7 @@ export const useStorySpotMap = () => {
         setSpotListInMap(response.storySpots);
         return response;
       } catch (error) {
-        console.error("fetchSpotMarkerInMap 에러");
+        console.error("fetchSpotMarkerInMap 에러", error);
         return undefined;
       }
     },
@@ -64,47 +66,34 @@ export const useStorySpotMap = () => {
     []
   );
 
-  //main 지도 이동 시 위치저장
-  const handleRegionChange = useCallback(
-    (bounds: {
-      minLongitude: number;
-      minLatitude: number;
-      maxLongitude: number;
-      maxLatitude: number;
-    }) => {
+  //지도 bounding 한 위치
+  const fetchStorySpotInBoundingBox = useCallback(
+    (boundingBox: BoundingBox) => {
+      const latDiff =
+        boundingBox.northEast.latitude - boundingBox.southWest.latitude;
+      if (latDiff > 5) {
+        return;
+      }
+      const bounds: RectangleBoundsParams = {
+        minLatitude: boundingBox.southWest.latitude,
+        minLongitude: boundingBox.southWest.longitude,
+        maxLatitude: boundingBox.northEast.latitude,
+        maxLongitude: boundingBox.northEast.longitude,
+      };
+
+      fetchSpotMarkerInMap(bounds);
       const spotInMapRequest: GetStoryInMapRequest = {
-        minLongitude: bounds.minLongitude,
-        minLatitude: bounds.minLatitude,
-        maxLongitude: bounds.maxLongitude,
-        maxLatitude: bounds.maxLatitude,
+        minLatitude: boundingBox.southWest.latitude,
+        minLongitude: boundingBox.southWest.longitude,
+        maxLatitude: boundingBox.northEast.latitude,
+        maxLongitude: boundingBox.northEast.longitude,
         page: 0,
         size: 10,
         sort: "createdAt,desc",
       };
       fetchStoryListInMap(spotInMapRequest);
     },
-
-    [fetchStoryListInMap]
-  );
-
-  //지도 bounding 한 위치
-  const fetchStorySpotInBoundingBox = useCallback(
-    (boundingBox: BoundingBox, delay = 300) => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
-      }
-      debounceTimer.current = setTimeout(() => {
-        const bounds: RectangleBoundsParams = {
-          minLatitude: boundingBox.southWest.latitude,
-          minLongitude: boundingBox.southWest.longitude,
-          maxLatitude: boundingBox.northEast.latitude,
-          maxLongitude: boundingBox.northEast.longitude,
-        };
-        fetchSpotMarkerInMap(bounds);
-        handleRegionChange(bounds);
-      }, delay);
-    },
-    [fetchSpotMarkerInMap, handleRegionChange]
+    [fetchSpotMarkerInMap, fetchStoryListInMap]
   );
 
   // 스토리 마커 선택 시

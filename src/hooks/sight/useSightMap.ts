@@ -50,19 +50,20 @@ export const useSightMap = () => {
 
   //지도에서 bounding한 위치
   const fetchSightInBoundingBox = useCallback(
-    (boundingBox: BoundingBox, delay = 300) => {
-      if (debounceTimer.current) {
-        clearTimeout(debounceTimer.current);
+    (boundingBox: BoundingBox) => {
+      const latDiff =
+        boundingBox.northEast.latitude - boundingBox.southWest.latitude;
+      // 위도 차이가 5 이상이면 기초 줌아웃일 때 호출 생략
+      if (latDiff > 5) {
+        return;
       }
-      debounceTimer.current = setTimeout(() => {
-        const bounds: RectangleBoundsParams = {
-          minLatitude: boundingBox.southWest.latitude,
-          minLongitude: boundingBox.southWest.longitude,
-          maxLatitude: boundingBox.northEast.latitude,
-          maxLongitude: boundingBox.northEast.longitude,
-        };
-        fetchSightsInBounds(bounds);
-      }, delay);
+      const bounds: RectangleBoundsParams = {
+        minLatitude: boundingBox.southWest.latitude,
+        minLongitude: boundingBox.southWest.longitude,
+        maxLatitude: boundingBox.northEast.latitude,
+        maxLongitude: boundingBox.northEast.longitude,
+      };
+      fetchSightsInBounds(bounds);
     },
     [fetchSightsInBounds]
   );

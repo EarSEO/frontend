@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
+import { InteractionManager } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 
 import { BottomSheetMethods } from "@gorhom/bottom-sheet/src/types";
@@ -53,13 +54,13 @@ function MapTabScreen() {
   useEffect(() => {
     /**TODO
      * 화면 별 요소 추가
-     * - 초기 마커 컴포넌트
-     * - regionChange 시 마커 로드 함수
-     * - 검색바 컴포넌트
-     * - 바텀시트 내부 컴포넌트
-     * - 바텀시트 위치 조정
+     * - 초기 마커 컴포넌트 O
+     * - regionChange 시 마커 로드 함수 O
+     * - 검색바 컴포넌트 O
+     * - 바텀시트 내부 컴포넌트 O
+     * - 바텀시트 위치 조정 X
      *
-     * TODO issue: param이 변경될때마다 세번씩 호출됨
+     * TODO issue: param이 변경될때마다 세번씩 호출됨 O
      */
     if (!mapType) return;
     setRegionChangeCompleteMethod(undefined);
@@ -73,7 +74,6 @@ function MapTabScreen() {
       setEnableCluster(false);
       setPathVisibility(true);
       setSpotListInMap([]);
-      setRegionChangeCompleteMethod(undefined);
       setBottomSheetContent(<RouteBottomSheet />);
     } else if (mapType === "sight") {
       //TODO 관광지 지도용 요소 추가
@@ -90,9 +90,6 @@ function MapTabScreen() {
           }}
         />
       );
-      setRegionChangeCompleteMethod(fetchSightInBoundingBox);
-      //TODO 관광지 큐레이션 바텀시트 추가
-      loadMarkerFromStore();
       setBottomSheetContent(<CurationBottomSheet />);
     }
 
@@ -112,8 +109,6 @@ function MapTabScreen() {
             }}
           />
         );
-        setRegionChangeCompleteMethod(fetchStorySpotInBoundingBox);
-        loadMarkerFromStore();
       }
       if (storyAddStep === "location") {
         setCenterPinVisibility(true);
@@ -134,8 +129,19 @@ function MapTabScreen() {
       }
     }
 
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (mapType === "sight") {
+        setRegionChangeCompleteMethod(fetchSightInBoundingBox);
+        loadMarkerFromStore();
+      } else if (mapType === "story" && storyAddStep === "none") {
+        setRegionChangeCompleteMethod(fetchStorySpotInBoundingBox);
+        loadMarkerFromStore();
+      }
+    });
+
     return () => {
       // store 기반 공유 컴포넌트 데이터 초기화
+      task.cancel();
       setBottomSheetLayout({
         snapPoints: ["15%", "45%", "75%", "100%"],
         index: 1,

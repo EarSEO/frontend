@@ -160,17 +160,10 @@ const BaseMap: React.FC<BaseMapProps> = ({
     setTimeout(() => {
       useBaseMapStore.getState().setIsMapFollowingUser(true);
       setCameraFollow(true);
-      onRegionChangeCompleteWithBoundingBox();
     }, 500);
     // 바텀시트의 위치 상태에 따라 버튼 랜더링 및 마커 로드
-    initBaseMapBottomSheetCallbacks();
-  }, []);
-
-  useEffect(() => {
-    if (storyAddStep !== "none") {
-      setSpotListInMap([]);
-    }
-  }, [storyAddStep, setSpotListInMap]);
+    // initBaseMapBottomSheetCallbacks();
+  }, [mapType]);
 
   return (
     <>
