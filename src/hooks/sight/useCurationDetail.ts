@@ -90,7 +90,7 @@ export const useCurationDetail = () => {
         };
         if (!isInCart(sight.sightId)) {
           insertRouteCartItem(AddSightInfo);
-          router.replace("/(tabs)/myRoute");
+          // router.replace("/(tabs)/myRoute");  
           setCurationSightList(undefined);
         }
       });

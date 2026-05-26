@@ -128,10 +128,17 @@ export const useBaseMap = () => {
     }, delay);
   }, []);
 
-  // 초기 마커 로드 x
+  // 초기 마커 로드 o
   const loadMarkerFromStore = useCallback(async () => {
     const regionChangeCompleteMethod =
       useBaseMapStore.getState().regionChangeCompleteMethod;
+
+    const storedBounds = useBaseMapStore.getState().currentMapBoundingBox;
+    if (storedBounds && regionChangeCompleteMethod) {
+      regionChangeCompleteMethod(storedBounds);
+      return;
+    }
+
     const mapBoundaries = await getCurMapRef()?.current?.getMapBoundaries();
     if (mapBoundaries && regionChangeCompleteMethod) {
       regionChangeCompleteMethod(mapBoundaries);
