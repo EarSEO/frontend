@@ -10,8 +10,8 @@ import AudioProgressBar from "@/components/docent/miniPlayerModal/AudioProgressB
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
-import { useMiniPlayerStore } from "@/store/useMiniPlayerStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
+import { useMiniPlayerStore } from "@/store/docent/useMiniPlayerStore";
 import View = Animated.View;
 
 const MiniPlayerModalPlayer: React.FC = () => {
@@ -23,7 +23,7 @@ const MiniPlayerModalPlayer: React.FC = () => {
       e.stopPropagation();
       toggleLyrics();
     },
-    [toggleLyrics],
+    [toggleLyrics]
   );
   return (
     <View

@@ -1,123 +1,23 @@
-export interface GetSpotTotalInfoResponse {
-  briefSpotInfo?: SpotInfoResponse;
-  spotTitleList?: SpotTitleListResponse;
-  distance?: number;
-  stories?: StoryInfoResponse[];
-  summaries?: StorySummaryResponse[];
-}
-
-export interface GetMapStoryResponse {
-  stories?: StoryInfoResponse[];
-  number?: number;
-  size?: number;
-  isFirst?: boolean;
-  isLast?: boolean;
-  hasNext?: boolean;
-  hasPrevious?: boolean;
-}
-
-export interface StoryItem {
-  storyAuthor?: {
-    storyAuthorId?: number;
-    nickname?: string;
-    profileUrl?: string;
-  };
-
-  title?: string;
-  content?: string;
-  locale?: "KO" | "EN";
-  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
-  likeCount?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  imageUrls?: string[];
-}
-
 export interface GetLocationSpotBriefInfoResponse {
-  spotId?: number;
+  spotId: number;
   titles?: string[];
 }
 
-export interface SpotInfoResponse {
-  longitude?: number;
-  latitude?: number;
-  storySpotId?: number;
-}
+// export interface StoryAuthorResponse {
+//   storyAuthorId: number;
+//   nickname?: string;
+//   profileUrl?: string;
+// }
 
-export interface SpotTitleListResponse {
-  titles?: string[];
-}
-
-export interface StoryAuthorResponse {
-  storyAuthorId: number;
-  nickname?: string;
-  profileUrl?: string;
-}
-
-export interface StoryInfoResponse {
-  storyAuthor?: StoryAuthorResponse;
-  title?: string;
-  content?: string;
-  locale?: "KO" | "EN";
-  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
-  likeCount?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  imageUrls?: string[];
-}
-
-export interface StorySummaryResponse {
-  storySpotSummaryId?: number;
-  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
-  docentUrl?: string;
-  title?: string;
-  summary?: string;
-  summarizedStoryIdSet?: number[];
-  updatedAt?: string;
-}
-
-export interface GetStoryRequest {
-  storySpotId: number;
-  query: {
-    query: {
-      longitude: number;
-      latitude: number;
-      locale: "KO" | "EN";
-      page?: number;
-      size?: number;
-      sort?:
-        | "createdAt,desc"
-        | "createdAt,asc"
-        | "likeCount,desc"
-        | "likeCount,asc";
-    };
-  };
-}
-
-export interface GetMapStoriesRequest {
-  minLongitude: number;
-  minLatitude: number;
-  maxLongitude: number;
-  maxLatitude: number;
-  page: number;
-  size: number;
-  sort: string;
-}
-
-export interface StoryData {
-  stories: StoryInfoResponse[];
-  number: number;
-  size: number;
-  isFirst: boolean;
-  isLast: boolean;
-  hasNext: boolean;
-  hasPrevious: boolean;
-}
-
-export interface GetSpotBriefInfoRequest {
-  longitude: number;
-  latitude: number;
-}
+// export interface StoryData {
+//   stories: StoryItems[];
+//   number: number;
+//   size: number;
+//   isFirst: boolean;
+//   isLast: boolean;
+//   hasNext: boolean;
+//   hasPrevious: boolean;
+// }
 
 export interface CreateStoryRequest {
   authorId: number;
@@ -134,7 +34,7 @@ export interface CreateStoryRequest {
 
 export interface CreateStoryResponse {
   storyId: number;
-  storySpotId: number;
+  storySpot?: number;
   createdAt: string;
 }
 
@@ -146,14 +46,14 @@ export interface GetSearchTitleRequest {
   minLatitude: number;
   maxLongitude: number;
   maxLatitude: number;
-  limit?: string;
+  limit?: number;
 }
 
 export interface storySpots {
   longitude: number;
   latitude: number;
   storySpotId: number;
-  distance?: number;
+  distance: number;
   title?: string;
 }
 
@@ -161,12 +61,114 @@ export interface SearchSpotInfoResponse {
   storySpots: storySpots[];
 }
 
-export interface MapSpotInfoList {
-  storySpots: MapSpotInfoItem[];
+// getSpotListInMap
+export interface GetSpotInMapRequest {
+  minLongitude: number;
+  minLatitude: number;
+  maxLongitude: number;
+  maxLatitude: number;
+}
+export interface SpotsListInMap {
+  storySpots: SpotsItemInMap[];
 }
 
-export interface MapSpotInfoItem {
+export interface SpotsItemInMap {
   longitude: number;
   latitude: number;
   storySpotId: number;
+}
+
+//공통
+export interface StoryAuthor {
+  storyAuthorId: number;
+  nickname?: string;
+  profileUrl?: string;
+}
+
+//getStoryListInMap 게시글 리스트
+export interface GetStoryInMapRequest {
+  minLongitude: number;
+  minLatitude: number;
+  maxLongitude: number;
+  maxLatitude: number;
+  page: number;
+  size: number;
+  sort: "createdAt,desc" | "createdAt,asc" | "likeCount,desc" | "likeCount,asc";
+}
+
+export interface StoryInMapResponse {
+  stories?: StoryListItem[];
+}
+
+export interface StoryListItem {
+  storyId: number;
+  storyAuthor?: StoryAuthor;
+  title?: string;
+  content?: string;
+  locale?: "KO" | "EN";
+  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+  likeCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  imageUrls?: string[];
+}
+
+//getSpotInfo 스팟 마커 리스트
+export interface GetSpotRequest {
+  storySpotId: number;
+  query: {
+    query: {
+      longitude: number | undefined;
+      latitude: number | undefined;
+      locale: "KO" | "EN";
+      page?: number;
+      size?: number;
+      sort?:
+        | "createdAt,desc"
+        | "createdAt,asc"
+        | "likeCount,desc"
+        | "likeCount,asc";
+    };
+  };
+}
+
+export interface SpotInfo {
+  briefSpotInfo: BriefSpotInfo;
+  spotTitleList: SpotTitleList;
+  distance: number;
+  stories: Stories[];
+  summaries: StorySummary[];
+}
+
+export interface BriefSpotInfo {
+  longitude: number;
+  latitude: number;
+  storySpotId: number;
+}
+
+export interface SpotTitleList {
+  titles?: string[];
+}
+
+export interface Stories {
+  storyId: number;
+  storyAuthor?: StoryAuthor;
+  title?: string;
+  content?: string;
+  locale?: "KO" | "EN";
+  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+  likeCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  imageUrls?: string[];
+}
+
+export interface StorySummary {
+  storySpotSummaryId: number;
+  storyConcept?: "TIP" | "EXPERIENCE" | "CULTURE" | "HISTORY" | "ETC";
+  docentUrl?: string;
+  title?: string;
+  summary?: string;
+  summarizedStoryIdSet?: number[];
+  updatedAt?: string;
 }

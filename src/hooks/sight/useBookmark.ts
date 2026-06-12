@@ -5,8 +5,8 @@ import {
   getBookmarkInfo,
   getDeleteBookmark,
 } from "@/api/sight/getSightBookMark";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useBookmarkStore } from "@/store/useBookmarkStore";
+import { useBookmarkStore } from "@/store/common/useBookmarkStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export const useBookmark = () => {
   const { setUserBookmarkList, setAddBookmark, setRemoveBookmark } =
@@ -28,7 +28,7 @@ export const useBookmark = () => {
 
   //북마크 추가
   const insertBookmark = useCallback(
-    async (sightId: string) => {
+    async (sightId: number) => {
       if (!memberId) return;
       const bookMark = {
         sightId: sightId,
@@ -46,7 +46,7 @@ export const useBookmark = () => {
 
   //북마크 삭제
   const removeBookmark = useCallback(
-    async (sightId: string) => {
+    async (sightId: number) => {
       if (!memberId) return;
       const bookMark = {
         sightId: sightId,

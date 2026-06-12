@@ -1,11 +1,11 @@
 export interface BookmarkEditRequest {
   id: number;
-  sightId: string;
+  sightId: number;
 }
 
 export interface BookmarkEditResponse {
   isLiked: boolean;
-  sightId: string;
+  sightId: number;
 }
 
 export interface BookmarkInfoRequest {
@@ -17,6 +17,6 @@ export interface BookmarkInfoList {
 }
 
 export interface BookmarkInfo {
-  sightId: string;
+  sightId: number;
   memberId: number;
 }

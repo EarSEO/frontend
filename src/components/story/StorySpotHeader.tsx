@@ -9,12 +9,16 @@ import StoryCard from "./StoryCard";
 import SummaryCard from "./SummaryCard";
 
 const StorySpotHeader = () => {
-  const { storyItems, spotTitleList } = useStoryStore();
+  const briefSpotInfo = useStoryStore((state) => state.briefSpotInfo);
+  const storyItems = useStoryStore((state) => state.stories);
+  const spotTitleList = useStoryStore((state) => state.spotTitleList);
 
-  const spotNames = spotTitleList?.titles;
-  const mainTitle = spotNames?.[spotNames.length - 1] || "제목 없음";
+  //spot names
+  const titles = spotTitleList?.titles ?? [];
+
+  const mainTitle = titles[titles.length - 1] || "제목 없음";
   const spotTitles =
-    spotNames
+    titles
       ?.slice(1, 4)
       .map((spotNames) => `📍${spotNames}`)
       .join(" ") || " ";
@@ -37,17 +41,17 @@ const StorySpotHeader = () => {
         </Description>
       </DescriptionWrapper>
       <ContentWrapper>
-        {storyItems?.map((storyItem, index) => (
+        {storyItems?.map((story, index) => (
           <StoryCard
-            key={`${storyItem.createdAt}-${index}`}
-            storyId={storyItem?.storyAuthor?.storyAuthorId}
-            userNickName={storyItem.storyAuthor?.nickname}
-            stroySpotName={storyItem.title}
-            storyConcept={storyItem.storyConcept}
-            content={storyItem.content}
-            imageUrls={storyItem.imageUrls}
-            likeCount={storyItem.likeCount}
-            createdAt={storyItem.createdAt}
+            key={`${story}-${index}`}
+            storyId={briefSpotInfo?.storySpotId}
+            userNickName={story.storyAuthor?.nickname}
+            stroySpotName={story.title}
+            storyConcept={story.storyConcept}
+            content={story.content}
+            imageUrls={story.imageUrls}
+            likeCount={story.likeCount}
+            createdAt={story.createdAt}
           />
         ))}
       </ContentWrapper>

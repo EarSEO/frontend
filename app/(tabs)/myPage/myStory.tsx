@@ -1,4 +1,4 @@
-import { useEffect,useRef, useState  } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ActivityIndicator, FlatList } from "react-native";
 import PagerView from "react-native-pager-view";
@@ -14,7 +14,7 @@ import { MyStoryItem } from "@/types/myStory";
 
 import { theme } from "@/styles/theme";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 type TabType = "myStory" | "liked";
 
@@ -37,14 +37,14 @@ export default function MyStory() {
     fetchLikedStories(true);
   }, []);
 
-    const handleTabPress = (tab: TabType) => {
-        setActiveTab(tab);
-        pagerRef.current?.setPage(tab === "myStory" ? 0 : 1);
-    };
+  const handleTabPress = (tab: TabType) => {
+    setActiveTab(tab);
+    pagerRef.current?.setPage(tab === "myStory" ? 0 : 1);
+  };
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
-        const position = e.nativeEvent.position;
-        setActiveTab(position === 0 ? "myStory" : "liked");
+    const position = e.nativeEvent.position;
+    setActiveTab(position === 0 ? "myStory" : "liked");
   };
 
   const { user } = useAuthStore();
@@ -73,90 +73,92 @@ export default function MyStory() {
         ref={pagerRef}
         initialPage={0}
         onPageSelected={handlePageSelected}
-        >
+      >
         <PageContainer key="1">
-            <FlatList
-                data={myStories}
-                style={{ flex: 1 }}
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyExtractor={(item) => item.storyId.toString()}
-                refreshing={isLoading}
-                onRefresh={() => fetchMyStories(true)}
-                renderItem={({ item }) => (
-                <StoryCard
-                  storyId={item.storyId}
-                  authorId={user?.memberId}
-                  profileUrl={item.storyAuthor?.profileUrl || user?.profileImage}
-                  userNickName={item.storyAuthor?.nickname}
-                  stroySpotName={item.title}
-                  storyConcept={item.storyConcept}
-                  content={item.content}
-                  imageUrls={item.imageUrls}
-                  likeCount={item.likeCount}
-                  isLiked={item.isLiked}
-                  createdAt={item.createdAt as string}
-                />
-                )}
-                onEndReached={() => {
-                if (hasNext && !isLoading) {
-                    fetchMyStories(false);
-                }
-                }}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={
-                isLoading ? <ActivityIndicator style={{ padding: 20 }} /> : null
-                }
-                ListEmptyComponent={
-                !isLoading ? (
-                    <EmptyContainer>
-                    <EmptyText>작성한 이야기가 없습니다</EmptyText>
-                    </EmptyContainer>
-                ) : null
-                }
-            />
-            </PageContainer>
-            <PageContainer key="2">
-              <FlatList
-                data={likedStories}
-                style={{ flex: 1 }}
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyExtractor={(item) => item.storyId.toString()}
-                refreshing={likedIsLoading}
-                onRefresh={refreshLikedStories}
-                renderItem={({ item }: { item: MyStoryItem }) => (
-                  <StoryCard
-                    storyId={item.storyId}
-                    authorId={user?.memberId}
-                    profileUrl={item.storyAuthor?.profileUrl}
-                    userNickName={item.storyAuthor?.nickname}
-                    stroySpotName={item.title}
-                    storyConcept={item.storyConcept}
-                    content={item.content}
-                    imageUrls={item.imageUrls}
-                    likeCount={item.likeCount}
-                    isLiked={item.isLiked}
-                    createdAt={item.createdAt as string}
-                  />
-                )}
-                onEndReached={() => {
-                  if (likedHasNext && !likedIsLoading) {
-                    fetchLikedStories(false);
-                  }
-                }}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={
-                  likedIsLoading ? <ActivityIndicator style={{ padding: 20 }} /> : null
-                }
-                ListEmptyComponent={
-                  !likedIsLoading ? (
-                    <EmptyContainer>
-                      <EmptyText>좋아요한 글이 없습니다</EmptyText>
-                    </EmptyContainer>
-                  ) : null
-                }
+          <FlatList
+            data={myStories}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyExtractor={(item) => item.storyId.toString()}
+            refreshing={isLoading}
+            onRefresh={() => fetchMyStories(true)}
+            renderItem={({ item }) => (
+              <StoryCard
+                storyId={item.storyId}
+                authorId={user?.memberId}
+                profileUrl={item.storyAuthor?.profileUrl || user?.profileImage}
+                userNickName={item.storyAuthor?.nickname}
+                stroySpotName={item.title}
+                storyConcept={item.storyConcept}
+                content={item.content}
+                imageUrls={item.imageUrls}
+                likeCount={item.likeCount}
+                isLiked={item.isLiked}
+                createdAt={item.createdAt as string}
               />
-            </PageContainer>
-        </StyledPagerView>
+            )}
+            onEndReached={() => {
+              if (hasNext && !isLoading) {
+                fetchMyStories(false);
+              }
+            }}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              isLoading ? <ActivityIndicator style={{ padding: 20 }} /> : null
+            }
+            ListEmptyComponent={
+              !isLoading ? (
+                <EmptyContainer>
+                  <EmptyText>작성한 이야기가 없습니다</EmptyText>
+                </EmptyContainer>
+              ) : null
+            }
+          />
+        </PageContainer>
+        <PageContainer key="2">
+          <FlatList
+            data={likedStories}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            keyExtractor={(item) => item.storyId.toString()}
+            refreshing={likedIsLoading}
+            onRefresh={refreshLikedStories}
+            renderItem={({ item }: { item: MyStoryItem }) => (
+              <StoryCard
+                storyId={item.storyId}
+                authorId={user?.memberId}
+                profileUrl={item.storyAuthor?.profileUrl}
+                userNickName={item.storyAuthor?.nickname}
+                stroySpotName={item.title}
+                storyConcept={item.storyConcept}
+                content={item.content}
+                imageUrls={item.imageUrls}
+                likeCount={item.likeCount}
+                isLiked={item.isLiked}
+                createdAt={item.createdAt as string}
+              />
+            )}
+            onEndReached={() => {
+              if (likedHasNext && !likedIsLoading) {
+                fetchLikedStories(false);
+              }
+            }}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              likedIsLoading ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+            ListEmptyComponent={
+              !likedIsLoading ? (
+                <EmptyContainer>
+                  <EmptyText>좋아요한 글이 없습니다</EmptyText>
+                </EmptyContainer>
+              ) : null
+            }
+          />
+        </PageContainer>
+      </StyledPagerView>
     </Container>
   );
 }

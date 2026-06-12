@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { ActivityIndicator, FlatList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useRouter } from "expo-router";
 import { ChevronLeft, ChevronRight } from "lucide-react-native";
@@ -13,86 +14,88 @@ import { theme } from "@/styles/theme";
 import { getNoticeList } from "@/api/notice/getNoticeApi";
 
 export default function Notice() {
-    const router = useRouter();
-    const [notices, setNotices] = useState<NoticePageItem[]>([]);
-    const [page, setPage] = useState(0);
-    const [hasNext, setHasNext] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [notices, setNotices] = useState<NoticePageItem[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const fetchNotices = async (reset: boolean = false) => {
-        if (isLoading) return;
-        setIsLoading(true);
-        try {
-            const currentPage = reset ? 0 : page;
-            const data = await getNoticeList(currentPage);
-            setNotices(reset ? data.content : [...notices, ...data.content]);
-            setHasNext(data.hasNext);
-            setPage(currentPage + 1);
-        } catch (error) {
-            console.error("공지사항 목록 조회 실패:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const fetchNotices = async (reset: boolean = false) => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const currentPage = reset ? 0 : page;
+      const data = await getNoticeList(currentPage);
+      setNotices(reset ? data.content : [...notices, ...data.content]);
+      setHasNext(data.hasNext);
+      setPage(currentPage + 1);
+    } catch (error) {
+      console.error("공지사항 목록 조회 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchNotices(true);
-    }, []);
+  useEffect(() => {
+    fetchNotices(true);
+  }, []);
 
-    const handleItemPress = (noticeId: number) => {
-        router.push({
-            pathname: "/myPage/noticeDetail",
-            params: { noticeId },
-        });
-    };
+  const handleItemPress = (noticeId: number) => {
+    router.push({
+      pathname: "/myPage/noticeDetail",
+      params: { noticeId },
+    });
+  };
 
-    const renderItem = useCallback(
-        ({ item }: { item: NoticePageItem }) => (
-            <NoticeItem onPress={() => handleItemPress(item.noticeId)}>
-                <NoticeInfo>
-                    <NoticeTitle>{item.title}</NoticeTitle>
-                    <NoticeDate>{item.createdAt.replace(/\//g, ".")}</NoticeDate>
-                </NoticeInfo>
-                <ChevronRight size={20} color={theme.colors.grey.neutral400} />
-            </NoticeItem>
-        ),
-        []
-    );
+  const renderItem = useCallback(
+    ({ item }: { item: NoticePageItem }) => (
+      <NoticeItem onPress={() => handleItemPress(item.noticeId)}>
+        <NoticeInfo>
+          <NoticeTitle>{item.title}</NoticeTitle>
+          <NoticeDate>{item.createdAt.replace(/\//g, ".")}</NoticeDate>
+        </NoticeInfo>
+        <ChevronRight size={20} color={theme.colors.grey.neutral400} />
+      </NoticeItem>
+    ),
+    []
+  );
 
-    return (
-        <Container>
-            <Header>
-                <BackButton onPress={() => router.back()}>
-                    <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
-                </BackButton>
-                <HeaderTitle>공지사항</HeaderTitle>
-                <Spacer />
-            </Header>
+  return (
+    <Container>
+      <SafeAreaView style={{ flex: 1 }}>
+        <Header>
+          <BackButton onPress={() => router.back()}>
+            <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
+          </BackButton>
+          <HeaderTitle>공지사항</HeaderTitle>
+          <Spacer />
+        </Header>
 
-            <FlatList
-                data={notices}
-                keyExtractor={(item) => item.noticeId.toString()}
-                renderItem={renderItem}
-                onEndReached={() => {
-                    if (hasNext && !isLoading) fetchNotices(false);
-                }}
-                onEndReachedThreshold={0.5}
-                ListFooterComponent={
-                    isLoading && notices.length > 0 ? (
-                        <ActivityIndicator style={{ padding: 20 }} />
-                    ) : null
-                }
-                ListEmptyComponent={
-                    !isLoading ? (
-                        <EmptyContainer>
-                            <EmptyText>공지사항이 없습니다</EmptyText>
-                        </EmptyContainer>
-                    ) : null
-                }
-                contentContainerStyle={{ flexGrow: 1 }}
-            />
-        </Container>
-    );
+        <FlatList
+          data={notices}
+          keyExtractor={(item) => item.noticeId.toString()}
+          renderItem={renderItem}
+          onEndReached={() => {
+            if (hasNext && !isLoading) fetchNotices(false);
+          }}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isLoading && notices.length > 0 ? (
+              <ActivityIndicator style={{ padding: 20 }} />
+            ) : null
+          }
+          ListEmptyComponent={
+            !isLoading ? (
+              <EmptyContainer>
+                <EmptyText>공지사항이 없습니다</EmptyText>
+              </EmptyContainer>
+            ) : null
+          }
+          contentContainerStyle={{ flexGrow: 1 }}
+        />
+      </SafeAreaView>
+    </Container>
+  );
 }
 
 const Container = styled.View`
@@ -134,20 +137,20 @@ const NoticeItem = styled.TouchableOpacity`
 `;
 
 const NoticeInfo = styled.View`
-    flex: 1;
+  flex: 1;
 `;
 
 const NoticeTitle = styled.Text`
-    font-family: ${theme.typography.fontFamily.medium};
-    font-size: ${theme.typography.fontSize.sm}px;
-    color: ${theme.colors.text.textPrimary};
+  font-family: ${theme.typography.fontFamily.medium};
+  font-size: ${theme.typography.fontSize.sm}px;
+  color: ${theme.colors.text.textPrimary};
 `;
 
 const NoticeDate = styled.Text`
-    font-family: ${theme.typography.fontFamily.regular};
-    font-size: ${theme.typography.fontSize.xxs}px;
-    color: ${theme.colors.text.textTertiary};
-    margin-top: 4px;
+  font-family: ${theme.typography.fontFamily.regular};
+  font-size: ${theme.typography.fontSize.xxs}px;
+  color: ${theme.colors.text.textTertiary};
+  margin-top: 4px;
 `;
 
 const EmptyContainer = styled.View`

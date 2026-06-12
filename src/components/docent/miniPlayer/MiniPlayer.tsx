@@ -10,8 +10,8 @@ import MiniPlayerModal from "@/components/docent/miniPlayerModal/MiniPlayerModal
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
-import { useMiniPlayerStore } from "@/store/useMiniPlayerStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
+import { useMiniPlayerStore } from "@/store/docent/useMiniPlayerStore";
 
 const MiniPlayer: React.FC = () => {
   const [miniBarPressed, setMiniBarPressed] = useState<boolean>(false);

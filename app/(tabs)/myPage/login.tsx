@@ -8,15 +8,15 @@ import styled from "styled-components/native";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 
+import { useAppleLogin } from "@/hooks/profile/useAppleLogin";
 import { useBookmark } from "@/hooks/sight/useBookmark";
-import { useAppleLogin } from "@/hooks/useAppleLogin";
 import { useGoogleLogin } from "@/hooks/useGoogleLogin";
 
 import { theme } from "@/styles/theme";
 import AppleLogo from "@/assets/icons/apple-logo.svg";
 import GoogleLogo from "@/assets/icons/google-logo.svg";
 
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -66,24 +66,24 @@ export default function Login() {
       </TitleArea>
 
       <InputArea>
-        <Input
-          placeholder="이메일 입력"
-          placeholderTextColor={theme.colors.text.textTertiary}
-          value={email}
-          onChangeText={setEmail}
-          backgroundColor={theme.colors.background.background50}
-          shadow="myInput"
-        />
+        <InputWrapper>
+          <Input
+            placeholder="이메일 입력"
+            placeholderTextColor={theme.colors.text.textTertiary}
+            value={email}
+            onChangeText={setEmail}
+          />
+        </InputWrapper>
         <Gap />
-        <Input
-          placeholder="비밀번호 입력"
-          placeholderTextColor={theme.colors.text.textTertiary}
-          value={password}
-          onChangeText={setPassword}
-          backgroundColor={theme.colors.background.background50}
-          shadow="myInput"
-          secureTextEntry={true}
-        />
+        <InputWrapper>
+          <Input
+            placeholder="비밀번호 입력"
+            placeholderTextColor={theme.colors.text.textTertiary}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={true}
+          />
+        </InputWrapper>
       </InputArea>
 
       <LinkContainer>
@@ -128,7 +128,7 @@ const ErrorText = styled.Text`
   margin-top: 10px;
 `;
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
   justify-content: center;
@@ -160,6 +160,15 @@ const ButtonArea = styled.View`
 
 const Gap = styled.View`
   height: 15px;
+`;
+
+const InputWrapper = styled.View`
+  width: 90%;
+  height: 50px;
+  margin-bottom: 12px;
+  padding-horizontal: 15px;
+  border-radius: ${theme.borderRadius.md}px;
+  background-color: ${theme.colors.background.background50};
 `;
 
 const LinkContainer = styled.View`

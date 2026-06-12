@@ -1,146 +1,158 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
-import { Keyboard } from "react-native";
+import { BoundingBox } from "react-native-maps";
+import { LatLng } from "react-native-maps/src/sharedTypes";
 
-import { MapRef } from "@/types/map";
-import { SightInfo } from "@/types/sight";
+import { RectangleBoundsParams } from "@/types/sight";
 import {
-  GetMapStoriesRequest,
-  GetSearchTitleRequest,
-  MapSpotInfoItem,
+  BriefSpotInfo,
+  GetSpotInMapRequest,
+  GetStoryInMapRequest,
+  SpotsListInMap,
+  StoryInMapResponse,
 } from "@/types/storySpot";
 
-import { KOREA_GEOM } from "@/constants/geometry";
-
-import { useStoryAddStore } from "@/store/story/useStoryAddStore";
+import {
+  getSpotInfo,
+  getSpotListInMap,
+  getStoryListInMap,
+  getStorySpotInfoBrief,
+} from "@/api/story/getStoryApi";
+import { useLocationStore } from "@/store/common/useLocationStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-
-import { useCustomPinNavigation } from "./useCustomPinNavigation";
 
 export const useStorySpotMap = () => {
   const {
+    setTitleList,
+    setSpotListInMap,
+    selectedStorySpot,
     setStoryListInMap,
-    setStoryInfo,
-    setStoryLocationInMap,
-    resetStoryInfo,
-    setStorySpotBriefInfo,
-    storySpotBriefInfo,
-    setSearchStory,
   } = useStoryStore();
 
-  const { storyLocation } = useStoryAddStore();
+  const [isLoading, setIsLoading] = useState<boolean>();
 
-  const { moveToCustomPinLocation, setSelectedSpot } = useCustomPinNavigation();
+  // 디바운스용 타이머 ref
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const mapRef = useRef<MapRef>(null);
+  const location = useLocationStore((state) => state.location);
 
-  const [selectedMarkerId, setSelectedMarkerId] = useState<
-    number | undefined
-  >();
-  const [inputSpotName, setInputSpotName] = useState<string>("");
+  //지도상에 있는 마커들의 위치 정보 가져오기
+  const fetchSpotMarkerInMap = useCallback(
+    async (param: GetSpotInMapRequest) => {
+      try {
+        const response: SpotsListInMap = await getSpotListInMap(param);
+        setSpotListInMap(response.storySpots);
+        return response;
+      } catch (error) {
+        console.error("fetchSpotMarkerInMap 에러", error);
+        return undefined;
+      }
+    },
+    [setSpotListInMap]
+  );
 
-  //지도 선택했을 때(마커 선택 취소 시)
-  const handleMapPress = useCallback(() => {
-    setSelectedMarkerId(undefined);
-    resetStoryInfo();
-  }, [resetStoryInfo]);
-
-  //main 지도 이동 시 위치저장
-  const handleRegionChange = useCallback(
-    (bounds: {
-      minLongitude: number;
-      minLatitude: number;
-      maxLongitude: number;
-      maxLatitude: number;
-    }) => {
-      const mapStoriesRequest: GetMapStoriesRequest = {
-        minLongitude: bounds.minLongitude,
-        minLatitude: bounds.minLatitude,
-        maxLongitude: bounds.maxLongitude,
-        maxLatitude: bounds.maxLatitude,
-        page: 0,
-        size: 10,
-        sort: "createdAt,desc",
-      };
-
-      setStoryListInMap(mapStoriesRequest);
-      setStoryLocationInMap(mapStoriesRequest);
+  // 지도상에 있는 마커들의 게시글 내용 받아오기
+  const fetchStoryListInMap = useCallback(
+    async (param: GetStoryInMapRequest) => {
+      try {
+        const response: StoryInMapResponse = await getStoryListInMap(param);
+        setStoryListInMap(response.stories ?? []);
+        return response;
+      } catch (error) {
+        console.error("fetchStoryListInMap 에러");
+        return undefined;
+      }
     },
     []
   );
 
-  // 스토리 마커 선택 시
-  const handleStoryMarkerPress = useCallback((story: MapSpotInfoItem) => {
-    const storyRequest = {
-      storySpotId: story.storySpotId,
-      query: {
-        query: {
-          longitude: story.longitude,
-          latitude: story.latitude,
-          locale: "KO" as const,
-          page: 0,
-          size: 1000,
-          sort: "createdAt,desc" as const,
-        },
-      },
-    };
-    setStorySpotBriefInfo({
-      latitude: story.latitude,
-      longitude: story.longitude,
-    });
-
-    setStoryInfo(storyRequest);
-    moveToCustomPinLocation(mapRef, story.latitude, story.longitude);
-    setSelectedMarkerId(storyRequest?.storySpotId);
-  }, []);
-
-  //sight 마커선택 시
-  const handleSightMarkerPress = useCallback((sight: SightInfo) => {
-    const mapLat = sight.latitude;
-    const mapLng = sight.longitude;
-
-    setSelectedSpot(Number(sight.id), sight.title);
-    moveToCustomPinLocation(mapRef, mapLat, mapLng);
-  }, []);
-
-  //이야기 검색 시
-  const handleSearch = async () => {
-    Keyboard.dismiss();
-    try {
-      if (!storyLocation) {
+  //지도 bounding 한 위치
+  const fetchStorySpotInBoundingBox = useCallback(
+    (boundingBox: BoundingBox) => {
+      const latDiff =
+        boundingBox.northEast.latitude - boundingBox.southWest.latitude;
+      if (latDiff > 5) {
         return;
       }
-      const searchParams: GetSearchTitleRequest = {
-        keyword: inputSpotName,
-        longitude: storyLocation.longitude,
-        latitude: storyLocation.latitude,
-        minLongitude: KOREA_GEOM.LOGITUDE.MIN,
-        minLatitude: KOREA_GEOM.LATITUDE.MIN,
-        maxLongitude: KOREA_GEOM.LOGITUDE.MAX,
-        maxLatitude: KOREA_GEOM.LATITUDE.MAX,
-        limit: "10",
+      const bounds: RectangleBoundsParams = {
+        minLatitude: boundingBox.southWest.latitude,
+        minLongitude: boundingBox.southWest.longitude,
+        maxLatitude: boundingBox.northEast.latitude,
+        maxLongitude: boundingBox.northEast.longitude,
       };
-      await setSearchStory(searchParams);
-      setStorySpotBriefInfo({
-        latitude: storyLocation.latitude,
-        longitude: storyLocation.longitude,
-      });
-    } catch (error) {
-      throw error;
-    }
-  };
+
+      fetchSpotMarkerInMap(bounds);
+      const spotInMapRequest: GetStoryInMapRequest = {
+        minLatitude: boundingBox.southWest.latitude,
+        minLongitude: boundingBox.southWest.longitude,
+        maxLatitude: boundingBox.northEast.latitude,
+        maxLongitude: boundingBox.northEast.longitude,
+        page: 0,
+        size: 10,
+        sort: "createdAt,desc",
+      };
+      fetchStoryListInMap(spotInMapRequest);
+    },
+    [fetchSpotMarkerInMap, fetchStoryListInMap]
+  );
+
+  // 스토리 마커 선택 시
+  const fetchSpotDetail = useCallback(
+    async (spotInfo: BriefSpotInfo) => {
+      const spotRequest = {
+        storySpotId: spotInfo.storySpotId,
+        query: {
+          query: {
+            longitude: location.longitude,
+            latitude: location.latitude,
+            locale: "KO" as const,
+            page: 0,
+            size: 1000,
+            sort: "createdAt,desc" as const,
+          },
+        },
+      };
+      try {
+        const spotDeatil = await getSpotInfo(spotRequest);
+        selectedStorySpot([spotDeatil]);
+        setTitleList(spotDeatil.spotTitleList);
+
+        return spotDeatil;
+      } catch (error) {
+        return undefined;
+      }
+    },
+    [selectedStorySpot]
+  );
+
+  //sight -> storySpotId 조회
+  const fetchStorySpotId = useCallback(
+    async (location: LatLng) => {
+      try {
+        const res = await getStorySpotInfoBrief(location);
+        if (location && res) {
+          const sightStoryInfo = {
+            longitude: location.longitude,
+            latitude: location.latitude,
+            storySpotId: res.spotId,
+          };
+          fetchSpotDetail(sightStoryInfo);
+        } else return;
+      } catch (error) {
+        console.error("fetchStorySpotId에러");
+      }
+    },
+    [location, fetchSpotDetail]
+  );
 
   return {
-    mapRef,
-    selectedMarker: selectedMarkerId,
-    setSelectedMarker: setSelectedMarkerId,
-    handleMapPress,
-    handleRegionChange,
-    handleStoryMarkerPress,
-    handleSightMarkerPress,
-    setSearchTitle: setSearchStory,
-    inputSpotName,
-    setInputSpotName,
-    handleSearch,
+    //액션
+    fetchSpotDetail,
+    fetchStoryListInMap,
+    fetchSpotMarkerInMap,
+    fetchStorySpotId,
+
+    //상태
+    fetchStorySpotInBoundingBox,
   };
 };

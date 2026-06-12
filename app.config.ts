@@ -11,17 +11,17 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     updates: {
-      url: "https://u.expo.dev/51f8ef22-b7f8-40ed-92d1-201c776e3b87"
+      url: "https://u.expo.dev/51f8ef22-b7f8-40ed-92d1-201c776e3b87",
     },
     runtimeVersion: {
-      policy: "appVersion"
+      policy: "appVersion",
     },
     extra: {
       APP_ENV_API_BASE_URL: process.env.APP_ENV_API_BASE_URL,
-      APP_ENV_GEOFENCE_RADIUS: process.env.APP_ENV_GEOFENCE_RADIUS || '100',
+      APP_ENV_GEOFENCE_RADIUS: process.env.APP_ENV_GEOFENCE_RADIUS || "100",
       eas: {
-        projectId: "51f8ef22-b7f8-40ed-92d1-201c776e3b87"
-      }
+        projectId: "51f8ef22-b7f8-40ed-92d1-201c776e3b87",
+      },
     },
     ios: {
       bundleIdentifier: "com.earseo.earseo",
@@ -32,7 +32,7 @@ export default {
         UIBackgroundModes: ["audio", "location"],
       },
       config: {
-        usesNonExemptEncryption: false
+        usesNonExemptEncryption: false,
       },
       icon: "./src/assets/earseo-ios.icon",
       displayName: "이어서",

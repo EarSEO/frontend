@@ -1,51 +1,58 @@
+import { Address } from "react-native-maps";
+import { LatLng } from "react-native-maps/src/sharedTypes";
+
 import { create } from "zustand";
+
+export type StoryAddStep = "none" | "location" | "name" | "storyAdd";
 
 interface storyAddStore {
   newSpotName?: string;
-  setNewSpotName: (name: string | undefined) => void;
-  resetNewSpotName: () => void;
+  setNewSpotName: (newSpotName?: string) => void;
 
-  setStoryLocation: (latitude: number, longitude: number) => void;
-  resetStoryLocation: () => void;
-  storyLocation?: { latitude: number; longitude: number };
+  addStoryLocation?: LatLng;
+  setStoryLocation: (addStoryLocation?: LatLng) => void;
 
-  setSavedStorySpot: (
-    id: number | undefined,
-    title: string | undefined
-  ) => void;
-  resetSavedStorySpot: () => void;
-  selectedSpotId?: number;
-  selectedSpotTitle?: string;
+  storyAddStep: StoryAddStep;
+  setStoryAddStep: (step: StoryAddStep) => void;
+
+  pinAddress?: Address | undefined;
+  setPinAddress: (pinAddress: Address | undefined) => void;
+
+  onStoryAdd: boolean;
+  setOnStoryAdd: (onStoryAdd: boolean) => void;
 }
 
 export const useStoryAddStore = create<storyAddStore>((set, get) => ({
   storyLocation: undefined,
   newSpotName: undefined,
   selectedSpotTitle: undefined,
+  storyAddStep: "none",
+  addStoryLocation: undefined,
+  pinAddress: undefined,
 
   //이야기 등록 시 새로운 스토리 이름 저장
-  setNewSpotName: (name: string | undefined) => set({ newSpotName: name }),
-  resetNewSpotName: () => set({ newSpotName: undefined }),
+  setNewSpotName: (newSpotName?: string) => {
+    if (!newSpotName) {
+      set({ newSpotName: undefined });
+    } else {
+      set({ newSpotName: newSpotName });
+    }
+  },
 
-  //기존 이야기 정보저장
-  setSavedStorySpot: (id: number | undefined, title: string | undefined) =>
-    set({
-      selectedSpotId: id,
-      selectedSpotTitle: title,
-    }),
-  resetSavedStorySpot: () =>
-    set({ selectedSpotId: undefined, selectedSpotTitle: undefined }),
+  setStoryLocation: (addStoryLocation?: LatLng) => {
+    if (!addStoryLocation) {
+      set({ addStoryLocation: undefined });
+    } else {
+      set({ addStoryLocation: addStoryLocation });
+    }
+  },
 
-  //이야기 등록 시 스토리 위치 정보 저장
-  setStoryLocation: (latitude: number, longitude: number) =>
-    set({
-      storyLocation: {
-        latitude,
-        longitude,
-      },
-    }),
-  resetStoryLocation: () =>
-    set({
-      storyLocation: undefined,
-    }),
+  setPinAddress: (pinAddress: Address | undefined) => set({ pinAddress }),
+
+  setStoryAddStep: (storyAddStep: StoryAddStep) => set({ storyAddStep }),
+
+  onStoryAdd: false,
+  setOnStoryAdd: (onStoryAdd: boolean) => {
+    set({ onStoryAdd });
+  },
 }));

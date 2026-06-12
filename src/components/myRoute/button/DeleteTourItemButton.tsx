@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 
 import { theme } from "@/styles/theme";
 
-import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
+import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetStore";
 import View = Animated.View;
 
 const DeleteTourItemButton: React.FC = () => {

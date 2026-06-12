@@ -4,11 +4,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useFonts } from "expo-font";
+import { LocationSubscription } from "expo-location";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as TaskManager from "expo-task-manager";
 import * as Updates from "expo-updates";
 import { ThemeProvider } from "styled-components";
+
+import { useLocation } from "@/hooks/common/useLocation";
 
 import { theme } from "@/styles/theme";
 import { GEOFENCE_TASK } from "@/constants/taskManagerTaskKeys";
@@ -17,8 +20,10 @@ import {
   geofenceTask,
   isGeofenceActive,
 } from "@/services/geofence/geofenceService";
-import { setAudioModeDuckOthers } from "@/store/useAudioPlayerStore";
-import { useRouteStore } from "@/store/useRouteStore";
+import { setAudioModeDuckOthers } from "@/store/docent/useAudioPlayerStore";
+import { useBaseMapStore } from "@/store/map/useBaseMapStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 
 SplashScreen.preventAutoHideAsync();
 SplashScreen.setOptions({
@@ -28,7 +33,17 @@ SplashScreen.setOptions({
 TaskManager.defineTask(GEOFENCE_TASK, geofenceTask);
 setAudioModeDuckOthers();
 
+useBaseMapStore.subscribe((state, prevState) => {
+  if (state.mapRef !== prevState.mapRef) {
+    console.log("[참조 변경 감지]", new Date().toISOString());
+    console.log("이전:", prevState.mapRef);
+    console.log("이후:", state.mapRef);
+    console.trace(); // 호출 스택 출력
+  }
+});
+
 export default function RootLayout() {
+  useLocation();
   const [fontsLoaded] = useFonts({
     "Pretendard-Bold": require("../src/assets/fonts/Pretendard-Bold.otf"),
     "Pretendard-SemiBold": require("../src/assets/fonts/Pretendard-SemiBold.otf"),
@@ -36,8 +51,15 @@ export default function RootLayout() {
     "Pretendard-Medium": require("../src/assets/fonts/Pretendard-Medium.otf"),
   });
 
+  const loadUser = useAuthStore((s) => s.loadUser);
+
+  useEffect(() => {
+    void loadUser();
+  }, [loadUser]);
+
   // EAS ota Upadte
   useEffect(() => {
+    if (__DEV__) return;
     const checkForUpdates = async () => {
       try {
         const update = await Updates.checkForUpdateAsync();
@@ -62,15 +84,41 @@ export default function RootLayout() {
     });
   }, []);
 
+  // 클라이언트 위치 초기화 및 구독
+  const { isPositionLoading, watchPositionAsync } = useLocation();
+  useEffect(() => {
+    let subscription: LocationSubscription | undefined;
+
+    (async () => {
+      subscription = await watchPositionAsync().finally(() => {
+        // 클라이언트 위치 초기화 & 맵 로딩 완료 후 스플래시 스크린 제거
+        setTimeout(() => {
+          SplashScreen.hideAsync();
+        }, 500);
+      });
+    })();
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
+
   useEffect(() => {
     if (fontsLoaded) {
       (Text as any).defaultProps = (Text as any).defaultProps || {};
       (Text as any).defaultProps.style = {
         fontFamily: "Pretendard-Regular",
       };
-      SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (!isPositionLoading && fontsLoaded) {
+      setTimeout(() => {
+        SplashScreen.hideAsync();
+      }, 500);
+    }
+  }, [isPositionLoading, fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;
@@ -79,15 +127,18 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider theme={theme}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: "white" },
-              }}
+        <GestureHandlerRootView>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: "white" },
+            }}
+          >
+            <Stack.Screen
+              name="searchScreen"
+              options={{ headerShown: false }}
             />
-          </SafeAreaView>
+          </Stack>
         </GestureHandlerRootView>
       </ThemeProvider>
     </SafeAreaProvider>

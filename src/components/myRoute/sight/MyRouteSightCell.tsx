@@ -6,14 +6,13 @@ import { Feather } from "@expo/vector-icons";
 import { getDistance } from "geolib";
 import { MapPinPlusIcon } from "lucide-react-native";
 
-import { useLocation } from "@/hooks/useLocation";
-
 import { theme } from "@/styles/theme";
 
-import { useMyRouteBottomSheetStore } from "@/store/useMyRouteBottomSheetStore";
-import { RouteCartItem } from "@/store/useRouteCartStore";
+import { useMyRouteBottomSheetStore } from "@/store/route/useMyRouteBottomSheetStore";
+import { RouteCartItem } from "@/store/route/useRouteCartStore";
 import { distanceToString } from "@/util/locationUtil";
 import View = Animated.View;
+import { useLocationStore } from "@/store/common/useLocationStore";
 
 interface MyRouteSightCellProps {
   routeCartItem: RouteCartItem;
@@ -22,17 +21,17 @@ interface MyRouteSightCellProps {
 const MyRouteSightCell: React.FC<MyRouteSightCellProps> = ({
   routeCartItem,
 }) => {
-  const { location } = useLocation();
+  const location = useLocationStore((state) => state.location);
   const distance = getDistance(
     { latitude: location.latitude, longitude: location.longitude },
     {
       latitude: routeCartItem.point.latitude,
       longitude: routeCartItem.point.longitude,
-    },
+    }
   );
   const { addDeleteList, removeDeleteList } = useMyRouteBottomSheetStore();
   const isPreTourDelete = useMyRouteBottomSheetStore(
-    (state) => state.isPreTourDelete,
+    (state) => state.isPreTourDelete
   );
   const deleteList = useMyRouteBottomSheetStore((state) => state.deleteList);
   const isChecked = deleteList.includes(routeCartItem.sightId);

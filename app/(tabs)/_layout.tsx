@@ -1,27 +1,39 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, usePathname } from "expo-router";
 
 import CourseIcon from "@/components/icons/tabs/CourseIcon";
 import MyRouteIcon from "@/components/icons/tabs/MyRouteIcon";
 
 import { theme } from "@/styles/theme";
 
+import { useNavigationBarStore } from "@/store/common/useNavigationBarStore";
+
 export default function TabLayout() {
+  const pathname = usePathname();
+  const currentMapType = pathname.startsWith("/sight")
+    ? "sight"
+    : pathname.startsWith("/route")
+      ? "route"
+      : pathname.startsWith("/story")
+        ? "story"
+        : null;
+  const { isNavigationBarHidden } = useNavigationBarStore();
   return (
     <Tabs
       backBehavior="history"
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          height: 15,
-          paddingTop: 15,
-          paddingHorizontal: 10,
-          borderTopWidth: 1,
-          position: "static",
-          overflow: "hidden",
-          borderTopColor: theme.colors.grey.neutral200,
-          backgroundColor: theme.colors.white,
-        },
+        tabBarStyle: isNavigationBarHidden
+          ? { display: "none" }
+          : {
+              paddingTop: 15,
+              paddingHorizontal: 10,
+              borderTopWidth: 1,
+              position: "static",
+              overflow: "hidden",
+              borderTopColor: theme.colors.grey.neutral200,
+              backgroundColor: theme.colors.white,
+            },
       }}
     >
       <Tabs.Screen
@@ -38,42 +50,67 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/*@deprecated*/}
+
       <Tabs.Screen
-        name="myRoute"
+        name="(route)/[mapType]"
         options={{
+          title: "route",
+          href: {
+            pathname: "/(tabs)/(index)/[mapType]",
+            params: { mapType: "route" },
+          },
           tabBarLabel: () => null,
-          tabBarIcon: ({ focused, color, size }) => (
-            <MyRouteIcon
-              size={24}
-              color={focused ? theme.colors.main.primary : theme.colors.black}
-            ></MyRouteIcon>
-          ),
+          tabBarIcon: ({ color }) => {
+            color =
+              currentMapType === "route"
+                ? theme.colors.main.primary
+                : theme.colors.black;
+            return <MyRouteIcon size={24} color={color} />;
+          },
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="(index)/[mapType]"
         options={{
+          title: "sight",
+          href: {
+            pathname: "/(tabs)/(index)/[mapType]",
+            params: { mapType: "sight" },
+          },
           tabBarLabel: () => null,
-          tabBarIcon: ({ focused, color, size }) => (
-            <CourseIcon
-              size={26}
-              color={focused ? theme.colors.main.primary : theme.colors.black}
-            ></CourseIcon>
-          ),
+          tabBarIcon: ({ color }) => {
+            color =
+              currentMapType === "sight"
+                ? theme.colors.main.primary
+                : theme.colors.black;
+            return <CourseIcon size={26} color={color} />;
+          },
         }}
       />
       <Tabs.Screen
-        name="story"
+        name="(story)/[mapType]"
         options={{
-          href: "/story",
+          title: "story",
+          href: {
+            pathname: "/(tabs)/(index)/[mapType]",
+            params: { mapType: "story" },
+          },
           tabBarLabel: () => null,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Ionicons
-              name="chatbox-ellipses-outline"
-              size={28}
-              color={focused ? theme.colors.main.primary : theme.colors.black}
-            />
-          ),
+          tabBarIcon: ({ color }) => {
+            color =
+              currentMapType === "story"
+                ? theme.colors.main.primary
+                : theme.colors.black;
+            return (
+              <Ionicons
+                name="chatbox-ellipses-outline"
+                size={28}
+                color={color}
+              />
+            );
+          },
         }}
       />
       <Tabs.Screen

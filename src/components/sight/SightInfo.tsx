@@ -17,17 +17,17 @@ import { theme } from "@/styles/theme";
 import {
   sightToCustomAudioMetadata,
   useAudioPlayerStore,
-} from "@/store/useAudioPlayerStore";
+} from "@/store/docent/useAudioPlayerStore";
 import { normalizeHtmlBreaks } from "@/util/textNormalize";
 
 import Divider from "../story/Divider";
 
-interface SightInfo {
+interface SightDetail {
   isDetailLoading: boolean;
   sightDetail: SightDetailInfo | null;
 }
 
-const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
+const SightInfo: React.FC<SightDetail> = ({ isDetailLoading, sightDetail }) => {
   const checkData = (data: string | undefined | null) => {
     const normalized = normalizeHtmlBreaks(data);
     return normalized && normalized.trim() !== ""
@@ -46,7 +46,7 @@ const SightInfo: React.FC<SightInfo> = ({ isDetailLoading, sightDetail }) => {
     e.stopPropagation();
     if (!sightDetail?.docentUrl) return;
     if (isMyDocentPlaying) {
-      setTemporarySightInfo();
+      setTemporarySightInfo(undefined);
     } else {
       setTemporarySightInfo(sightDetail);
     }

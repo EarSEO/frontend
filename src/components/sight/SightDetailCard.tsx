@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 
 import PagerView from "react-native-pager-view";
 
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import styled from "styled-components/native";
 
+import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 import { useBookmark } from "@/hooks/sight/useBookmark";
-import { useRequireLogin } from "@/hooks/useRequireLogin";
+import { useStoryAdd } from "@/hooks/story/useStoryAdd";
+import { useStorySpotMap } from "@/hooks/story/useStorySpotMap";
 
 import { SightDetailCardProps } from "@/types/sight";
 
@@ -15,15 +18,16 @@ import AfterAddRoute from "@/assets/icons/afterAddRoute.svg";
 import BeforeAddBookmark from "@/assets/icons/beforeAddBookmark.svg";
 import BeforeAddRoute from "@/assets/icons/beforeAddRoute.svg";
 
-import { useStoryStore } from "@/store/story/useStoryStore";
-import { useBookmarkStore } from "@/store/useBookmarkStore";
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { useBookmarkStore } from "@/store/common/useBookmarkStore";
+import { useBottomSheetStore } from "@/store/common/useBottomSheetStore";
+import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useStoryAddStore } from "@/store/story/useStoryAddStore";
 
 import AddressLabel from "../common/AddressLabel";
 import HeaderButton from "../common/HeaderButton";
 import { StoryAddButton } from "../story/StoryAddButton";
-import SightInfo from "./SightInfo";
+import SightDetail from "./SightInfo";
 import SightStory from "./SightStory";
 
 type TabType = "sightInfo" | "sightStory";
@@ -33,20 +37,23 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
   sightDetail,
   isDetailLoading,
   handleHeaderBackPress,
+  handleHeaderClosePress,
 }) => {
   const pagerRef = useRef<PagerView>(null);
   const requireLogin = useRequireLogin();
 
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
-  const { setStorySpotBriefInfo } = useStoryStore();
+  const { fetchStorySpotId } = useStorySpotMap();
   const { userBookmarkList } = useBookmarkStore();
+
   const { insertBookmark, removeBookmark } = useBookmark();
   const {
     setButtonStyle,
     setShowBackButton,
     setShowCloseButton,
     setOnClosePress,
+    setOnBackPress,
   } = useHeaderButtonStore();
 
   const [activeTab, setActiveTab] = useState<TabType>("sightInfo");
@@ -57,12 +64,36 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   useEffect(() => {
     setButtonStyle("NONE");
-    setShowBackButton(false);
+    setShowBackButton(true);
     setShowCloseButton(true);
-    setOnClosePress(() => {
-      handleHeaderBackPress();
-    });
-  }, [setShowBackButton, handleHeaderBackPress, setOnClosePress]);
+    setOnBackPress(handleHeaderBackPress);
+    setOnClosePress(handleHeaderClosePress);
+  }, [
+    setShowBackButton,
+    handleHeaderBackPress,
+    handleHeaderClosePress,
+    setOnClosePress,
+  ]);
+
+  const { handleStoryAddButton } = useStoryAdd();
+  const storyAddStep = useStoryAddStore((state) => state.storyAddStep);
+
+  const { setBottomSheetAbsoluteBottom } = useBottomSheetStore();
+
+  useEffect(() => {
+    const button =
+      activeTab === "sightStory" ? (
+        <AddButtonWrapper>
+          <StoryAddButton onPressButton={handleStoryAddButton} />
+        </AddButtonWrapper>
+      ) : (
+        <></>
+      );
+    setBottomSheetAbsoluteBottom(button);
+    return () => {
+      setBottomSheetAbsoluteBottom(undefined);
+    };
+  }, [activeTab]);
 
   //sight 조회 시 srotyId 저장
   useEffect(() => {
@@ -71,8 +102,8 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
       longitude: selectedSight.longitude,
       latitude: selectedSight.latitude,
     };
-    setStorySpotBriefInfo(sightLocation);
-  }, [setStorySpotBriefInfo, selectedSight?.latitude, selectedSight?.latitude]);
+    fetchStorySpotId(sightLocation);
+  }, [fetchStorySpotId, selectedSight?.latitude, selectedSight?.longitude]);
 
   const handlePageSelected = (e: { nativeEvent: { position: number } }) => {
     const position = e.nativeEvent.position;
@@ -92,117 +123,120 @@ const SightDetailCard: React.FC<SightDetailCardProps> = ({
 
   return (
     <Container>
-      <HeaderContainer>
-        <HeaderButton />
-      </HeaderContainer>
+      <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+        <HeaderContainer>
+          <HeaderButton />
+        </HeaderContainer>
 
-      <SightHeaderContainer>
-        <SightTitle>{selectedSight.title}</SightTitle>
-        <RouteAddButton
-          onPress={(e) => {
-            if (!requireLogin()) return;
+        <SightHeaderContainer>
+          <SightTitle>{selectedSight.title}</SightTitle>
+          <RouteAddButton
+            onPress={(e) => {
+              if (!requireLogin()) return;
 
-            e.stopPropagation();
-            if (isInCart) {
-              removeRouteCartItem(String(selectedSight.id));
-            } else {
-              insertRouteCartItem({
-                sightId: String(sightDetail?.id ?? selectedSight.id),
-                theme: sightDetail?.theme ?? "",
-                title: sightDetail?.title ?? "",
-                address: sightDetail?.address ?? "",
-                point: {
-                  longitude: sightDetail?.longitude ?? selectedSight.longitude,
-                  latitude: sightDetail?.latitude ?? selectedSight.latitude,
-                },
-                imageUrl: sightDetail?.imgUrl ?? "",
-              });
-            }
-          }}
-        >
-          {isInCart ? (
-            <AfterAddRoute width={28} height={28} />
-          ) : (
-            <BeforeAddRoute width={28} height={28} />
-          )}
-        </RouteAddButton>
-
-        <BookMarkAddButton
-          onPress={(e) => {
-            e.stopPropagation();
-            if (!requireLogin()) return;
-
-            if (isBookmark) {
-              removeBookmark(selectedSight.id);
-            } else {
-              insertBookmark(selectedSight.id);
-            }
-          }}
-        >
-          {isBookmark ? (
-            <AfterAddBookmark width={28} height={28} />
-          ) : (
-            <BeforeAddBookmark width={28} height={28} />
-          )}
-        </BookMarkAddButton>
-      </SightHeaderContainer>
-
-      {isDetailLoading ? (
-        <LoadingText>상세 정보 로딩 중...</LoadingText>
-      ) : sightDetail ? (
-        <SightTopInfoWrapper>
-          <BasicInfoWrapper>
-            <AddressLabel
-              address={sightDetail.address}
-              distance={sightDetail.distance}
-              fontSize={theme.typography.fontSize.sm}
-            />
-            <SightTheme>{sightDetail.theme}</SightTheme>
-          </BasicInfoWrapper>
-
-          <SightImage
-            source={{
-              uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
+              e.stopPropagation();
+              if (isInCart) {
+                removeRouteCartItem(selectedSight.id);
+              } else {
+                insertRouteCartItem({
+                  sightId: sightDetail?.id ?? selectedSight.id,
+                  theme: sightDetail?.theme ?? "",
+                  title: sightDetail?.title ?? "",
+                  address: sightDetail?.address ?? "",
+                  point: {
+                    longitude:
+                      sightDetail?.longitude ?? selectedSight.longitude,
+                    latitude: sightDetail?.latitude ?? selectedSight.latitude,
+                  },
+                  imageUrl: sightDetail?.imgUrl ?? "",
+                });
+              }
             }}
-            resizeMode="cover"
-          />
-        </SightTopInfoWrapper>
-      ) : null}
-      <TabContainer>
-        <TabButton
-          active={activeTab === "sightInfo"}
-          onPress={() => handleTabPress("sightInfo")}
-        >
-          <TabText active={activeTab === "sightInfo"}>정보</TabText>
-        </TabButton>
-        <TabButton
-          active={activeTab === "sightStory"}
-          onPress={() => handleTabPress("sightStory")}
-        >
-          <TabText active={activeTab === "sightStory"}>이야기</TabText>
-        </TabButton>
-      </TabContainer>
+          >
+            {isInCart ? (
+              <AfterAddRoute width={28} height={28} />
+            ) : (
+              <BeforeAddRoute width={28} height={28} />
+            )}
+          </RouteAddButton>
 
-      <StyledPagerView ref={pagerRef} onPageSelected={handlePageSelected}>
-        <PageContainer key="1">
-          <SightInfo
-            isDetailLoading={isDetailLoading}
-            sightDetail={sightDetail}
-          />
-        </PageContainer>
+          <BookMarkAddButton
+            onPress={(e) => {
+              e.stopPropagation();
+              if (!requireLogin()) return;
 
-        <PageContainer key="2">
-          <SightStory />
-          <StoryAddButton />
-        </PageContainer>
-      </StyledPagerView>
+              if (isBookmark) {
+                removeBookmark(selectedSight.id);
+              } else {
+                insertBookmark(selectedSight.id);
+              }
+            }}
+          >
+            {isBookmark ? (
+              <AfterAddBookmark width={28} height={28} />
+            ) : (
+              <BeforeAddBookmark width={28} height={28} />
+            )}
+          </BookMarkAddButton>
+        </SightHeaderContainer>
+
+        {isDetailLoading ? (
+          <LoadingText>상세 정보 로딩 중...</LoadingText>
+        ) : sightDetail ? (
+          <SightTopInfoWrapper>
+            <BasicInfoWrapper>
+              <AddressLabel
+                address={sightDetail.address}
+                distance={sightDetail.distance}
+                fontSize={theme.typography.fontSize.sm}
+              />
+              <SightTheme>{sightDetail.theme}</SightTheme>
+            </BasicInfoWrapper>
+
+            <SightImage
+              source={{
+                uri: sightDetail.imgUrl || "https://via.placeholder.com/400",
+              }}
+              resizeMode="cover"
+            />
+          </SightTopInfoWrapper>
+        ) : null}
+        <TabContainer>
+          <TabButton
+            active={activeTab === "sightInfo"}
+            onPress={() => handleTabPress("sightInfo")}
+          >
+            <TabText active={activeTab === "sightInfo"}>정보</TabText>
+          </TabButton>
+          <TabButton
+            active={activeTab === "sightStory"}
+            onPress={() => handleTabPress("sightStory")}
+          >
+            <TabText active={activeTab === "sightStory"}>이야기</TabText>
+          </TabButton>
+        </TabContainer>
+
+        <ContentContainer>
+          {activeTab === "sightInfo" ? (
+            <SightDetail
+              isDetailLoading={isDetailLoading}
+              sightDetail={sightDetail}
+            />
+          ) : (
+            <>
+              <SightStory />
+              <StoryButtonWrapper></StoryButtonWrapper>
+            </>
+          )}
+        </ContentContainer>
+      </BottomSheetScrollView>
     </Container>
   );
 };
 
 export default SightDetailCard;
 
-const Container = styled.ScrollView`
+const Container = styled.View`
   gap: 12px;
   height: 100%;
 `;
@@ -253,6 +287,8 @@ const SightTopInfoWrapper = styled.View`
 const LoadingText = styled.Text`
   font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
   color: ${({ theme }) => theme.colors.text.textTertiary};
+  margin-left: 16px;
+  margin-right: 16px;
 `;
 
 const SightImage = styled.Image`
@@ -286,13 +322,23 @@ const TabText = styled.Text<{ active: boolean }>`
     active ? theme.colors.text.textPrimary : theme.colors.text.textTertiary};
 `;
 
-const StyledPagerView = styled(PagerView)`
-  height: 360px;
+const ContentContainer = styled.View`
+  flex: 1;
 `;
 
-const PageContainer = styled.View`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+const StoryButtonWrapper = styled.View`
+  position: absolute;
+  bottom: 150px;
+  right: 30px;
+
+  width: 24px;
+  height: 24px;
+
+  align-items: center;
+`;
+
+const AddButtonWrapper = styled.View`
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 `;

@@ -9,8 +9,8 @@ import BookmarkIcon from "@/assets/icons/bookmark-icon.svg";
 import LastTripIcon from "@/assets/icons/last-trip-icon.svg";
 import MyStoryIcon from "@/assets/icons/mystory-icon.svg";
 
-import { useAuthStore } from "@/store/useAuthStore";
-import { useBookmarkStore } from "@/store/useBookmarkStore";
+import { useBookmarkStore } from "@/store/common/useBookmarkStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function MyPageIndex() {
   const router = useRouter();
@@ -144,7 +144,7 @@ function LoggedInView({
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
 `;

@@ -14,8 +14,8 @@ import { CompletedRouteItem } from "@/types/completedRoute";
 
 import { theme } from "@/styles/theme";
 
+import { useSightStore } from "@/store/sight/useSightStore";
 import { useStoryStore } from "@/store/story/useStoryStore";
-import { useSightStore } from "@/store/useSightStore";
 
 export default function PastTripDetail() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function PastTripDetail() {
 
   const handleCardPress = (item: CompletedRouteItem) => {
     if (item.itemType === "SIGHT") {
-      useSightStore.getState().setNavigateSightId(item.itemId);
+      useSightStore.getState().setNavigateSightId(Number(item.itemId));
       router.push("/(tabs)");
     } else {
       useStoryStore.getState().setNavigateStorySpotId(Number(item.itemId));
@@ -86,13 +86,17 @@ export default function PastTripDetail() {
         <BackButton onPress={() => router.back()}>
           <ChevronLeft size={24} color={theme.colors.text.textPrimary} />
         </BackButton>
-        <HeaderTitle numberOfLines={2} adjustsFontSizeToFit={false}>{selectedRoute?.name || "여행 상세"}</HeaderTitle>
+        <HeaderTitle numberOfLines={2} adjustsFontSizeToFit={false}>
+          {selectedRoute?.name || "여행 상세"}
+        </HeaderTitle>
         <HeaderSpacer />
       </Header>
 
       <FlatList
         data={selectedRouteItems}
-        keyExtractor={(item, index) => `${item.itemType}-${item.itemId}-${index}`}
+        keyExtractor={(item, index) =>
+          `${item.itemType}-${item.itemId}-${index}`
+        }
         renderItem={renderItem}
         contentContainerStyle={{ padding: 20, gap: 12 }}
         ListEmptyComponent={

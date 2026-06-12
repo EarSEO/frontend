@@ -2,16 +2,17 @@ import { useCallback, useState } from "react";
 
 import { useRouter } from "expo-router";
 
-import { CurationItem, CurationSightList } from "@/types/sight";
+import { CurationItem } from "@/types/sight";
 
 import { getCurationList, getCurationSightList } from "@/api/sight/getCuration";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
+import { useSightStore } from "@/store/sight/useSightStore";
 
-import { useLocation } from "../useLocation";
-import { useRequireLogin } from "../useRequireLogin";
+import { useRequireLogin } from "../common/useRequireLogin";
 
 export const useCurationDetail = () => {
-  const { location } = useLocation();
+  const location = useLocationStore((state) => state.location);
   const { insertRouteCartItem } = useRouteCartStore();
   const router = useRouter();
   const requireLogin = useRequireLogin();
@@ -20,8 +21,7 @@ export const useCurationDetail = () => {
   const [isCurationLoading, setIsCurationLoading] = useState(false);
   const routeCartItems = useRouteCartStore((state) => state.routeCartItems);
 
-  const [curationSightList, setCurationSightList] =
-    useState<CurationSightList[]>();
+  const { setCurationSightList, curationSightList } = useSightStore();
   const [selectedCurationTitle, setSelectedCurationTitle] = useState<
     string | undefined
   >("");
@@ -63,7 +63,7 @@ export const useCurationDetail = () => {
 
   //카드에 있는지 확인
   const isInCart = useCallback(
-    (sightId: string) => {
+    (sightId: number) => {
       return routeCartItems.some((item) => item.sightId === sightId);
     },
     [routeCartItems]
@@ -90,7 +90,7 @@ export const useCurationDetail = () => {
         };
         if (!isInCart(sight.sightId)) {
           insertRouteCartItem(AddSightInfo);
-          router.replace("/(tabs)/myRoute");
+          // router.replace("/(tabs)/myRoute");  
           setCurationSightList(undefined);
         }
       });
@@ -107,6 +107,5 @@ export const useCurationDetail = () => {
     selectedCurationDescription,
     handleAddSightListToMy,
     isInCart,
-    setCurationSightList,
   };
 };

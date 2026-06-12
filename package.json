@@ -23,8 +23,10 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@csark0812/zustand-expo-devtools": "^2.1.6",
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.6",
+    "@mapbox/geo-viewport": "^0.5.0",
     "@react-native-community/datetimepicker": "8.4.4",
     "@react-native-picker/picker": "2.11.1",
     "@react-navigation/bottom-tabs": "^7.4.0",
@@ -76,6 +78,7 @@
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.5.1",
     "styled-components": "^6.1.19",
+    "supercluster": "^8.0.1",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

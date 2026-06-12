@@ -14,8 +14,8 @@ import { theme } from "@/styles/theme";
 import {
   routeItemToCustomAudioMetadata,
   useAudioPlayerStore,
-} from "@/store/useAudioPlayerStore";
-import { RouteItem } from "@/store/useRouteStore";
+} from "@/store/docent/useAudioPlayerStore";
+import { RouteItem } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 export interface StorySpotDocentCellProps {

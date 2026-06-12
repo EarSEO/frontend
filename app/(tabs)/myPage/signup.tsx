@@ -15,7 +15,7 @@ import { theme } from "@/styles/theme";
 import API_ENDPOINTS from "@/constants/endpoints";
 
 import api from "@/api/axios";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/store/profile/useAuthStore";
 
 export default function SignUp() {
   const [step, setStep] = useState(1);
@@ -168,8 +168,6 @@ export default function SignUp() {
               placeholderTextColor={theme.colors.text.textTertiary}
               value={password}
               onChangeText={setPassword}
-              backgroundColor={theme.colors.background.background50}
-              width="100%"
               secureTextEntry={true}
             />
           </InputWrapper>
@@ -180,8 +178,6 @@ export default function SignUp() {
               placeholderTextColor={theme.colors.text.textTertiary}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
-              backgroundColor={theme.colors.background.background50}
-              width="100%"
               secureTextEntry={true}
             />
           </InputWrapper>
@@ -244,7 +240,7 @@ export default function SignUp() {
   );
 }
 
-const Container = styled.View`
+const Container = styled.SafeAreaView`
   flex: 1;
   background-color: ${theme.colors.white};
 `;
@@ -287,7 +283,11 @@ const Label = styled.Text`
 `;
 
 const InputWrapper = styled.View`
-  margin-bottom: 10px;
+  height: 50px;
+  margin-bottom: 12px;
+  padding-horizontal: 15px;
+  border-radius: ${theme.borderRadius.md}px;
+  background-color: ${theme.colors.background.background50};
 `;
 
 const InputWithButton = styled.View`

@@ -1,13 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { useRouter } from "expo-router";
 import styled from "styled-components/native";
 
-import { useRequireLogin } from "@/hooks/useRequireLogin";
+import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 
 import StoryAddButtonIcon from "../../assets/icons/story/storyAddButton.svg";
 
-export const StoryAddButton = () => {
+interface StoryAddProps {
+  onPressButton: () => void;
+}
+
+export const StoryAddButton: React.FC<StoryAddProps> = ({ onPressButton }) => {
   const router = useRouter();
   const requireLogin = useRequireLogin();
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(false); // 중복 클릭 방지
@@ -18,8 +22,9 @@ export const StoryAddButton = () => {
     setTimeout(() => setButtonDisabled(false), 500);
 
     if (!requireLogin()) return;
-
-    router.push("/story/spotLocationSelected");
+    else {
+      onPressButton();
+    }
   };
 
   return (
@@ -30,7 +35,7 @@ export const StoryAddButton = () => {
 };
 
 const StoryAddButtonContainer = styled.Pressable`
-  position: absolute;
+  /* position: absolute;
   bottom: 30px;
   right: 30px;
   z-index: 999;
@@ -39,5 +44,5 @@ const StoryAddButtonContainer = styled.Pressable`
   height: 24px;
 
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
 `;

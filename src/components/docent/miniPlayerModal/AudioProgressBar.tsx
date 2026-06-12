@@ -4,7 +4,7 @@ import { useAudioPlayerStatus } from "expo-audio";
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
 import View = Animated.View;
 
 interface AudioProgressBar {

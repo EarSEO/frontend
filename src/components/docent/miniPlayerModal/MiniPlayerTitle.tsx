@@ -11,8 +11,8 @@ import styled from "styled-components/native";
 
 import { theme } from "@/styles/theme";
 
-import { useAudioPlayerStore } from "@/store/useAudioPlayerStore";
-import { useRouteStore } from "@/store/useRouteStore";
+import { useAudioPlayerStore } from "@/store/docent/useAudioPlayerStore";
+import { useRouteStore } from "@/store/route/useRouteStore";
 import View = Animated.View;
 
 interface MiniPlayerModalTitleProps {

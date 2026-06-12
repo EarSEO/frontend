@@ -1,18 +1,19 @@
 import { useCallback, useEffect } from "react";
 
+import { LatLng } from "react-native-maps";
+
 import styled from "styled-components/native";
 
+import { useRequireLogin } from "@/hooks/common/useRequireLogin";
 import { useCurationDetail } from "@/hooks/sight/useCurationDetail";
-import { useLocation } from "@/hooks/useLocation";
-import { useRequireLogin } from "@/hooks/useRequireLogin";
 
-import { Point } from "@/types/geom";
 import { CurationSightList, SightInfo } from "@/types/sight";
 
 import { theme } from "@/styles/theme";
 
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
-import { useRouteCartStore } from "@/store/useRouteCartStore";
+import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
+import { useLocationStore } from "@/store/common/useLocationStore";
+import { useRouteCartStore } from "@/store/route/useRouteCartStore";
 
 import HeaderButton from "../common/HeaderButton";
 import SightCard from "../common/SightCard";
@@ -44,7 +45,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   } = useHeaderButtonStore();
   const { isInCart } = useCurationDetail();
   const { insertRouteCartItem, removeRouteCartItem } = useRouteCartStore();
-  const { location } = useLocation();
+  const location = useLocationStore((state) => state.location);
   const requireLogin = useRequireLogin();
 
   //헤더 렌더링
@@ -60,12 +61,12 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   //나의 경로에 sight 추가하는 핸들러
   const handleAddSightToMy = useCallback(
     (
-      sightId: string,
+      sightId: number,
       sightTitle: string,
       sightTheme: string,
       sightAddress: string,
       sightImage: string,
-      sightLocation: Point
+      sightLocation: LatLng
     ) => {
       const AddCartSight = {
         sightId: sightId,
@@ -91,13 +92,13 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
   //sight 클릭 시 관광지 상세로 이동하는 핸들러
   const handleMoveToSightDetail = useCallback(
     (
-      sightId: string,
+      id: number,
       sightTitle: string,
       sightGeohash: string,
-      sightLocation: Point
+      sightLocation: LatLng
     ) => {
       const sight = {
-        id: sightId,
+        id: id,
         title: sightTitle,
         longitude: sightLocation.longitude,
         latitude: sightLocation.latitude,
@@ -165,9 +166,7 @@ const CurationDetail: React.FC<CurationDetailProps> = ({
 
 export default CurationDetail;
 
-const Container = styled.View`
-  gap: 16px;
-`;
+const Container = styled.View``;
 
 const HeaderContainer = styled.View`
   margin-bottom: 60px;
@@ -188,6 +187,7 @@ const CurationDescription = styled.Text`
   font-family: ${({ theme }) => theme.typography.fontFamily.regular};
   font-size: ${({ theme }) => theme.typography.fontSize.sm}px;
   color: ${({ theme }) => theme.colors.text.textSecondary};
+  margin-bottom: 10px;
 `;
 
 const SightListContainer = styled.View`

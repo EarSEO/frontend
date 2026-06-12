@@ -4,7 +4,7 @@ import styled from "styled-components/native";
 import BackButtonCircle from "@/assets/icons/headerButton/backButtonCircle.svg";
 import CloseButtonCircle from "@/assets/icons/headerButton/closeButtonCircle.svg";
 
-import { useHeaderButtonStore } from "@/store/useHeaderButtonStore";
+import { useHeaderButtonStore } from "@/store/common/useHeaderButtonStore";
 
 const HeaderButton: React.FC = () => {
   const {
